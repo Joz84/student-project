@@ -1,0 +1,38 @@
+<div class="container page-min-height">
+  <div class="row">
+    <h2 class="text-center my-5">Ma team</h2>
+    <div class="col-md-6 offset-md-3">
+      <%= simple_form_for current_user do |f| %>
+        <%= f.association :team %>
+        <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
+      <% end %>
+      <br>
+      <hr>
+      <p>
+      Je suis le 1er de ma team à me connecté, celle-ci n'est pas encore dans la liste. Je la créer la team maintenant
+      </p>
+        <!-- Button trigger modal -->
+      <button type="button" class="btn btn-danger text-white w-100" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Nouvelle team
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Nouvelle team</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <%= simple_form_for @team do |f| %>
+                  <%= f.input :name %>
+                  <%= f.button :submit, class: "btn btn-danger text-white" %>
+                <% end %>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

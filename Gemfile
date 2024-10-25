@@ -17,6 +17,12 @@ gem 'rack-attack'
 gem "recaptcha"
 gem "bootsnap", require: false
 
+gem "activeadmin", "~> 3.2"
+gem "postmark-rails", "~> 0.22.1"
+gem "dotenv-rails"
+gem "cloudinary"
+gem "font-awesome-sass", "~> 6.1"
+
 group :development, :test do
   gem 'pry-byebug'
 end
@@ -31,7 +37,3 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
-
-gem "activeadmin", "~> 3.2"
-
-gem "postmark-rails", "~> 0.22.1"

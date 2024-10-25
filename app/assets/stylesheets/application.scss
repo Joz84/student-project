@@ -1,6 +1,7 @@
 @import "config/fonts";
 @import "config/colors";
 @import "config/bootstrap_variables";
+@import "font-awesome";
 
 // External libraries
 @import "bootstrap";
@@ -8,3 +9,18 @@
 
 // Your CSS partials
 @import "components/index";
+
+a {
+  text-decoration: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+  color: $blue;
+}
+
+.bg-ligthblue {
+  background: $ligthblue;
+} 

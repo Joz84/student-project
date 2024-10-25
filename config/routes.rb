@@ -1,15 +1,14 @@
 Rails.application.routes.draw do
-  get '/legal', to: 'pages#legal', as: 'legal'
-  root to: "pages#home"
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   devise_for :users
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
+  get '/legal', to: 'pages#legal', as: 'legal'
+  get '/prog_router', to: 'programmations#router', as: 'prog_router'
+  get '/project_router', to: 'projects#router', as: 'project_router'  
+  root to: "pages#home"
+  resources :users, only: :update
+  resources :teams, only: [:new, :create]
+  resources :projects, only: [:index, :show]
 
-  # Defines the root path route ("/")
-  # root "posts#index"
 end

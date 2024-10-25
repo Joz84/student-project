@@ -1,26 +1,46 @@
-<div class="<%= yield(:navbar_classes)%>">
-  <div class="navbar">
-    <%= link_to root_path, class: 'navbar-brand' do %>
-      <%= image_tag "logo.png" %><span class="title d-none d-md-block">Mihivai</span>
-    <% end %>
+<div class="navbar-mihivai">
+  <!-- Logo -->
+  <a href="/" class="navbar-mihivai-brand">
+    <%= image_tag "logo.png" %>
+  </a>
 
-    <div class='d-flex align-items-center gap-3'>
-      <div class="nav-item dropdown">
-        <div class='avatar cursor-pointer d-none d-md-flex justify-content-center align-items-center' id="navbarDropdown" aria-haspopup="true" aria-expanded="false" data-bs-toggle="dropdown">
-          <%= svg_tag('pictos/avatar') %>
-        </div>
-
-        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-          <% if user_signed_in? %>
-            <%= link_to 'Se déconnecter', destroy_user_session_path, class: 'dropdown-item', data: { turbo_method: :delete } %>
-          <% else %>
-            <%= link_to 'Se connecter', new_user_session_path, class: 'dropdown-item'  %>
-          <% end %>
-        </div>
-      </div>
-
+  <div class="d-none d-md-block">
+    <div class="d-flex align-items-center justify-content-between">
+      <% if user_signed_in? %>
+        <%= link_to "Home", root_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
+        <%= link_to "Se déconnecter", destroy_user_session_path, data: {turbo_method: :delete} , class: "navbar-mihivai-item navbar-mihivai-link"%>
+      <% else %>
+        <%= link_to "Se connecter", new_user_session_path , class: "navbar-mihivai-item navbar-mihivai-link"%>
+      <% end %>
     </div>
   </div>
 
-  <div style="height: 70px;"></div>
+  <div class="d-block d-md-none">
+    <div class="navbar-dropdown">
+      <input id="toggle" type="checkbox"/>
+      <label class="hamburger" for="toggle">
+        <div class="top"></div>
+        <div class="meat"></div>
+        <div class="bottom"></div>
+      </label>
+
+      <div class="nav">
+        <div class="nav-wrapper">
+          <nav class= "d-flex flex-column">
+            <%= link_to "Accueil", root_path, class: "navbar-link" %>
+            <% if user_signed_in? %>
+              <%= link_to "home", root_path, class: "navbar-link"  %>
+              <%= link_to "Se déconnecter", destroy_user_session_path, class: "navbar-link", data: {turbo_method: :delete} %>
+            <% else %>
+              <%= link_to "Créer un compte", new_user_registration_path, class: "navbar-link" %>
+              <%= link_to "Se connecter", new_user_session_path,  class: "navbar-link" %>
+            <% end %>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
+
+<div style="height: 70px;"></div>

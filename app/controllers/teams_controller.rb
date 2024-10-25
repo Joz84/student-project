@@ -1,0 +1,24 @@
+class TeamsController < ApplicationController
+  def new
+    @team = Team.new
+    authorize @team
+  end
+
+  def create
+    @team = Team.new(team_params)
+    authorize @team
+    if @team.save
+      current_user.team.destroy if current_user.team&.users&.count == 1
+      current_user.update(team: @team)
+      redirect_to projects_path
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def team_params
+    params.require(:team).permit(:name)
+  end
+end

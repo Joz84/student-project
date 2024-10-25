@@ -1,0 +1,31 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-9">
+      <h2 class="text-center my-5">Les projets</h2>
+      <div class="container">
+        <div class="row">
+        <% @projects.each do |project| %>
+          <div class="col-md-4">
+            <div class="card w-100 p-3 mb-2">
+              <h6 class="text-center"><%= project.name %></h6>
+              <small class="text-grey"><i><%= project.subject.capitalize %></i></small>
+              <p><%= project.description %></p>
+              <%= link_to "lien vers le drive", project.drive_link, target: "_blank" %>
+            </div>
+          </div>
+        <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 bg-primary page-min-height pb-5">
+      <h2 class="text-center text-white my-5">Ton classement</h2>
+      <div class="container">
+        <% current_user.ratings.each do |rating| %>
+        <div class="card w-100 p-3 mb-2">
+          <h6 class="text-center"><%= rating.project.name %></h6>
+        </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
