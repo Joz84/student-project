@@ -1,0 +1,22 @@
+<div class="card w-100 p-3 mb-3" data-card-id="<%= card.id %>">
+  <div class="d-flex justify-content-between">
+    <div>
+      <h6><%= "#{card.name}" %></h6>
+      <small class="text-grey"><i id="begin-at"><%= card.str_begin_at %></i></small>
+      <small class="text-grey"><i id="separator"><%= " - " if card.str_begin_at && card.str_end_at %></i></small>
+      <small class="text-grey"><i id="end-at"><%= card.str_end_at %></i></small>
+      <br>
+      <small><%= link_to "lien vers le drive", card.drive_link, target: "_blank" %></small>
+    </div>
+    <div class="card-avatars">
+      <% card.users.each_with_index do |user, index| %>
+        <div class="card-avatar-position" style="top: <%= index * 15 %>px">
+          <%= render "teams/card_avatar", user: user %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%= render "teams/card_options", card: card %>
+
+</div>

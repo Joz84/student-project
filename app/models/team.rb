@@ -1,12 +1,24 @@
 class Team < ApplicationRecord
-  has_many :bookings
+  belongs_to :project, optional: true
   has_many :users, dependent: :nullify
+  has_many :lists
+  has_many :cards, through: :lists
   validates :name, presence: true
   validates :name, uniqueness: true
 
-  enum progress: [ :pending, :booked ]
+  after_create :create_lists
 
-  def project
-    bookings.find()
+  private
+
+  def create_lists
+    names = ["Tâches à faire", "Tâches en cours", "Tâches finalisées"]
+    names.each_with_index do |name, index|
+      List.create(
+        team: self, 
+        name: name,
+        position: index
+      )
+    end
   end
+
 end

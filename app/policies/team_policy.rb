@@ -1,20 +1,14 @@
 class TeamPolicy < ApplicationPolicy
-  def new
-    true
-  end
-
   def create?
     true
-    #record.user == user
   end
 
   def update?
-    #record.user == user
-    true
+    user.team == record
   end
 
   def show?
-    true
+    user.team == record
   end
 
   class Scope < ApplicationPolicy::Scope

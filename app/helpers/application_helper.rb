@@ -11,4 +11,14 @@ module ApplicationHelper
   def render_turbo_stream_flash_messages
     turbo_stream.prepend "flash", partial: "shared/flashes"
   end
+
+  def active_course
+    Course.where(ticket_activation: true).last
+  end
+
+  def default_course
+    Course.find_by(id: session[:course_id]) || 
+    active_course ||
+    Course.find_by(position: 1)
+  end
 end

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= render "layouts/google_analytics" %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title><%= meta_title %></title>
+    <meta name="description" content="<%= meta_description %>">
+    <!-- Facebook Open Graph data -->
+    <meta property="og:title" content="<%= meta_title %>" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= request.original_url %>" />
+    <meta property="og:image" content="<%= meta_image %>" />
+    <meta property="og:description" content="<%= meta_description %>" />
+    <meta property="og:site_name" content="<%= meta_title %>" />
+
+    <%= yield(:robots) %>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%#= favicon_link_tag asset_path('favicon.ico') %> <!-- Uncomment for favicon -->
+  </head>
+  <body>
+    <%= render 'shared/navbar' %>
+    <div id='flash'>
+      <%= render 'shared/flashes' %>
+    </div>
+
+    <div class="container-fluid page-min-height">
+    <div class="row">
+        <div class="col-md-3 bg-primary page-min-height pb-5">
+        <h2 class="text-center text-white my-5">Mes cours</h2>
+            <div class="accordion" id="accordionCourses">
+            <% Course.all.each_with_index do |course, index| %>
+                <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="false" aria-controls="collapse<%= index %>">
+                    Cours <%= course.position %>
+                    </button>
+                </h2>
+                <div id="collapse<%= index %>" class="accordion-collapse collapse" data-bs-parent="#accordionCourses">
+                    <div class="accordion-body">
+                    <%= link_to "Le Cours", course %>
+                    <hr>
+                    <%= link_to "Les Exercices", course_exercices_path(course) %>
+                    <hr>
+                    <%= link_to "Les Tickets", tickets_path %>
+                    </div>
+                </div>
+                </div>
+            <% end %>
+            </div> 
+        </div>
+        <div class="col-md-9">
+          <%= yield %>
+        </div>
+    </div>
+    </div>
+
+
+
+    <%= render 'shared/footer' %>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-9">
+      <h2 class="text-center my-5">Mon Tableau de bord</h2>
+      <div class="container">
+        <div class="row">
+          <% @team.lists.order(:position).each do |list| %>             
+            <div class="col-md-4">
+              <h4 class="text-center"><%= list.name %></h4>
+              <div class="card w-100 m-2 bg-danger p-2">
+
+                <div class="card w-100 mb-3">
+                  <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseList<%= list.id %>" aria-expanded="false" aria-controls="collapseList<%= list.id %>">
+                    Créer une tâche
+                  </button>
+                  <div class="collapse" id="collapseList<%= list.id %>">
+                    <div class="card card-body">
+                      <%= simple_form_for [list, @card] do |f| %>
+                        <%= f.input :name %>
+                        <%= f.input :description %>
+                        <%= f.input :drive_link %>                   
+                        <%= f.button :submit, "Valider", class: "btn btn-danger text-white" %>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="w-100" data-controller="dragndrop" data-dragndrop-target="cards" data-list-id="<%= list.id %>">
+                  <% list.cards.order(position: :asc).each do |card| %>
+                    <%= render "teams/card", card: card %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 bg-primary page-min-height pb-5">
+      <h2 class="text-center text-white my-5">Ma team</h2>
+      <div class="card w-100 p-3 mb-3">
+        <h6 class="text-center mb-3"><%= @team.project.name %></h6>
+        <small class="text-grey"><i><%= @team.project.subject.capitalize %></i></small>
+        <p><%= @team.project.description %></p>
+        <%= link_to "lien vers le drive du projet", @team.project.drive_link, target: "_blank" %>
+      </div>
+
+      <div class="card w-100 p-3 mb-3">
+        <h6 class="text-center mb-3">Mes outils</h6>
+        <%= link_to "lien vers notre Drive", @team.drive_link, target: "_blank" %>
+        <%= link_to "lien vers notre Trello", @team.trello_link, target: "_blank" %>
+      </div>
+
+      <div class="card w-100 p-3 mb-3">
+        <h6 class="text-center mb-3">L'équipe</h6>
+        <div class="container-fluid">
+          <div class="row">     
+            <% @team.users.where(teacher: nil).each do |user| %>
+            <div class="col-md-6">
+              <div class="w-100 d-flex mx-1 flex-column justify-content-center align-items-center">
+                <%= render "teams/card_avatar", user: user %>
+                <div class="m-2 w-100 text-center">
+                  <p><b><%= user.first_name %></b></p>
+                </div>
+              </div>
+            </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

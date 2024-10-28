@@ -24,3 +24,47 @@ h1, h2, h3, h4, h5, h6 {
 .bg-ligthblue {
   background: $ligthblue;
 } 
+
+.card-avatars {
+  position: relative;
+  width: 50px;
+  min-height: 100px;
+}
+
+.card-avatar-position {
+  position: absolute;
+  right: 0px;
+}
+
+.card-avatar {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 24px;
+  // border: 1px solid gray;
+  box-shadow: 5px 5px 5px gray;
+}
+
+.accordion-padding {
+  padding: 8px 16px;
+}
+
+.btn-supp {
+  border: 1px solid $red;
+  color: $red;
+}
+
+.slides-iframe {
+  width: 80%;
+  aspect-ratio: 480 / 300;
+}
+
+.color-progress {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  box-shadow: 2px 2px 2px gray;
+}

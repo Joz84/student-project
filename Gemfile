@@ -22,6 +22,10 @@ gem "postmark-rails", "~> 0.22.1"
 gem "dotenv-rails"
 gem "cloudinary"
 gem "font-awesome-sass", "~> 6.1"
+gem 'acts_as_list'
+gem 'rails-i18n'
+gem 'redcarpet'
+gem 'httparty'
 
 group :development, :test do
   gem 'pry-byebug'
@@ -37,3 +41,4 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+gem "rest-client", "~> 2.1"

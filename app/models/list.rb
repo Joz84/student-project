@@ -1,6 +1,6 @@
 class List < ApplicationRecord
-  belongs_to :project
+  belongs_to :team
   has_many :cards
   validates :name, presence: true
-  validates :name, uniqueness: { scope: :project }
+  validates :name, uniqueness: { scope: :team }
 end

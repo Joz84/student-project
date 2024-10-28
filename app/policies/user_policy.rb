@@ -1,4 +1,8 @@
 class UserPolicy < ApplicationPolicy
+  def router?
+    true
+  end
+  
   def update?
     record == user
   end

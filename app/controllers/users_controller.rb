@@ -13,6 +13,6 @@ class UsersController < ApplicationController
   private
 
   def user_params
-    params.require(:user).permit(:team, :team_id)
+    params.require(:user).permit(:team, :team_id, :progress)
   end
 end

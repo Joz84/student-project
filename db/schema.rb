@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_25_105249) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_28_010049) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -77,21 +77,58 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_105249) do
     t.index ["user_id"], name: "index_assignments_on_user_id"
   end
 
+  create_table "attempts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "exercice_id", null: false
+    t.boolean "succeeded"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["exercice_id"], name: "index_attempts_on_exercice_id"
+    t.index ["user_id"], name: "index_attempts_on_user_id"
+  end
+
   create_table "cards", force: :cascade do |t|
     t.bigint "list_id", null: false
     t.string "name"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "drive_link"
+    t.datetime "begin_at"
+    t.datetime "end_at"
+    t.integer "position"
     t.index ["list_id"], name: "index_cards_on_list_id"
   end
 
+  create_table "courses", force: :cascade do |t|
+    t.string "name"
+    t.string "github_link"
+    t.string "slides_link"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "ticket_activation"
+  end
+
+  create_table "exercices", force: :cascade do |t|
+    t.string "name"
+    t.string "cw_token"
+    t.integer "position"
+    t.bigint "course_id", null: false
+    t.boolean "visible"
+    t.integer "kata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_exercices_on_course_id"
+  end
+
   create_table "lists", force: :cascade do |t|
-    t.bigint "project_id", null: false
+    t.bigint "team_id", null: false
+    t.integer "position"
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_lists_on_project_id"
+    t.index ["team_id"], name: "index_lists_on_team_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -130,8 +167,21 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_105249) do
     t.bigint "project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "progress"
+    t.integer "progress", default: 0
+    t.string "drive_link"
+    t.string "trello_link"
     t.index ["project_id"], name: "index_teams_on_project_id"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "content"
+    t.integer "progress", default: 0
+    t.bigint "course_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["course_id"], name: "index_tickets_on_course_id"
+    t.index ["user_id"], name: "index_tickets_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -146,9 +196,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_105249) do
     t.string "first_name"
     t.string "last_name"
     t.string "student_number"
-    t.integer "progress"
+    t.integer "progress", default: 0
     t.boolean "teacher"
     t.bigint "team_id"
+    t.string "avatar_color"
+    t.string "cw_nickname"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["team_id"], name: "index_users_on_team_id"
@@ -158,12 +210,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_25_105249) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "assignments", "cards"
   add_foreign_key "assignments", "users"
+  add_foreign_key "attempts", "exercices"
+  add_foreign_key "attempts", "users"
   add_foreign_key "cards", "lists"
-  add_foreign_key "lists", "projects"
+  add_foreign_key "exercices", "courses"
+  add_foreign_key "lists", "teams"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"
   add_foreign_key "supervisions", "projects"
   add_foreign_key "supervisions", "users"
   add_foreign_key "teams", "projects"
+  add_foreign_key "tickets", "courses"
+  add_foreign_key "tickets", "users"
   add_foreign_key "users", "teams"
 end

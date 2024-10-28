@@ -1,0 +1,12 @@
+<div class="navbar border-bottom d-flex justify-content-center">
+    <%= link_to "Le Cours", @course, class: "btn btn-danger text-white mx-2" %>
+    <%= link_to "Les Exercices", course_exercices_path(@course), class: "btn btn-danger text-white mx-2" %>
+    <%= link_to "Les Tickets", tickets_path, class: "btn btn-danger text-white mx-2" %>
+</div>
+<div class="container">
+  <h2 class="text-center my-5">Cours <%= @course.position %>: <%= @course.name %></h2>
+  <div class="d-flex justify-content-center mb-5">
+    <iframe class="slides-iframe" src="<%= @course.slides_link %>" frameborder="0" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+  </div>
+  <%= raw @markdown_content %>
+</div>

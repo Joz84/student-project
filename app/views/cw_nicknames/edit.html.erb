@@ -1,0 +1,16 @@
+<div class="container page-min-height">
+  <div class="row">
+    <h2 class="text-center my-5">Mon Nickname CodeWars</h2>
+    <div class="col-md-6 offset-md-3">
+      <p>Afin de pouvoir être noté il faut que tu t'inscrive sur le site
+      <%= link_to "www.codewars.com", "https://www.codewars.com/" %>. Ce site est un site collaboratif sur lequel sont référencés de nombreux exercices. 
+      Il permet de tester son code et de voir voir les meilleures solutions</p>
+      
+      <%= simple_form_for :user, url: cw_nickname_path(current_user), method: :patch do |f| %>
+        <%= f.input :cw_nickname, label: "Nickname Codewars" %>
+        <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

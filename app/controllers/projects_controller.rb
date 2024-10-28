@@ -10,12 +10,10 @@ class ProjectsController < ApplicationController
     authorize Project.new
     if current_user.team_id.nil?
       redirect_to new_team_path
-    elsif current_user.pending?
-      redirect_to projects_path
-    elsif current_user.team.pending?
+    elsif current_user.team.project.nil?
       redirect_to projects_path
     else
-      redirect_to current_user.project
+      redirect_to current_user.team
     end
   end
 end

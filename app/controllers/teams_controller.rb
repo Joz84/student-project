@@ -16,6 +16,13 @@ class TeamsController < ApplicationController
     end
   end
 
+  def show
+    @team = Team.find(params[:id])
+    authorize @team
+    @card = Card.new
+    @assignment = Assignment.new
+  end
+
   private
 
   def team_params

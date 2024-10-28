@@ -1,0 +1,74 @@
+<a class="btn btn-primary text-white" data-bs-toggle="collapse" href="#collapse<%= card.id %>" role="button" aria-expanded="false" aria-controls="collapse<%= card.id %>">
+Options
+</a>
+<div class="collapse" id="collapse<%= card.id %>">
+  <div class="">
+    <div class="accordion" id="accordion<%= card.id %>">
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%= card.id%>" aria-expanded="false" aria-controls="collapseOne<%= card.id%>">
+            Description
+            </button>
+        </h2>
+        <div id="collapseOne<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
+            <div class="accordion-body">
+            <p><%= card.description %></p>            
+            </div>
+        </div>
+        </div>
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo<%= card.id%>" aria-expanded="false" aria-controls="collapseTwo<%= card.id%>">
+            Gestion des collaborateur
+            </button>
+        </h2>        
+
+        <div id="collapseTwo<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
+            <div class="accordion-body">
+              <% card.assignments.each do |assignment| %>
+                <%= link_to assignment_path(assignment), data: { "turbo-method": :delete, "turbo_confirm": "Êtes vous sûrs de vouloir retirer ce collaborateur?" }, class: "w-100 d-flex justify-content-between px-3 text-black" do %>
+                  <div><%= "#{assignment.user.first_name.capitalize} #{assignment.user.last_name.first.upcase}." %></div> 
+                  <i class="fa-regular fa-trash-can"></i>
+                <% end %>
+              <% end %>
+              <hr>
+              <%= simple_form_for [card, @assignment] do |f| %>
+                  <%= f.association :user, label: "Ajouter un collaborateur", collection: card.list.team.users.where.not(id: card.users.map(&:id)) %>
+                  <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
+              <% end %>
+            </div>
+        </div>
+        </div>
+
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree<%= card.id%>" aria-expanded="false" aria-controls="collapseThree<%= card.id%>">
+            Modifier la tâche
+            </button>
+        </h2>
+        <div id="collapseThree<%= card.id%>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
+            <%= simple_form_for card do |f| %>
+            <%= f.input :name %>
+            <%= f.input :description %>
+            <%= f.input :drive_link %>                   
+            <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
+            <% end %>
+        </div>
+        </div>
+
+        <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour<%= card.id%>" aria-expanded="false" aria-controls="collapseFour<%= card.id%>">
+            Supprimer la tâche
+            </button>
+        </h2>
+        <div id="collapseFour<%= card.id%>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
+            <%= link_to "Supprimer la tâche", card_path(card), data: { "turbo-method": :delete, "turbo_confirm": "Êtes vous sûrs de vouloir supprimer cette tâche?" }, class: "btn btn-supp w-100" %>
+        </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
