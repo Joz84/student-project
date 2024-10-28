@@ -19,16 +19,32 @@
     </div>
     <div class="col-md-3 bg-primary page-min-height pb-5">
       <h2 class="text-center text-white my-5">Ton classement</h2>
-      <% if current_user.pending? %>
-        <div class="container" data-controller="sortable" data-sortable-animation-value="150" data-sortable-resource-name-value="rating"> <%# data-controller="dragndrop" data-dragndrop-target="ratings" %>
-      <% else %>
-        <div class="container">
-      <% end %>
-        <% current_user.ratings.order(:position).each do |rating| %>
-        <div class="card w-100 p-3 mb-2" data-sortable-update-url="<%= rating_path(rating) %>">
-          <h6 class="text-center"><%= rating.project.name %></h6>
+      <div class="container">
+        <div class="row g-0">
+          <div class="col-2">
+            <% current_user.ratings.order(:position).each do |rating| %>
+              <div class="card mb-2 height-rating d-flex justify-content-center align-items-center">
+                <h6><%= rating.position %></h6>
+              </div>
+            <% end %>
+
+
+          </div>
+          <div class="col-10">
+            <% if current_user.pending? %>
+              <div data-controller="sortable" data-sortable-animation-value="150" data-sortable-resource-name-value="rating"> <%# data-controller="dragndrop" data-dragndrop-target="ratings" %>
+            <% else %>
+              <div>
+            <% end %>
+              <% current_user.ratings.order(:position).each do |rating| %>
+              <div class="card height-rating w-100 p-3 mb-2" data-sortable-update-url="<%= rating_path(rating) %>">
+                <h6 class="text-center"><%= rating.project.name %></h6>
+              </div>
+              <% end %>
+            </div>
+            
+          </div>
         </div>
-        <% end %>
       </div>
       <div class="container">
       <% if current_user.pending? %>
@@ -38,7 +54,9 @@
           <%= f.submit 'Valider ma liste', class: "btn btn-danger text-white w-100" %>
         <% end %>
         <% else %>
-        <p>Ta liste est validée et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
+        <div class="card p-3 btn-supp">
+          <p>Ta liste est validée et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
+        </div>
         <% end %>
       </div>
     </div>

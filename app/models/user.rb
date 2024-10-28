@@ -50,6 +50,26 @@ class User < ApplicationRecord
     cw_nickname_exist?
   end
 
+  def update_attempts
+    exercice_cw_tokens = Exercice.where
+                                 .not(id: self.attempts.map(&:exercice_id))
+                                 .map(&:cw_token)
+                                 .uniq
+    url = "https://www.codewars.com/api/v1/users/#{cw_nickname}/code-challenges/completed"
+    begin
+      if exercice_cw_tokens.count < Exercice.count
+        all_completed_cw_token = JSON.parse(RestClient.get(url).body)["data"]
+          .select{|kata| kata["completedLanguages"].include?("python")}
+          .map{|kata| kata["id"]}.uniq
+        completed_exercice_cw_tokens = (all_completed_cw_token & exercice_cw_tokens)
+        completed_exercice_cw_tokens.each do |cw_token|
+          Exercice.find_by(cw_token: cw_token).attempts.create(user: self)
+        end
+      end
+    rescue
+    end
+  end
+
   private
 
   def create_ratings

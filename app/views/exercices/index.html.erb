@@ -8,10 +8,11 @@
 
   <h3 class="text-center my-5">Les Exercices</h3>
   <% @exercices.each do |exercice| %>
-    <%= link_to exercice.cw_url, class: "card p-3 mb-2" do  %>
+    <%= link_to exercice.cw_url, target: "_blank", class: "card p-3 mb-2" do  %>
       <div class="d-flex justify-content-between w-100">
-        <div class="text-black">
-          Exercice <%= exercice.position %>: <%= exercice.name %>
+        <div class="text-black d-flex align-items-baseline">
+          <div class="mx-2 color-progress" style="background: <%= exercice.attempts.find_by(user: current_user).present? ? "#89BF48" : "lightgray" %>"></div>
+          <p>Exercice <%= exercice.position %>: <%= exercice.name %></p>
         </div>
         <div>
           Ouvrir dans codewars
@@ -19,4 +20,7 @@
       </div>
     <% end %>
   <% end %>
+
+  <h3 class="text-center my-5">Le compileur</h3>
+  <iframe src="https://trinket.io/embed/python3/443fa5da8c1a" width="100%" height="500" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
 </div>
