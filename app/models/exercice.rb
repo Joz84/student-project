@@ -1,3 +1,5 @@
+require 'redcarpet'
+
 class Exercice < ApplicationRecord
   belongs_to :course
   has_many :attempts
@@ -13,5 +15,10 @@ class Exercice < ApplicationRecord
 
   def level
     9 - kata
+  end
+
+  def markdown_description
+    markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+    markdown.render(description).html_safe
   end
 end
