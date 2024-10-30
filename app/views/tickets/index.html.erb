@@ -31,7 +31,8 @@
     <h4 class="my-5">Liste des Tickets</h4>
 
     <% @tickets.each do |ticket| %>
-      <div class="card shadow p-3 mb-2">      
+      <div class="card shadow p-3 mb-2">    
+        <small><b><%= ticket.user.first_name %> <%= ticket.user.last_name %></b></small>  
         <div class="d-flex justify-content-between w-100">
           <div class="text-black">
             <%= ticket.content %>
