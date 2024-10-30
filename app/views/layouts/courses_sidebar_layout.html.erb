@@ -33,7 +33,7 @@
         <div class="col-md-3 bg-primary page-min-height pb-5">
         <h2 class="text-center text-white my-5">Mes cours</h2>
             <div class="accordion" id="accordionCourses">
-            <% Course.all.each_with_index do |course, index| %>
+            <% Course.all.order(:position).each_with_index do |course, index| %>
                 <div class="accordion-item">
                 <h2 class="accordion-header">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse<%= index %>" aria-expanded="false" aria-controls="collapse<%= index %>">
