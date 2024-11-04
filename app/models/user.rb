@@ -57,7 +57,7 @@ class User < ApplicationRecord
                                  .uniq
     url = "https://www.codewars.com/api/v1/users/#{cw_nickname}/code-challenges/completed"
     begin
-      if exercice_cw_tokens.count < Exercice.count
+      if exercice_cw_tokens.count > 0
         all_completed_cw_token = JSON.parse(RestClient.get(url).body)["data"]
           .select{|kata| kata["completedLanguages"].include?("python")}
           .map{|kata| kata["id"]}.uniq

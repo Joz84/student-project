@@ -217,155 +217,155 @@
 # "
 # )
 
-Exercice.where(course: Course.find_by(position: 2)).destroy_all
+# Exercice.where(course: Course.find_by(position: 2)).destroy_all
 
-Exercice.create!(
-  name: "Return a string's even characters.", 
-  cw_token: "56cd44e1aa4ac7879200010b", 
-  position: 1, 
-  course: Course.find_by(position: 2), 
-  kata: 7,
-  description: "## Description:
-Écrivez une fonction qui renvoie une séquence (l'index commence par 1) de tous les caractères pairs d'une chaîne. Si la chaîne contient moins de deux caractères ou plus de 100 caractères, la fonction doit renvoyer « chaîne non valide ».
+# Exercice.create!(
+#   name: "Return a string's even characters.", 
+#   cw_token: "566044325f8fddc1c000002c", 
+#   position: 1, 
+#   course: Course.find_by(position: 2), 
+#   kata: 7,
+#   description: "## Description:
+# Écrivez une fonction qui renvoie une séquence (l'index commence par 1) de tous les caractères pairs d'une chaîne. Si la chaîne contient moins de deux caractères ou plus de 100 caractères, la fonction doit renvoyer « chaîne non valide ».
 
-### Exemples:
+# ### Exemples:
 
-```
-\"abcdefghijklm\" --> [\"b\", \"d\", \"f\", \"h\", \"j\", \"l\"]
-```
+# ```
+# \"abcdefghijklm\" --> [\"b\", \"d\", \"f\", \"h\", \"j\", \"l\"]
+# ```
 
-```
-\"a\"             --> \"invalid string\"
-```
-"
-)
+# ```
+# \"a\"             --> \"invalid string\"
+# ```
+# "
+# )
 
-Exercice.create!(
-  name: "Password maker", 
-  cw_token: "5637b03c6be7e01d99000046", 
-  position: 2, 
-  course: Course.find_by(position: 2), 
-  kata: 7,
-  description: "## Description:
-Une suggestion pour créer un mot de passe satisfaisant est de commencer par une phrase ou une expression mémorable et de créer un mot de passe en extrayant la première lettre de chaque mot.
+# Exercice.create!(
+#   name: "Password maker", 
+#   cw_token: "5637b03c6be7e01d99000046", 
+#   position: 2, 
+#   course: Course.find_by(position: 2), 
+#   kata: 7,
+#   description: "## Description:
+# Une suggestion pour créer un mot de passe satisfaisant est de commencer par une phrase ou une expression mémorable et de créer un mot de passe en extrayant la première lettre de chaque mot.
 
-Il est encore mieux de remplacer certaines de ces lettres par des chiffres (par exemple, la lettre Opeut être remplacée par le chiffre 0) :
+# Il est encore mieux de remplacer certaines de ces lettres par des chiffres (par exemple, la lettre Opeut être remplacée par le chiffre 0) :
 
-au lieu d'inclure i ou I de mettre le numéro 1 dans le mot de passe ;
-au lieu d'inclure o ou O de mettre le numéro 0 dans le mot de passe ;
-au lieu d'inclure s ou S de mettre le numéro 5 dans le mot de passe.
+# au lieu d'inclure i ou I de mettre le numéro 1 dans le mot de passe ;
+# au lieu d'inclure o ou O de mettre le numéro 0 dans le mot de passe ;
+# au lieu d'inclure s ou S de mettre le numéro 5 dans le mot de passe.
 
-### Exemples:
+# ### Exemples:
 
-```
-\"Give me liberty or give me death\"  --> \"Gml0gmd\"
-```
+# ```
+# \"Give me liberty or give me death\"  --> \"Gml0gmd\"
+# ```
 
-```
-\"Keep Calm and Carry On\"            --> \"KCaC0\"
-```
-"
-)
+# ```
+# \"Keep Calm and Carry On\"            --> \"KCaC0\"
+# ```
+# "
+# )
 
-Exercice.create!(
-  name: "Password validator", 
-  cw_token: "56a921fa8c5167d8e7000053", 
-  position: 3, 
-  course: Course.find_by(position: 2), 
-  kata: 7,
-  description: "## Description
-Votre travail consiste à créer une fonction de validation de mot de passe simple, comme celle que l'on voit sur de nombreux sites Web.
+# Exercice.create!(
+#   name: "Password validator", 
+#   cw_token: "56a921fa8c5167d8e7000053", 
+#   position: 3, 
+#   course: Course.find_by(position: 2), 
+#   kata: 7,
+#   description: "## Description
+# Votre travail consiste à créer une fonction de validation de mot de passe simple, comme celle que l'on voit sur de nombreux sites Web.
 
-Les règles pour un mot de passe valide sont les suivantes :
+# Les règles pour un mot de passe valide sont les suivantes :
 
-- Il doit y avoir au moins 1 lettre majuscule.
-- Il doit y avoir au moins 1 lettre minuscule.
-- Il doit y avoir au moins 1 numéro.
-- Le mot de passe doit comporter au moins 8 caractères.
-Vous êtes autorisé à utiliser toutes les méthodes pour valider le mot de passe.
+# - Il doit y avoir au moins 1 lettre majuscule.
+# - Il doit y avoir au moins 1 lettre minuscule.
+# - Il doit y avoir au moins 1 numéro.
+# - Le mot de passe doit comporter au moins 8 caractères.
+# Vous êtes autorisé à utiliser toutes les méthodes pour valider le mot de passe.
 
-### Exemples:
-```
-password(\"Abcd1234\"); ===> true
-```
+# ### Exemples:
+# ```
+# password(\"Abcd1234\"); ===> true
+# ```
 
-```
-password(\"Abcd123\"); ===> false
-```
+# ```
+# password(\"Abcd123\"); ===> false
+# ```
 
-```
-password(\"abcd1234\"); ===> false
-```
+# ```
+# password(\"abcd1234\"); ===> false
+# ```
 
-```
-password(\"AbcdefGhijKlmnopQRsTuvwxyZ1234567890\"); ===> true
-```
+# ```
+# password(\"AbcdefGhijKlmnopQRsTuvwxyZ1234567890\"); ===> true
+# ```
 
-```
-password(\"ABCD1234\"); ===> false
-```
+# ```
+# password(\"ABCD1234\"); ===> false
+# ```
 
-```
-password(\"Ab1!@#$%^&*()-_+={}[]|\:;?/>.<,\"); ===> true;
-```
+# ```
+# password(\"Ab1!@#$%^&*()-_+={}[]|\:;?/>.<,\"); ===> true;
+# ```
 
-```
-password(\"!@#$%^&*()-_+={}[]|\:;?/>.<,\"); ===> false;
-```
+# ```
+# password(\"!@#$%^&*()-_+={}[]|\:;?/>.<,\"); ===> false;
+# ```
 
-Informations supplémentaires
-- Seules des chaînes vous seront transmises.
-- La chaîne peut contenir n’importe quel caractère de clavier standard.
-- Les chaînes acceptées peuvent avoir n'importe quelle longueur, à condition qu'elles comportent 8 caractères ou plus.
+# Informations supplémentaires
+# - Seules des chaînes vous seront transmises.
+# - La chaîne peut contenir n’importe quel caractère de clavier standard.
+# - Les chaînes acceptées peuvent avoir n'importe quelle longueur, à condition qu'elles comportent 8 caractères ou plus.
 
-"
-)
+# "
+# )
 
-Exercice.create!(
-  name: "Sum of two lowest positive integers", 
-  cw_token: "558fc85d8fd1938afb000014", 
-  position: 4, 
-  course: Course.find_by(position: 2), 
-  kata: 7,
-  description: "## Description:
-Créez une fonction qui renvoie la somme des deux nombres positifs les plus bas à partir d'un tableau d'au moins 4 entiers positifs. Aucun nombre flottant ou entier non positif ne sera transmis.
+# Exercice.create!(
+#   name: "Sum of two lowest positive integers", 
+#   cw_token: "558fc85d8fd1938afb000014", 
+#   position: 4, 
+#   course: Course.find_by(position: 2), 
+#   kata: 7,
+#   description: "## Description:
+# Créez une fonction qui renvoie la somme des deux nombres positifs les plus bas à partir d'un tableau d'au moins 4 entiers positifs. Aucun nombre flottant ou entier non positif ne sera transmis.
 
-### Exemples : (Entrée --> Sortie)
+# ### Exemples : (Entrée --> Sortie)
 
-```
-[19, 5, 42, 2, 77] --> 7
-```
+# ```
+# [19, 5, 42, 2, 77] --> 7
+# ```
 
-```
-[10, 343445353, 3453445, 3453545353453] --> 3453455
-```
-"
-)
+# ```
+# [10, 343445353, 3453445, 3453545353453] --> 3453455
+# ```
+# "
+# )
 
-Exercice.create!(
-  name: "Testing 1-2-3", 
-  cw_token: "54bf85e3d5b56c7a05000cf9", 
-  position: 5, 
-  course: Course.find_by(position: 2), 
-  kata: 7,
-  description: "## Description:
-Votre équipe écrit un nouvel éditeur de texte sophistiqué et vous avez été chargé d'implémenter la numérotation des lignes.
+# Exercice.create!(
+#   name: "Testing 1-2-3", 
+#   cw_token: "54bf85e3d5b56c7a05000cf9", 
+#   position: 5, 
+#   course: Course.find_by(position: 2), 
+#   kata: 7,
+#   description: "## Description:
+# Votre équipe écrit un nouvel éditeur de texte sophistiqué et vous avez été chargé d'implémenter la numérotation des lignes.
 
-Écrivez une fonction qui prend une liste de chaînes et renvoie chaque ligne précédée du numéro correct.
+# Écrivez une fonction qui prend une liste de chaînes et renvoie chaque ligne précédée du numéro correct.
 
-La numérotation commence à 1. Le format est n: string. Notez les deux points et l'espace entre les deux.
+# La numérotation commence à 1. Le format est n: string. Notez les deux points et l'espace entre les deux.
 
-### Exemples : (Entrée --> Sortie)
+# ### Exemples : (Entrée --> Sortie)
 
-```
-[] --> []
- ```
+# ```
+# [] --> []
+#  ```
  
- ```
-[\"a\", \"b\", \"c\"] --> [\"1: a\", \"2: b\", \"3: c\"]
-```
-"
-)
+#  ```
+# [\"a\", \"b\", \"c\"] --> [\"1: a\", \"2: b\", \"3: c\"]
+# ```
+# "
+# )
 
 #---------------------------------
 
@@ -471,3 +471,100 @@ La numérotation commence à 1. Le format est n: string. Notez les deux points e
 # **Remarque** : Dans ce Kata, une chaîne est dite en MAJUSCULES lorsqu'elle ne contient aucune lettre minuscule, donc toute chaîne ne contenant aucune lettre est trivialement considérée comme étant en MAJUSCULES.
 # "
 # )
+
+
+# e = Exercice.create!(
+#   name: "Counting Duplicates", 
+#   cw_token: "54bf1c2cd5b56cc47f0007a1", 
+#   position: 1, 
+#   course: Course.find_by(position: 3), 
+#   kata: 6,
+#   description: "## Description:
+
+#   Écrivez une fonction qui renverra le nombre de caractères alphabétiques distincts, insensibles à la casse , et de chiffres numériques qui apparaissent plusieurs fois dans la chaîne d'entrée. On peut supposer que la chaîne d'entrée contient uniquement des lettres (majuscules et minuscules) et des chiffres numériques.
+
+# ### Exemples : (Entrée --> Sortie)
+
+# ```
+# \"abcde\" -> 0 # no characters repeats more than once
+# ```
+
+# ```
+# \"aabbcde\" -> 2 # 'a' and 'b'
+# ```
+
+# ```
+# \"aabBcde\" -> 2 # 'a' occurs twice and 'b' twice (`b` and `B`)
+# ```
+
+# ```
+# \"indivisibilité\" -> 1 # 'i' occurs six times
+# ```
+
+# ```
+# \"Indivisibilités\" -> 2 # 'i' occurs seven times and 's' occurs twice
+# ```
+
+# ```
+# \"aA11\" -> 2 # 'a' and '1'
+# ```
+
+# ```
+# \"ABBA\" -> 2 # 'A' and 'B' each occur twice
+# ```
+# "
+# )
+
+Exercice.create!(
+  name: "", 
+  cw_token: "", 
+  position: 2, 
+  course: Course.find_by(position: 3), 
+  kata: 6,
+  description: "## Description:
+
+### Exemples : (Entrée --> Sortie)
+
+```
+```
+
+```
+```
+"
+)
+
+Exercice.create!(
+  name: "", 
+  cw_token: "", 
+  position: 3, 
+  course: Course.find_by(position: 3), 
+  kata: 6,
+  description: "## Description:
+
+### Exemples : (Entrée --> Sortie)
+
+```
+```
+
+```
+```
+"
+)
+
+Exercice.create!(
+  name: "", 
+  cw_token: "", 
+  position: 4, 
+  course: Course.find_by(position: 3), 
+  kata: 6,
+  description: "## Description:
+
+### Exemples : (Entrée --> Sortie)
+
+```
+```
+
+```
+```
+"
+)
