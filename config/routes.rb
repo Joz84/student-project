@@ -28,4 +28,8 @@ Rails.application.routes.draw do
     resources :assignments, only: [:create, :destroy], shallow: true
   end
 
+  namespace :teacher do
+    resources :teams, only: [:index, :show]
+  end
+
 end

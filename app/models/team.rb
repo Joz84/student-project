@@ -16,6 +16,14 @@ class Team < ApplicationRecord
 
   after_create :create_lists
 
+  def project_ratings
+    div = users.count.to_f * ((Project.count - 1) * 2 + 1) / 100
+    Project.all.map { |project|
+      rating = project.ratings.where(user: users).map(&:score).sum / div
+      [project, rating.round(2)]
+    }.to_h
+  end
+
   private
 
   def create_lists

@@ -6,4 +6,8 @@ class Rating < ApplicationRecord
   def self.ransackable_attributes(auth_object = nil)
     ["created_at", "id", "id_value", "position", "project_id", "updated_at", "user_id"]
   end
+
+  def score
+    (Project.count - position) * 2 + 1
+  end
 end

@@ -1,0 +1,38 @@
+<h1>Teams</h1>
+<p>Find me in app/views/teacher/teams/index.html.erb</p>
+
+<ul>
+<% @teams.each do |team| %>
+
+    <li><%= team.name %> - <%= team.users.count %></li>
+<% end %>
+</ul>
+
+
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2 class="text-center my-5">Les équipes</h2>
+      <div class="container">
+        <div class="row">
+        <% @teams.each do |team| %>
+          <div class="col-md-4">
+            <div class="card w-100 p-3 mb-2">
+              <h6 class="text-center"><%= team.name %></h6>
+              <small class="text-grey text-center"><i>Nbr d'élèves : <%= team.users.count %></i></small>
+              <div>
+                <% team.project_ratings.each do |project, rating| %>
+                    <div><%= rating.round(2) %> - <%= project.name %></div>
+                    <div class="card" style="background: <%= project.color %>; width:<%= rating %>%; height: 10px" ></div>
+                <% end %>
+                
+              </div>
+              <%#= link_to "lien vers le drive", project.drive_link, target: "_blank" %>
+            </div>
+          </div>
+        <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
