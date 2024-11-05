@@ -6,6 +6,10 @@ class Card < ApplicationRecord
   validates :name, presence: true
   validates :description, presence: true
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["begin_at", "created_at", "description", "drive_link", "end_at", "id", "id_value", "list_id", "name", "position", "updated_at"]
+  end
+
   attr_reader :old_list, :new_list, :old_index, :new_index
 
   def team

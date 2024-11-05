@@ -6,7 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :team, optional: true
   has_many :ratings
-  has_many :supervisons
+  has_many :supervisions
   has_many :assignments
   has_many :cards, through: :assignments
   has_many :attempts
@@ -16,6 +16,15 @@ class User < ApplicationRecord
   validates :student_number, presence: true
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
+
+  def self.ransackable_associations(auth_object = nil)
+    ["assignments", "attempts", "cards", "ratings", "supervisions", "team", "tickets"]
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["admin", "avatar_color", "created_at", "cw_nickname", "email", "encrypted_password", "first_name", "id", "id_value", "last_name", "progress", "remember_created_at", "reset_password_sent_at", "reset_password_token", "student_number", "teacher", "team_id", "updated_at"]
+  end
+
 
   before_create :initialize_avatar_color
   after_create :create_ratings

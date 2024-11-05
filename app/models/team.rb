@@ -6,6 +6,14 @@ class Team < ApplicationRecord
   validates :name, presence: true
   validates :name, uniqueness: true
 
+  def self.ransackable_associations(auth_object = nil)
+    ["cards", "lists", "project", "users"]
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["created_at", "drive_link", "id", "id_value", "name", "progress", "project_id", "trello_link", "updated_at"]
+  end
+
   after_create :create_lists
 
   private
