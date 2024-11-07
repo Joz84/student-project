@@ -7,6 +7,10 @@ class Teacher::TeamPolicy < ApplicationPolicy
     user.teacher?
   end
 
+  def update?
+    user.teacher?
+  end
+
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve

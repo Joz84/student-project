@@ -1,38 +1,99 @@
-<h1>Teams</h1>
-<p>Find me in app/views/teacher/teams/index.html.erb</p>
-
-<ul>
-<% @teams.each do |team| %>
-
-    <li><%= team.name %> - <%= team.users.count %></li>
-<% end %>
-</ul>
 
 
 <div class="container-fluid page-min-height">
   <div class="row">
     <div class="col-md-8 offset-md-2">
       <h2 class="text-center my-5">Les équipes</h2>
-      <div class="container">
-        <div class="row">
-        <% @teams.each do |team| %>
-          <div class="col-md-4">
-            <div class="card w-100 p-3 mb-2">
-              <h6 class="text-center"><%= team.name %></h6>
-              <small class="text-grey text-center"><i>Nbr d'élèves : <%= team.users.count %></i></small>
-              <div>
-                <% team.project_ratings.each do |project, rating| %>
-                    <div><%= rating.round(2) %> - <%= project.name %></div>
-                    <div class="card" style="background: <%= project.color %>; width:<%= rating %>%; height: 10px" ></div>
-                <% end %>
-                
+
+      <div class="card card-body">
+        <a class="" data-bs-toggle="collapse" href="#collapseTeamCreate" role="button" aria-expanded="false" aria-controls="collapseTeamCreate">
+          Constitution des équipes
+        </a>
+        <div class="collapse mt-3" id="collapseTeamCreate">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="card bg-primary p-3 text-center mb-5">
+                  <h6>Nombre d'équipes créées</h6>
+                  <h5><%= Team.count - 1 %></h5>
+                </div>
               </div>
-              <%#= link_to "lien vers le drive", project.drive_link, target: "_blank" %>
+              <div class="col-md-4">
+                <div class="card bg-primary p-3 text-center mb-5">
+                  <h6>Nombre d'élèves en équipe</h6>
+                  <h5><%= User.where.not(teacher: true, team: nil).count %></h5>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card bg-primary p-3 text-center mb-5">
+                  <h6>Nombre d'élèves sans équipe</h6>
+                  <h5><%= User.where(teacher: false, team: nil).count %></h5>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+            <% @teams.each do |team| %>
+              <div class="col-md-4">
+                <div class="card w-100 p-3 mb-2">
+                  <h6 class="text-center"><%= team.name %></h6>
+                  <small class="text-grey text-center mb-2"><i>Nbr d'élèves : <%= team.users.count %></i></small>
+                  <% project = team.project || team.project_ratings.select{ |p, r| r == team.project_ratings.values.max }.keys.first %>                    
+                  <div class="rounded py-1 px-3 d-flex align-items-baseline" style="background: <%= project.color %>;">
+                    <div class="color-progress me-1" style="background: <%= team.project.present? ? "black" : "white" %>"></div>
+                    <div>
+                      <%= team.project_ratings[project].round(2) %> - <%= project.name %>
+                    </div>
+                  </div>
+                  <div class="card card-body">
+                    <a class="" data-bs-toggle="collapse" href="#collapseTeamUpdate" role="button" aria-expanded="false" aria-controls="collapseTeamUpdate">
+                      Attribuer un projet
+                    </a>
+                    <div class="collapse mt-3" id="collapseTeamUpdate">
+                      <%= simple_form_for [:teacher, team] do |f| %>
+                        <%= f.input :project_id, collection: Project.all.map{|p| [p.name, p.id]}.append(["Aucun", nil]), label: false, include_blank: false %>
+                        <%= f.submit 'Valider', class: "btn btn-primary w-100" %>
+                      <% end %>
+                    </div>
+                  </div>
+
+                  
+                  <div class="card card-body">
+                    <a class="" data-bs-toggle="collapse" href="#collapseTeamMembers" role="button" aria-expanded="true" aria-controls="collapseTeamMembers">
+                      Membres de l'équipe
+                    </a>
+                    <div class="collapse mt-3 show" id="collapseTeamMembers">
+                      <ul>
+                        <% team.users.each do |user| %>
+                          <li><%= user.first_name %> <%= user.last_name %></li>
+                        <% end %>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="card card-body">
+                    <a class="" data-bs-toggle="collapse" href="#collapseProjectRatings" role="button" aria-expanded="true" aria-controls="collapseProjectRatings">
+                      Les notes projets
+                    </a>
+                    <div class="collapse mt-3 show" id="collapseProjectRatings">
+                      <% team.project_ratings.each do |project, rating| %>
+                          <div><%= rating.round(2) %> - <%= project.name %></div>
+                          <div class="card" style="background: <%= project.color %>; width:<%= rating %>%; height: 10px" ></div>
+                      <% end %>
+                    </div>
+                  </div>                  
+                  
+                  
+                  <div>
+
+                    
+                  </div>
+                </div>
+              </div>
+            <% end %>
             </div>
           </div>
-        <% end %>
         </div>
       </div>
     </div>
   </div>
 </div>
+

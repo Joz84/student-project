@@ -29,7 +29,7 @@ Rails.application.routes.draw do
   end
 
   namespace :teacher do
-    resources :teams, only: [:index, :show]
+    resources :teams, only: [:index, :show, :update]
   end
 
 end
