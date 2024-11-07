@@ -28,15 +28,16 @@
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'élèves sans équipe</h6>
                   <h5><%= User.where(teacher: nil, team: nil).count %></h5>
-                  <ul>
-                    
-                    <% User.where(teacher: nil, team: nil).each do |user| %>
-                      <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.eamail %></li>
-                    <% end %>
-                    
-                  </ul>
                 </div>
               </div>
+            </div>
+            <div class="row">
+            <h6>Elèves sans équipe</h6>
+            <ul>
+              <% User.where(teacher: nil, team: nil).each do |user| %>
+                <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.eamail %></li>
+              <% end %>
+            </ul>
             </div>
             <div class="row">
             <% @teams.each do |team| %>
