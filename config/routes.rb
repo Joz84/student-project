@@ -11,11 +11,14 @@ Rails.application.routes.draw do
   root to: "pages#home"
   resources :users, only: [:update]
   resources :cw_nicknames, only: [:edit, :update]
-  resources :teams, only: [:new, :create, :show]
   resources :projects, only: [:index, :show]
   resources :ratings, only: [:update]
   resources :tickets, only: [:index, :create, :update, :destroy]
   
+  resources :teams, only: [:new, :create, :show] do
+    resources :messages, only: [:create]
+  end
+
   resources :courses, only: :show do
     resources :exercices, only: :index
   end

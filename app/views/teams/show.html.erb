@@ -38,33 +38,71 @@
     </div>
     <div class="col-md-3 bg-primary page-min-height pb-5">
       <h2 class="text-center text-white my-5">Ma team</h2>
-      <div class="card w-100 p-3 mb-3">
-        <h6 class="text-center mb-3"><%= @team.project.name %></h6>
-        <small class="text-grey"><i><%= @team.project.subject.capitalize %></i></small>
-        <p><%= @team.project.description %></p>
-        <%= link_to "lien vers le drive du projet", @team.project.drive_link, target: "_blank" %>
-      </div>
 
-      <div class="card w-100 p-3 mb-3">
-        <h6 class="text-center mb-3">Mes outils</h6>
-        <%= link_to "lien vers notre Drive", @team.drive_link, target: "_blank" %>
-        <%= link_to "lien vers notre Trello", @team.trello_link, target: "_blank" %>
-      </div>
+      <div class="accordion" id="accordionSidebar">
+        <div class="">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="<%= (params[:messagerie] != 'true').to_s %>" aria-controls="collapseOne">
+              Infos
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse <%= 'show' if params[:messagerie] != 'true' %>" data-bs-parent="#accordionSidebar">
+            <div class="">
 
-      <div class="card w-100 p-3 mb-3">
-        <h6 class="text-center mb-3">L'équipe</h6>
-        <div class="container-fluid">
-          <div class="row">     
-            <% @team.users.where(teacher: nil).each do |user| %>
-            <div class="col-md-6">
-              <div class="w-100 d-flex mx-1 flex-column justify-content-center align-items-center">
-                <%= render "teams/card_avatar", user: user %>
-                <div class="m-2 w-100 text-center">
-                  <p><b><%= user.first_name %></b></p>
+              <div class="card w-100 p-3 mb-3">
+                <h6 class="text-center mb-3"><%= @team.project.name %></h6>
+                <small class="text-grey"><i><%= @team.project.subject.capitalize %></i></small>
+                <p><%= @team.project.description %></p>
+                <%= link_to "lien vers le drive du projet", @team.project.drive_link, target: "_blank" %>
+              </div>
+
+              <div class="card w-100 p-3 mb-3">
+                <h6 class="text-center mb-3">Mes outils</h6>
+                <%= link_to "lien vers notre Drive", @team.drive_link, target: "_blank" %>
+                <%= link_to "lien vers notre Trello", @team.trello_link, target: "_blank" %>
+              </div>
+
+              <div class="card w-100 p-3 mb-3">
+                <h6 class="text-center mb-3">L'équipe</h6>
+                <div class="container-fluid">
+                  <div class="row">     
+                    <% @team.users.where(teacher: nil).each do |user| %>
+                    <div class="col-md-6">
+                      <div class="w-100 d-flex mx-1 flex-column justify-content-center align-items-center">
+                        <%= render "teams/card_avatar", user: user %>
+                        <div class="m-2 w-100 text-center">
+                          <p><b><%= user.first_name %></b></p>
+                        </div>
+                      </div>
+                    </div>
+                    <% end %>
+                  </div>
                 </div>
               </div>
+
             </div>
-            <% end %>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<%= (params[:messagerie] == 'true').to_s %>" aria-controls="collapseTwo">
+              Messagerie
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse <%= 'show' if params[:messagerie] == 'true' %>" data-bs-parent="#accordionSidebar">
+            <div class="accordion-body">            
+              <% @team.messages.each do |message| %>
+                <div class="card w-100 p-3 mb-3">
+                  <small><b><%= message.user.first_name %></b></small>
+                  <small><i><%= message.created_at %></i></small>
+                  <p><%= message.content %></p>
+                </div>
+              <% end %>
+              <%= simple_form_for [@team, @message] do |f| %>
+                <%= f.input :content, label: false, placeholder: "Ton message" %>
+                <%= f.button :submit, "Envoyer", class: "btn btn-danger text-white w-100" %>
+              <% end %> 
+            </div>
           </div>
         </div>
       </div>

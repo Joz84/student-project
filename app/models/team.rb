@@ -2,6 +2,7 @@ class Team < ApplicationRecord
   belongs_to :project, optional: true
   has_many :users, dependent: :nullify
   has_many :lists
+  has_many :messages
   has_many :cards, through: :lists
   validates :name, presence: true
   validates :name, uniqueness: true
