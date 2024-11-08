@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :cards, through: :assignments
   has_many :attempts
   has_many :tickets
+  has_many :messages
   validates :first_name, presence: true
   validates :first_name, presence: true
   validates :student_number, presence: true

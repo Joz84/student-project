@@ -21,6 +21,7 @@ class TeamsController < ApplicationController
     authorize @team
     @card = Card.new
     @assignment = Assignment.new
+    @message = Message.new
   end
 
   private

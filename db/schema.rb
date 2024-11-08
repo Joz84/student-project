@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_05_033408) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_08_102511) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -120,6 +120,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_05_033408) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description"
+    t.boolean "optional"
     t.index ["course_id"], name: "index_exercices_on_course_id"
   end
 
@@ -130,6 +131,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_05_033408) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["team_id"], name: "index_lists_on_team_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "team_id", null: false
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id"], name: "index_messages_on_team_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -153,6 +164,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_05_033408) do
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_ratings_on_project_id"
     t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.text "channel"
+    t.text "payload"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
   end
 
   create_table "supervisions", force: :cascade do |t|
@@ -217,6 +236,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_05_033408) do
   add_foreign_key "cards", "lists"
   add_foreign_key "exercices", "courses"
   add_foreign_key "lists", "teams"
+  add_foreign_key "messages", "teams"
+  add_foreign_key "messages", "users"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"
   add_foreign_key "supervisions", "projects"

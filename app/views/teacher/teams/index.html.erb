@@ -35,7 +35,7 @@
             <h6>Elèves sans équipe</h6>
             <ul>
               <% User.where(teacher: nil, team: nil).each do |user| %>
-                <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.eamail %></li>
+                <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.email %></li>
               <% end %>
             </ul>
             </div>
