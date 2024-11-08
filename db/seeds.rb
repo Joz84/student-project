@@ -514,57 +514,163 @@
 # ```
 # "
 # )
+Exercice.create!(
+  name: "Beginner - Reduce but Grow", 
+  cw_token: "57f780909f7e8e3183000078", 
+  position: 1, 
+  course: Course.find_by(position: 2), 
+  kata: 8,
+  description: "## Description:
+Pour une liste non vide d'entiers, renvoyer le résultat de la multiplication de toutes les valeurs de la liste. 
+
+### Exemples : (Entrée --> Sortie)
+
+```
+[1, 2, 3, 4] --> 1 * 2 * 3 * 4 = 24
+```
+"
+)
 
 Exercice.create!(
-  name: "", 
-  cw_token: "", 
+  name: "Calculate average", 
+  cw_token: "57a2013acf1fa5bfc4000921", 
+  position: 2, 
+  course: Course.find_by(position: 2), 
+  kata: 8,
+  description: "## Description:
+
+Écrivez une fonction qui calcule la moyenne des nombres dans une liste donnée.
+
+**Remarque** : les tableaux vides doivent renvoyer 0.
+"
+)
+
+Exercice.create!(
+  name: "Beginner - Lost Without a Map", 
+  cw_token: "57f781872e3d8ca2a000007e", 
+  position: 3, 
+  course: Course.find_by(position: 2), 
+  kata: 8,
+  description: "## Description:
+
+Pour une liste d'entiers, renvoyez une nouvelle liste avec chaque valeur doublée.
+
+### Exemples : (Entrée --> Sortie)
+
+```
+[1, 2, 3] --> [2, 4, 6]
+```
+"
+)
+
+Exercice.create!(
+  name: "Sum Arrays", 
+  cw_token: "53dc54212259ed3d4f00071c", 
+  position: 4, 
+  course: Course.find_by(position: 2), 
+  kata: 8,
+  description: "## Description:
+
+Écrivez une fonction qui prend une liste de nombres et renvoie la somme des nombres. 
+Les nombres peuvent être négatifs ou non entiers. 
+Si la liste ne contient aucun nombre, vous devez renvoyer 0.
+
+### Exemples : (Entrée --> Sortie)
+
+```
+[1, 5.2, 4, 0, -1] --> 9.2
+```
+
+```
+[] --> 0
+```
+
+```
+[-2.398] --> -2.398
+```
+
+### Hypothèses
+- Vous pouvez supposer que vous ne recevez que des nombres.
+- Vous ne pouvez pas supposer la taille de la liste.
+- Vous pouvez supposer que vous obtenez une liste et que si la liste est vide, vous renvoyez 0.
+
+### Ce que nous testons
+Nous testons des boucles de base et des opérations mathématiques. Ceci est destiné aux débutants qui apprennent juste les boucles et les opérations mathématiques.
+Les utilisateurs avancés peuvent trouver cela extrêmement facile et peuvent facilement écrire cela sur une seule ligne.
+"
+)
+
+
+Exercice.create!(
+  name: "Define a card suit", 
+  cw_token: "5a360620f28b82a711000047", 
+  position: 1, 
+  course: Course.find_by(position: 3), 
+  kata: 8,
+  description: "## Description:
+
+Vous recevez n'importe quelle carte comme argument. Votre tâche consiste à retourner la couleur de cette carte (en minuscules).
+
+Notre jeu (est préchargé) :
+```
+DECK = ['2S','3S','4S','5S','6S','7S','8S','9S','10S','JS','QS','KS','AS',
+        '2D','3D','4D','5D','6D','7D','8D','9D','10D','JD','QD','KD','AD',
+        '2H','3H','4H','5H','6H','7H','8H','9H','10H','JH','QH','KH','AH',
+        '2C','3C','4C','5C','6C','7C','8C','9C','10C','JC','QC','KC','AC']
+```
+
+### Exemples : (Entrée --> Sortie)
+
+```
+'3C' --> 'clubs'
+```
+
+```
+'3D' --> 'diamonds'
+```
+
+```
+'3H' --> 'hearts'
+```
+
+```
+'3S' --> 'spades'
+```
+"
+)
+
+Exercice.create!(
+  name: "Get Planet Name By ID", 
+  cw_token: "515e188a311df01cba000003", 
   position: 2, 
   course: Course.find_by(position: 3), 
-  kata: 6,
+  kata: 8,
   description: "## Description:
+
+La fonction ne renvoie pas les valeurs correctes. Pouvez-vous comprendre pourquoi ?
 
 ### Exemples : (Entrée --> Sortie)
 
 ```
-```
-
-```
+3 --> \"Earth\"
 ```
 "
 )
 
 Exercice.create!(
-  name: "", 
-  cw_token: "", 
+  name: "Switch it Up!", 
+  cw_token: "5808dcb8f0ed42ae34000031", 
   position: 3, 
   course: Course.find_by(position: 3), 
-  kata: 6,
+  kata: 8,
   description: "## Description:
+
+Lorsqu'un nombre compris entre 0 et 9 est fourni, renvoyez-le en lettres. Notez que l'entrée est garantie d'être comprise entre 0 et 9.
 
 ### Exemples : (Entrée --> Sortie)
 
 ```
-```
-
-```
-```
-"
-)
-
-Exercice.create!(
-  name: "", 
-  cw_token: "", 
-  position: 4, 
-  course: Course.find_by(position: 3), 
-  kata: 6,
-  description: "## Description:
-
-### Exemples : (Entrée --> Sortie)
-
-```
-```
-
-```
+1 --> \"Un\"
 ```
 "
 )

@@ -7,7 +7,10 @@
   <h2 class="text-center my-5">Cours <%= @course.position %>: <%= @course.name %></h2>
 
   <h3 class="text-center my-5">Les Exercices</h3>
-  <% @exercices.each do |exercice| %>
+
+  <h5>Exercices basics</h5>
+  <hr>
+  <% @exercices.where(optional: nil).each do |exercice| %>
   
     <div class="card p-3 mb-2">
       <div class="d-flex justify-content-between w-100">
@@ -30,6 +33,33 @@
       </div>
     </div>
   <% end %>
+
+    <h5>Exercices optionnels</h5>
+  <hr>
+  <% @exercices.where(optional: true).each do |exercice| %>
+  
+    <div class="card p-3 mb-2">
+      <div class="d-flex justify-content-between w-100">
+        <div class="text-black d-flex align-items-baseline">
+          <div class="mx-2 color-progress" style="background: <%= exercice.attempts.find_by(user: current_user).present? ? "#89BF48" : "lightgray" %>"></div>
+          <p>Exercice <%= exercice.position %>: <%= exercice.name %></p>
+        </div>
+        <div>
+          <%= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
+          <a class="btn btn-primary text-white" data-bs-toggle="collapse" href="#collapse<%= exercice.id %>" role="button" aria-expanded="false" aria-controls="collapse<%= exercice.id %>">
+            Voir l'énnoncé
+          </a>
+        </div>
+      </div>
+
+      <div class="collapse" id="collapse<%= exercice.id %>">
+        <div class="card card-body">
+          <%= raw exercice.markdown_description %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
 
   <h3 class="text-center my-5">Le compileur</h3>
   <iframe src="https://trinket.io/embed/python3/443fa5da8c1a" width="100%" height="500" frameborder="0" marginwidth="0" marginheight="0" allowfullscreen></iframe>
