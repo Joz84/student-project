@@ -7,6 +7,7 @@ class User < ApplicationRecord
   belongs_to :team, optional: true
   has_many :ratings
   has_many :supervisions
+  has_many :supervised_projects, through: :supervisions, source: :project
   has_many :assignments
   has_many :cards, through: :assignments
   has_many :attempts
