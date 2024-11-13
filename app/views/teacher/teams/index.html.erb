@@ -106,7 +106,7 @@
         <h4 class="mt-5">Professeur <%= teacher.last_name.capitalize %></h4>
         
         <% teacher.supervised_projects.each do |project| %>
-          <% if project.teams.any? %>%
+          <% if project.teams.any? %>
             <h6><%= project.name %></h6>
             <div class="container-fluid">
               <div class="row">
