@@ -4,11 +4,11 @@ class TeamPolicy < ApplicationPolicy
   end
 
   def update?
-    user.team == record
+    user.team == record || user.teacher?
   end
 
   def show?
-    user.team == record
+    user.team == record || user.teacher?
   end
 
   class Scope < ApplicationPolicy::Scope
