@@ -1,13 +1,23 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
   before_action :configure_permitted_parameters, if: :devise_controller?
-  
+  before_action :update_reading_date
+
   include Pundit::Authorization
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
   
   #after_action :verify_authorized, unless: :skip_pundit?
   after_action :verify_authorized, except: :index, unless: :skip_pundit?
   after_action :verify_policy_scoped, only: :index, unless: :skip_pundit?
+
+  def update_reading_date
+    if user_signed_in? && current_user.reading
+      current_user.update(
+        reading: false, 
+        reading_date: Time.now
+      )
+    end
+  end
 
   def active_admin_controller?
     is_a?(ActiveAdmin::BaseController)

@@ -81,6 +81,20 @@ class User < ApplicationRecord
     end
   end
 
+  def old_team_messages
+    Message.where('created_at <= ?', reading_date)
+           .where(team: team)
+  end
+
+  def new_team_messages
+    Message.where('created_at > ?', reading_date)
+           .where(team: team)
+  end
+
+  def new_team_messages_count
+    new_team_messages.count
+  end
+
   private
 
   def create_ratings

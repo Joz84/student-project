@@ -22,6 +22,7 @@ class TeamsController < ApplicationController
     @card = Card.new
     @assignment = Assignment.new
     @message = Message.new
+    current_user.update(reading: true)
   end
 
   private

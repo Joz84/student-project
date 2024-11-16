@@ -10,6 +10,16 @@
         <% if current_user.teacher %>
           <%= link_to "Espace Enseignant", teacher_teams_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
         <% end %>
+
+        <% if current_user.team.present? %>
+          <div class="notifs-bg">
+            <%= link_to "Ma team", current_user.team, class: "navbar-mihivai-item navbar-mihivai-link" %>
+            <% if current_user.new_team_messages_count > 0 %>
+              <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
+            <% end %>
+          </div>
+        <% end %>
+
         <%= link_to "Home", root_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
         <%= link_to "Se déconnecter", destroy_user_session_path, data: {turbo_method: :delete} , class: "navbar-mihivai-item navbar-mihivai-link"%>
       <% else %>
@@ -38,6 +48,15 @@
                 <%= link_to "Espace Enseignant", teacher_teams_path, class: "navbar-link" %>
               <% end %>
               
+              <% if current_user.team.present? %>
+                <div class="notifs-bg">
+                  <%= link_to "Ma team", current_user.team, class: "navbar-link" %>
+                  <% if current_user.new_team_messages_count > 0 %>
+                    <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
+                  <% end %>
+                </div>
+              <% end %>
+
               <%= link_to "home", root_path, class: "navbar-link"  %>
               <%= link_to "Se déconnecter", destroy_user_session_path, class: "navbar-link", data: {turbo_method: :delete} %>
             <% else %>
