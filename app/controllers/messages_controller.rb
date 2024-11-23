@@ -1,5 +1,12 @@
 class MessagesController < ApplicationController
 
+  def index
+    @messages = policy_scope(Message)
+    @team = Team.find(params[:team_id])
+    @message = Message.new
+    current_user.update(reading: true)
+  end
+
   def create
     @team = Team.find(params[:team_id])
     authorize @team
@@ -11,10 +18,9 @@ class MessagesController < ApplicationController
       @team.users.where.not(id: current_user.id).each do |user|  
         user.update(reading: false) 
       end
-      redirect_to team_path(@team, messagerie: true)
+      redirect_to team_messages_path(@team)
     else
-      @card = Card.new
-      @assignment = Assignment.new
+      @messages = policy_scope(Message)
       render "teams/show"
     end
   end

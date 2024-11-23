@@ -1,0 +1,33 @@
+<div data-controller="chatroom">
+  <div class="container mt-5">   
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <% current_user.old_team_messages.each do |message| %>
+          <div class="card w-100 p-3 mb-3">
+            <small><b><%= message.user.first_name %></b></small>
+            <small><i><%= message.created_at %></i></small>
+            <p><%= message.content %></p>
+          </div>
+        <% end %>
+
+        <% if current_user.new_team_messages_count > 0 %>
+
+          <div class="new_messages">Nouveaux Messages</div>  
+          <% current_user.new_team_messages.each do |message| %>
+            <div class="card w-100 p-3 mb-3">
+              <small><b><%= message.user.first_name %></b></small>
+              <small><i><%= message.created_at %></i></small>
+              <p><%= message.content %></p>
+            </div>
+          <% end %>
+        <% end %>
+        
+        <%= simple_form_for [@team, @message] do |f| %>
+          <%= f.input :content, label: false, placeholder: "Ton message" %>
+          <%= f.button :submit, "Envoyer", class: "btn btn-danger text-white w-100" %>
+        <% end %> 
+      </div>
+    </div>         
+
+  </div>
+</div>

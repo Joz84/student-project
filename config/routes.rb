@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   resources :tickets, only: [:index, :create, :update, :destroy]
   
   resources :teams, only: [:new, :create, :show] do
-    resources :messages, only: [:create]
+    resources :messages, only: [:create, :index]
   end
 
   resources :courses, only: :show do

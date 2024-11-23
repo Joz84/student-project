@@ -83,48 +83,6 @@
             </div>
           </div>
         </div>
-        <%# raise %>
-        <div class="accordion-item notifs-bg">
-          <% if current_user.new_team_messages_count > 0 %>
-            <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
-          <% end %>
-          <h2 class="accordion-header ">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="<%= (params[:messagerie] == 'true').to_s %>" aria-controls="collapseTwo">
-                Messagerie
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse <%= 'show' if params[:messagerie] == 'true' %>" data-bs-parent="#accordionSidebar">
-            <div class="accordion-body">            
-              <% current_user.old_team_messages.each do |message| %>
-                <div class="card w-100 p-3 mb-3">
-                  <small><b><%= message.user.first_name %></b></small>
-                  <small><i><%= message.created_at %></i></small>
-                  <p><%= message.content %></p>
-                </div>
-              <% end %>
-
-              <% if current_user.new_team_messages_count > 0 %>
-
-                <div class="new_messages">Nouveaux Messages</div>  
-                <% current_user.new_team_messages.each do |message| %>
-                  <div class="card w-100 p-3 mb-3">
-                    <small><b><%= message.user.first_name %></b></small>
-                    <small><i><%= message.created_at %></i></small>
-                    <p><%= message.content %></p>
-                  </div>
-                <% end %>
-              <% end %>
-              
-
-
-
-              <%= simple_form_for [@team, @message] do |f| %>
-                <%= f.input :content, label: false, placeholder: "Ton message" %>
-                <%= f.button :submit, "Envoyer", class: "btn btn-danger text-white w-100" %>
-              <% end %> 
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

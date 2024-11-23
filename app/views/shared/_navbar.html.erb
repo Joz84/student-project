@@ -1,7 +1,8 @@
 <div class="navbar-mihivai">
   <!-- Logo -->
-  <a href="/" class="navbar-mihivai-brand">
+  <a href="/" class="navbar-mihivai-brand d-flex align-items-end">
     <%= image_tag "logo.png" %>
+    <h2 class="ms-3 text-danger">UPF-LEARN</h2>
   </a>
 
   <div class="d-none d-md-block">
@@ -11,13 +12,17 @@
           <%= link_to "Espace Enseignant", teacher_teams_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
         <% end %>
 
-        <% if current_user.team.present? %>
+        <% if current_user.team.present? && !current_user.teacher %>
+
+
           <div class="notifs-bg">
-            <%= link_to "Ma team", current_user.team, class: "navbar-mihivai-item navbar-mihivai-link" %>
+            <%= link_to "Messagerie", team_messages_path(current_user.team), class: "navbar-mihivai-item navbar-mihivai-link" %>
             <% if current_user.new_team_messages_count > 0 %>
               <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
             <% end %>
           </div>
+
+          <%= link_to "Ma team", current_user.team, class: "navbar-mihivai-item navbar-mihivai-link" %>
         <% end %>
 
         <%= link_to "Home", root_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
