@@ -33,6 +33,7 @@ Rails.application.routes.draw do
 
   namespace :teacher do
     resources :teams, only: [:index, :show, :update]
+    resources :messages, only: [:index, :create]
   end
 
 end

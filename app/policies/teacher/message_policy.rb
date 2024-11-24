@@ -1,20 +1,16 @@
-class Teacher::TeamPolicy < ApplicationPolicy
+class Teacher::MessagePolicy < ApplicationPolicy
   def index?
     user.teacher? 
   end
 
-  def show?
-    user.teacher?
-  end
-
-  def update?
-    user.teacher?
+  def create?
+    record.user == user && user.supervised_teams.include?(record.team)
   end
 
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve
-      scope.where(id: user.supervised_teams.map(&:id))
+      scope.where(team: user.supervised_teams)
     end
   end
 end

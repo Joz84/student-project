@@ -1,7 +1,8 @@
 class Project < ApplicationRecord
   has_many :teams
   has_many :ratings
-  has_many :supervisons
+  has_many :supervisions
+  has_many :teachers, through: :supervisions, source: :user
   validates :name, presence: true
   validates :description, presence: true
 

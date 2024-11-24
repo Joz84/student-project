@@ -1,0 +1,68 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-3 bg-primary page-min-height pb-5">
+      <h2 class="text-center text-white my-5">Mes teams</h2>
+      <div class="card w-100 p-3 mb-2">
+        <%= link_to "Toutes les teams", teacher_messages_path(team_id: 0) %>
+      </div>      
+      <% current_user.supervised_teams.each do |team| %>
+        <div class="card w-100 p-3 mb-2">
+          <%= link_to team.name, teacher_messages_path(team_id: team.id) %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-md-9">
+      <div data-controller="chatroom">
+        <div class="container page-min-height my-5">   
+          <div class="row">
+            <div class="col-md-12">
+              <% if @teams.count > 1 && current_user.all_new_team_messages_count == 0 %>
+                <h3 class="text-center w-100">Aucun nouveau message</h3>
+              <% end %>
+              <% @teams.each do |team| %>
+                <% if (@teams.count > 1 && current_user.new_team_messages(team).count > 0) || @teams.count == 1 %>
+
+                  <hr>
+                  <h3><%= team.name %></h3>
+                  
+                  <% if @teams.count == 1 %>
+                    <% current_user.old_team_messages(team).each do |message| %>
+                      <div class="card w-100 p-3 mb-3">
+                        <small><b><%= message.user.first_name %></b></small>
+                        <small><i><%= message.created_at %></i></small>
+                        <p><%= message.content %></p>
+                      </div>
+                    <% end %>
+                  <% end %>
+                  
+                  <% if @teams.count == 1 && current_user.new_team_messages(team).count > 0 %>
+                    <div class="new_messages">Nouveaux Messages</div>  
+                  <% end %>
+
+                  <% if current_user.new_team_messages(team).count > 0 %>
+                    <% current_user.new_team_messages(team).each do |message| %>
+                      <div class="card w-100 p-3 mb-3">
+                        <small><b><%= message.user.first_name %></b></small>
+                        <small><i><%= message.created_at %></i></small>
+                        <p><%= message.content %></p>
+                      </div>
+                    <% end %>
+                  <% end %>
+                  
+                  <%= simple_form_for :message, url: teacher_messages_path, method: :post do |f| %>
+                    <%= f.input :team_id, as: :hidden, input_html: {value: team.id} %>
+                    <%= f.input :content, label: false, placeholder: "Ton message" %>
+                    <%= f.button :submit, "Envoyer", class: "btn btn-danger text-white w-100" %>
+                  <% end %> 
+
+                <% end %>
+              <% end %>
+            </div>
+          </div>         
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

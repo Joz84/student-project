@@ -18,6 +18,10 @@ class MessagesController < ApplicationController
       @team.users.where.not(id: current_user.id).each do |user|  
         user.update(reading: false) 
       end
+      current_user.team.project.teachers.each do |user|  
+        user.update(reading: false) 
+      end
+
       redirect_to team_messages_path(@team)
     else
       @messages = policy_scope(Message)

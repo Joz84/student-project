@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :ratings
   has_many :supervisions
   has_many :supervised_projects, through: :supervisions, source: :project
+  has_many :supervised_teams, through: :supervised_projects, source: :teams
   has_many :assignments
   has_many :cards, through: :assignments
   has_many :attempts
@@ -81,18 +82,24 @@ class User < ApplicationRecord
     end
   end
 
-  def old_team_messages
+  def old_team_messages(selected_team = team)
     Message.where('created_at <= ?', reading_date)
-           .where(team: team)
+           .where(team: selected_team)
   end
 
-  def new_team_messages
+  def new_team_messages(selected_team = team)
     Message.where('created_at > ?', reading_date)
-           .where(team: team)
+           .where(team: selected_team)
   end
 
   def new_team_messages_count
     new_team_messages.count
+  end
+
+  def all_new_team_messages_count
+    Message.where('created_at > ?', reading_date)
+           .where(team: supervised_teams)
+           .count
   end
 
   private
