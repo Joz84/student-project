@@ -50,16 +50,11 @@
             <div class="">
 
               <div class="card w-100 p-3 mb-3">
-                <h6 class="text-center mb-3"><%= @team.project.name %></h6>
+                <h6 class="text-center"><%= @team.project.name %></h6>
+                <p class="text-center mb-3"><strong><%= @team.name %></strong></p>
                 <small class="text-grey"><i><%= @team.project.subject.capitalize %></i></small>
                 <p><%= @team.project.description %></p>
-                <%= link_to "lien vers le drive du projet", @team.project.drive_link, target: "_blank" %>
-              </div>
-
-              <div class="card w-100 p-3 mb-3">
-                <h6 class="text-center mb-3">Mes outils</h6>
-                <%= link_to "lien vers notre Drive", @team.drive_link, target: "_blank" %>
-                <%= link_to "lien vers notre Trello", @team.trello_link, target: "_blank" %>
+                <%= link_to "lien vers le drive du projet", @team.drive_link, target: "_blank" %>
               </div>
 
               <div class="card w-100 p-3 mb-3">
