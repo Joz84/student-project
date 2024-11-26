@@ -17,7 +17,7 @@ class Teacher::MessagesController < ApplicationController
       @message.team.users.each do |user|  
         user.update(reading: false) 
       end
-      current_user.team.project.teachers.where.not(id: current_user.id).each do |user|  
+      @message.team.project.teachers.where.not(id: current_user.id).each do |user|  
         user.update(reading: false) 
       end
       redirect_to teacher_messages_path(team_id: @message.team.id)
