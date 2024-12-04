@@ -6,7 +6,7 @@ class Exercice < ApplicationRecord
   validates :position, presence: true
   validates :name, presence: true
   validates :name, uniqueness: true
-  validates :cw_token, presence: true
+  # validates :cw_token, presence: true
   # validates :cw_token, uniqueness: true
 
   def cw_url

@@ -19,7 +19,14 @@
           <p>Exercice <%= exercice.position %>: <%= exercice.name %></p>
         </div>
         <div>
-          <%= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
+          <% if exercice.cw_token %>
+            <%= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
+          <% end %>
+          <% if exercice.colab_link %>
+            <%= link_to "Ouvrir dans colab", exercice.colab_link, target: "_blank", class: "btn btn-danger text-white" %>
+          <% end %>  
+
+          <%#= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
           <a class="btn btn-primary text-white" data-bs-toggle="collapse" href="#collapse<%= exercice.id %>" role="button" aria-expanded="false" aria-controls="collapse<%= exercice.id %>">
             Voir l'énnoncé
           </a>
@@ -34,10 +41,12 @@
     </div>
   <% end %>
 
+  <% if @exercices.where(optional: true).any? %>
     <h5>Exercices optionnels</h5>
-  <hr>
-  <% @exercices.where(optional: true).each do |exercice| %>
+    <hr>
+  <% end %>
   
+  <% @exercices.where(optional: true).each do |exercice| %>
     <div class="card p-3 mb-2">
       <div class="d-flex justify-content-between w-100">
         <div class="text-black d-flex align-items-baseline">
@@ -45,7 +54,14 @@
           <p>Exercice <%= exercice.position %>: <%= exercice.name %></p>
         </div>
         <div>
-          <%= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
+          
+          <% if exercice.cw_token %>
+            <%= link_to "Ouvrir dans codewars", exercice.cw_url, target: "_blank", class: "btn btn-danger text-white" %>
+          <% end %>
+          <% if exercice.colab_link %>
+            <%= link_to "Ouvrir dans colab", exercice.colab_link, target: "_blank", class: "btn btn-danger text-white" %>
+          <% end %>         
+          
           <a class="btn btn-primary text-white" data-bs-toggle="collapse" href="#collapse<%= exercice.id %>" role="button" aria-expanded="false" aria-controls="collapse<%= exercice.id %>">
             Voir l'énnoncé
           </a>
