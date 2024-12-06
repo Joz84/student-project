@@ -41,7 +41,7 @@
 
       <div class="card w-100 p-3 mb-3">
         <h6 class="text-center">Le prochain rdv</h6>
-        <p class="text-center mb-3"><strong><%= @team.meeting_date.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
+        <p class="text-center mb-3"><strong><%= @team.meeting_date&.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
         <p class="text-center"><%= @team.meeting_place %></p>
 
 
