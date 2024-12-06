@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   
   resources :teams, only: [:new, :create, :show] do
     resources :messages, only: [:create, :index]
+    resource :meetings, only: [:update]
   end
 
   resources :courses, only: :show do
@@ -36,4 +37,7 @@ Rails.application.routes.draw do
     resources :messages, only: [:index, :create]
   end
 
+  resources :exercices, only: [] do
+    resources :attempts, only: [:create]
+  end
 end

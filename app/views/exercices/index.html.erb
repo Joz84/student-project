@@ -36,6 +36,16 @@
       <div class="collapse" id="collapse<%= exercice.id %>">
         <div class="card card-body">
           <%= raw exercice.markdown_description %>
+          
+          <% if exercice.colab_link && exercice.attempts.find_by(user: current_user).nil? %>
+            <div>
+              <%= link_to 'Valider l\'exercice', exercice_attempts_path(exercice), 
+              data: { turbo_method: :post }, 
+              class: 'btn btn-primary text-white w-auto', 
+              method: :post %>
+            </div>
+          <% end %>
+          
         </div>
       </div>
     </div>

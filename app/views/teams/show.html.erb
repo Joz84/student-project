@@ -39,14 +39,65 @@
     <div class="col-md-3 bg-primary page-min-height pb-5">
       <h2 class="text-center text-white my-5">Ma team</h2>
 
+      <div class="card w-100 p-3 mb-3">
+        <h6 class="text-center">Le prochain rdv</h6>
+        <p class="text-center mb-3"><strong><%= @team.meeting_date.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
+        <p class="text-center"><%= @team.meeting_place %></p>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Nouveau rdv
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Nouveau rdv</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= simple_form_for @team, 
+                            url: team_meetings_path(@team), 
+                            method: :patch, 
+                            html: { data: { turbo: true } } do |form| %>
+          <div class="form-group">
+            <%= form.input :meeting_date, as: :string, label: "Date du rdv", input_html: { type: 'datetime-local', class: 'form-control' } %>
+          </div>
+
+          <div class="form-group">
+            <%= form.input :meeting_place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
+          </div>
+
+          <div class="form-group">
+            <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+
       <div class="accordion" id="accordionSidebar">
         <div class="">
           <h2 class="accordion-header">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="<%= (params[:messagerie] != 'true').to_s %>" aria-controls="collapseOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
               Infos
             </button>
           </h2>
-          <div id="collapseOne" class="accordion-collapse collapse <%= 'show' if params[:messagerie] != 'true' %>" data-bs-parent="#accordionSidebar">
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionSidebar">
             <div class="">
 
               <div class="card w-100 p-3 mb-3">
@@ -76,7 +127,8 @@
               </div>
 
             </div>
-          </div>
+          </div>        
+
         </div>
       </div>
     </div>

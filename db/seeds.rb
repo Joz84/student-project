@@ -676,51 +676,68 @@
 # )
 
 
-cours4 = Course.create!(
-  slides_link: "https://docs.google.com/presentation/d/e/2PACX-1vRFlPOwgPY4kMg508QbOuNKBV6RiDyv6IsuARfyZ1qJtL6wHLglCjaAY6-pJEOnaxvN8cpCzJ93v8Jb/embed?start=false&loop=false&delayms=3000",
-  position: 4, 
-  ticket_activation: false, 
-  name: "Colab, Pandas, Numpy, Matplotlib"
-)
+# cours4 = Course.create!(
+#   slides_link: "https://docs.google.com/presentation/d/e/2PACX-1vRFlPOwgPY4kMg508QbOuNKBV6RiDyv6IsuARfyZ1qJtL6wHLglCjaAY6-pJEOnaxvN8cpCzJ93v8Jb/embed?start=false&loop=false&delayms=3000",
+#   position: 4, 
+#   ticket_activation: false, 
+#   name: "Colab, Pandas, Numpy, Matplotlib"
+# )
+
+# Exercice.create!(
+#   name: "Révisions des bases en colab", 
+#   cw_token: nil, 
+#   colab_link: "https://colab.research.google.com/drive/1hRWK2RNEHTe1yAn23D5FYD98cD_UE_H8?usp=sharing",
+#   position: 1, 
+#   course: Course.find_by(position: 4), 
+#   kata: 8,
+#   description: "## Description:
+
+# Exercice reprenant les bases de python.
+
+# Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
+
+# Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
+# "
+# )
+
+# Exercice.create!(
+#   name: "Dictionnaires et fonctions en colab", 
+#   cw_token: nil, 
+#   colab_link: "https://colab.research.google.com/drive/1pYEGIGAnSsE2IEeqPeJQJpDRfTroZ8SA?usp=sharing",
+#   position: 2, 
+#   course: Course.find_by(position: 4), 
+#   kata: 8,
+#   description: "## Description:
+
+# Exercice reprenant les dictionnaires et les fonctions en python.
+
+# Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
+
+# Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
+# "
+# )
+
+
+# cours5 = Course.create!(
+#   slides_link: "https://docs.google.com/presentation/d/e/2PACX-1vQNpbbpQ20b4_-3i6FazLoiskvFCR22gWNL-b3-yyUIEuxoMYaMTY_C1PzxfMW-UnlNljaBoG7scELA/embed?start=false&loop=false&delayms=3000",
+#   position: 5, 
+#   ticket_activation: false, 
+#   name: "Pandas avancé, Plotly"
+# )
 
 Exercice.create!(
-  name: "Révisions des bases en colab", 
+  name: "Analyse et Visualisation des Pourboires", 
   cw_token: nil, 
-  colab_link: "https://colab.research.google.com/drive/1hRWK2RNEHTe1yAn23D5FYD98cD_UE_H8?usp=sharing",
+  colab_link: "https://colab.research.google.com/drive/1gkwrA2rhwgwQ1gWn2USNGqWKrLlyuvpU?usp=sharing",
   position: 1, 
-  course: Course.find_by(position: 4), 
+  course: Course.find_by(position: 5), 
   kata: 8,
   description: "## Description:
 
-Exercice reprenant les bases de python.
+Exercice reprenant les fondamentaux de Pandas et le tracage de graphiques avec Plotly.
 
 Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
 
 Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
 "
-)
-
-Exercice.create!(
-  name: "Dictionnaires et fonctions en colab", 
-  cw_token: nil, 
-  colab_link: "https://colab.research.google.com/drive/1pYEGIGAnSsE2IEeqPeJQJpDRfTroZ8SA?usp=sharing",
-  position: 2, 
-  course: Course.find_by(position: 4), 
-  kata: 8,
-  description: "## Description:
-
-Exercice reprenant les dictionnaires et les fonctions en python.
-
-Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
-
-Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
-"
-)
-
-
-cours5 = Course.create!(
-  slides_link: "https://docs.google.com/presentation/d/e/2PACX-1vQNpbbpQ20b4_-3i6FazLoiskvFCR22gWNL-b3-yyUIEuxoMYaMTY_C1PzxfMW-UnlNljaBoG7scELA/embed?start=false&loop=false&delayms=3000",
-  position: 5, 
-  ticket_activation: false, 
-  name: "Pandas avancé, Plotly"
 )

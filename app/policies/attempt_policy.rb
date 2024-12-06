@@ -1,14 +1,6 @@
-class TeamPolicy < ApplicationPolicy
+class AttemptPolicy < ApplicationPolicy
   def create?
-    true
-  end
-
-  def update?
-    (record == user.team) || user.teacher?
-  end
-
-  def show?
-    (record == user.team) || user.teacher?
+    (record.user == user) || user.teacher?
   end
 
   class Scope < ApplicationPolicy::Scope
