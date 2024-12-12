@@ -38,15 +38,16 @@ class User < ApplicationRecord
     "#{first_name.capitalize} #{last_name.capitalize}"
   end
 
-  def cw_nickname_exist?
+  def cw_nickname_exist?(nickname=cw_nickname)
     code = 100
     begin
-      code = RestClient.get("https://www.codewars.com/api/v1/users/#{cw_nickname}").code
+      code = RestClient.get("https://www.codewars.com/api/v1/users/#{nickname}").code
     rescue
       code = 404
     end
     if code != 200
       errors.add(:cw_nickname, "does not exist")
+      errors.add(:exam_nickname, "does not exist")
       false
     else
       true
@@ -61,6 +62,16 @@ class User < ApplicationRecord
         .nil? &&
     cw_nickname_exist?
   end
+
+  def exam_nickname_is_valid?
+    !exam_nickname.blank? && 
+    User.where
+        .not(exam_nickname: nil)
+        .find_by(exam_nickname: exam_nickname)
+        .nil? &&
+    cw_nickname_exist?(exam_nickname)
+  end
+
 
   def update_attempts
     exercice_cw_tokens = Exercice.where
@@ -100,6 +111,18 @@ class User < ApplicationRecord
     Message.where('created_at > ?', reading_date)
            .where(team: supervised_teams)
            .count
+  end
+
+  def exam_exo_count 
+    url = "https://www.codewars.com/api/v1/users/#{exam_nickname}/code-challenges/completed"
+    begin
+      all_completed_exam_token = JSON.parse(RestClient.get(url).body)["data"]
+        .select{|kata| kata["completedLanguages"].include?("python")}
+        .map{|kata| kata["id"]}.uniq
+      all_completed_exam_token.count
+    rescue
+      0
+    end
   end
 
   private

@@ -40,4 +40,6 @@ Rails.application.routes.draw do
   resources :exercices, only: [] do
     resources :attempts, only: [:create]
   end
+
+  resources :exam_nicknames, only: [:create]
 end

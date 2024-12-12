@@ -23,9 +23,9 @@ class CwNicknamesController < ApplicationController
     end
   end
 
-    private
+  private
 
-    def user_params
-      params.require(:user).permit(:cw_nickname)
-    end
+  def user_params
+    params.require(:user).permit(:cw_nickname)
+  end
 end

@@ -2,6 +2,10 @@ class UserPolicy < ApplicationPolicy
   def router?
     true
   end
+
+  def create?
+    true
+  end
   
   def update?
     record == user

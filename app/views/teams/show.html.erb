@@ -44,49 +44,40 @@
         <p class="text-center mb-3"><strong><%= @team.meeting_date&.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
         <p class="text-center"><%= @team.meeting_place %></p>
 
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          Nouveau rdv
+        </button>
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  Nouveau rdv
-</button>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Nouveau rdv</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <%= simple_form_for @team, 
+                                    url: team_meetings_path(@team), 
+                                    method: :patch, 
+                                    html: { data: { turbo: true } } do |form| %>
+                  <div class="form-group">
+                    <%= form.input :meeting_date, as: :string, label: "Date du rdv", input_html: { type: 'datetime-local', class: 'form-control' } %>
+                  </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Nouveau rdv</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <%= simple_form_for @team, 
-                            url: team_meetings_path(@team), 
-                            method: :patch, 
-                            html: { data: { turbo: true } } do |form| %>
-          <div class="form-group">
-            <%= form.input :meeting_date, as: :string, label: "Date du rdv", input_html: { type: 'datetime-local', class: 'form-control' } %>
+                  <div class="form-group">
+                    <%= form.input :meeting_place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
+                  </div>
+
+                  <div class="form-group">
+                    <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
           </div>
-
-          <div class="form-group">
-            <%= form.input :meeting_place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
-          </div>
-
-          <div class="form-group">
-            <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-
-
+        </div>
 
       </div>
 
