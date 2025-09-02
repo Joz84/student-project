@@ -10,6 +10,7 @@ class User < ApplicationRecord
   has_many :ratings, dependent: :destroy 
   has_many :supervisions
   has_many :supervised_projects, through: :supervisions, source: :project
+  has_many :supervised_batches, -> { distinct }, through: :supervised_projects, source: :batch
   has_many :supervised_teams, through: :supervised_projects, source: :teams
   has_many :assignments, dependent: :destroy 
   has_many :cards, through: :assignments

@@ -3,6 +3,12 @@
 <div class="container-fluid page-min-height">
   <div class="row">
     <div class="col-md-8 offset-md-2">
+      <div class="d-flex justify-content-center my-5">
+        <% @batchs.each do |batch| %>
+          <%= link_to batch.title, teacher_batch_teams_path(batch), class: "btn text-white mx-2 #{batch == @batch ? 'btn-primary' : 'btn-danger'}" %>
+        <% end %>
+      </div>
+
       <h2 class="text-center my-5">Les équipes</h2>
 
       <div class="card card-body">
@@ -21,20 +27,20 @@
               <div class="col-md-4">
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'élèves en équipe</h6>
-                  <h5><%= User.where.not(team: nil).where(teacher: nil, drop: false).count %></h5>
+                  <h5><%= User.where.not(team: nil).where(teacher: nil, batch: @batch).kept.count %></h5>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'élèves sans équipe</h6>
-                  <h5><%= User.where(teacher: nil, team: nil, drop: false).count %></h5>
+                  <h5><%= User.where(teacher: nil, team: nil, batch: @batch).kept.count %></h5>
                 </div>
               </div>
             </div>
             <div class="row">
             <h6>Elèves sans équipe</h6>
             <ul>
-              <% User.where(teacher: nil, team: nil, drop: false).each do |user| %>
+              <% User.where(teacher: nil, team: nil, batch: @batch).kept.each do |user| %>
                 <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.email %></li>
               <% end %>
             </ul>
@@ -87,12 +93,6 @@
                           <div class="card" style="background: <%= project.color %>; width:<%= rating %>%; height: 10px" ></div>
                       <% end %>
                     </div>
-                  </div>                  
-                  
-                  
-                  <div>
-
-                    
                   </div>
                 </div>
               </div>
@@ -105,7 +105,7 @@
       <% User.joins(supervisions: { project: :teams }).distinct.each do |teacher| %>
         <h4 class="mt-5">Professeur <%= teacher.last_name.capitalize %></h4>
         
-        <% teacher.supervised_projects.each do |project| %>
+        <% teacher.supervised_projects.where(batch: @batch).each do |project| %>
           <% if project.kept_teams.any? %>
             <h6><%= project.name %></h6>
             <div class="container-fluid">

@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   
   namespace :teacher do
     resources :teams, only: [:index, :show, :update]
+    resources :batches, only: [] do
+      resources :teams, only: [:index]
+    end
     resources :messages, only: [:index, :create]
   end
   
