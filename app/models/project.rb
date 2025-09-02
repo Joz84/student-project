@@ -1,4 +1,5 @@
 class Project < ApplicationRecord
+  belongs_to :batch
   has_many :teams
   has_many :ratings
   has_many :supervisions

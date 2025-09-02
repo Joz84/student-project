@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   belongs_to :team, optional: true
+  belongs_to :batch
   has_many :ratings
   has_many :supervisions
   has_many :supervised_projects, through: :supervisions, source: :project
@@ -15,7 +16,7 @@ class User < ApplicationRecord
   has_many :tickets
   has_many :messages
   validates :first_name, presence: true
-  validates :first_name, presence: true
+  validates :last_name, presence: true
   validates :student_number, presence: true
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }

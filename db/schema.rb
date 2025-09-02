@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_02_043915) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "active_admin_comments", force: :cascade do |t|
@@ -87,6 +88,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
     t.index ["user_id"], name: "index_attempts_on_user_id"
   end
 
+  create_table "batches", force: :cascade do |t|
+    t.string "title"
+    t.string "discord_link"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "cards", force: :cascade do |t|
     t.bigint "list_id", null: false
     t.string "name"
@@ -155,6 +163,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
     t.datetime "updated_at", null: false
     t.boolean "active"
     t.string "color"
+    t.bigint "batch_id", null: false
+    t.index ["batch_id"], name: "index_projects_on_batch_id"
   end
 
   create_table "ratings", force: :cascade do |t|
@@ -220,6 +230,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
     t.datetime "reading_date"
     t.boolean "reading"
     t.string "exam_nickname"
+    t.bigint "batch_id", null: false
+    t.index ["batch_id"], name: "index_users_on_batch_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["team_id"], name: "index_users_on_team_id"
@@ -236,6 +248,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
   add_foreign_key "lists", "teams"
   add_foreign_key "messages", "teams"
   add_foreign_key "messages", "users"
+  add_foreign_key "projects", "batches"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"
   add_foreign_key "supervisions", "projects"
@@ -243,5 +256,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_12_025825) do
   add_foreign_key "teams", "projects"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
+  add_foreign_key "users", "batches"
   add_foreign_key "users", "teams"
 end
