@@ -9,7 +9,7 @@
       <small><%= link_to "lien vers le drive", card.drive_link, target: "_blank" %></small>
     </div>
     <div class="card-avatars">
-      <% card.users.each_with_index do |user, index| %>
+      <% card.users.kept.each_with_index do |user, index| %>
         <div class="card-avatar-position" style="top: <%= index * 15 %>px">
           <%= render "teams/card_avatar", user: user %>
         </div>

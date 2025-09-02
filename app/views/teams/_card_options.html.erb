@@ -33,7 +33,7 @@ Options
               <% end %>
               <hr>
               <%= simple_form_for [card, @assignment] do |f| %>
-                  <%= f.association :user, label: "Ajouter un collaborateur", collection: card.list.team.users.where.not(id: card.users.map(&:id)) %>
+                  <%= f.association :user, label: "Ajouter un collaborateur", collection: card.list.team.users.kept.where.not(id: card.users.kept.map(&:id)) %>
                   <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
               <% end %>
             </div>

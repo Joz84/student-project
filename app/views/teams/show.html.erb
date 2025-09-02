@@ -103,7 +103,7 @@
                 <h6 class="text-center mb-3">L'équipe</h6>
                 <div class="container-fluid">
                   <div class="row">     
-                    <% @team.users.where(teacher: nil).each do |user| %>
+                    <% @team.users.kept.where(teacher: nil).each do |user| %>
                     <div class="col-md-6">
                       <div class="w-100 d-flex mx-1 flex-column justify-content-center align-items-center">
                         <%= render "teams/card_avatar", user: user %>
