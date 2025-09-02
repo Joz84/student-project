@@ -1,14 +1,17 @@
 class Teacher::TeamsController < ApplicationController
   def index
-    @batchs = current_user.supervised_batches
-    @batch_id = params[:batch_id] || session[:batch_id] || @batchs.last.id
-    @batch = Batch.find(@batch_id)
-    session[:batch_id] = @batch_id
     @teams = policy_scope([:teacher, Team])
-      .joins(:project)
-      .where(projects: { batch_id: @batch_id })
-      .distinct
-      .kept
+    @batch_id = params[:batch_id] || session[:batch_id] || @batchs.last.id
+    if @batch_id
+      @batchs = current_user.supervised_batches
+      @batch = Batch.find(@batch_id)
+      session[:batch_id] = @batch_id
+      @teams = @teams
+        .joins(:project)
+        .where(projects: { batch_id: @batch_id })
+        .distinct
+        .kept
+    end
   end
 
   def show
