@@ -8,7 +8,9 @@ class ProjectsController < ApplicationController
 
   def router
     authorize Project.new
-    if current_user.team_id.nil?
+    if current_user.teacher
+      redirect_to teacher_teams_path
+    elsif current_user.team_id.nil?
       redirect_to new_team_path
     elsif current_user.team.project.nil?
       redirect_to projects_path
