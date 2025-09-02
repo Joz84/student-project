@@ -1,11 +1,15 @@
 class Team < ApplicationRecord
   belongs_to :project, optional: true
+  belongs_to :user #team leader
   has_many :users, dependent: :nullify
   has_many :lists
   has_many :messages
   has_many :cards, through: :lists
   validates :name, presence: true
   validates :name, uniqueness: true
+
+
+  scope :kept, -> { joins(:users).merge(User.kept).distinct }
 
   def self.ransackable_associations(auth_object = nil)
     ["cards", "lists", "project", "users"]
@@ -18,9 +22,9 @@ class Team < ApplicationRecord
   after_create :create_lists
 
   def project_ratings
-    div = users.count.to_f * ((Project.count - 1) * 2 + 1) / 100
+    div = users.kept.count.to_f * ((Project.count - 1) * 2 + 1) / 100
     Project.all.map { |project|
-      rating = project.ratings.where(user: users).map(&:score).sum / div
+      rating = project.ratings.where(user: users.kept).map(&:score).sum / div
       [project, rating.round(2)]
     }.to_h
   end

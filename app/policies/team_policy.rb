@@ -1,6 +1,6 @@
 class TeamPolicy < ApplicationPolicy
   def create?
-    true
+    record.user == user
   end
 
   def update?

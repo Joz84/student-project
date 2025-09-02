@@ -9,7 +9,11 @@ class Project < ApplicationRecord
 
   enum subject: [ :physique, :chimie ]
 
-  before_create :initialize_avatar_color
+  before_create :initialize_color
+
+  def kept_teams
+    teams.merge(Team.kept)
+  end
 
   def initialize_color
     r = rand(128..255)

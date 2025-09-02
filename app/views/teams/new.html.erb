@@ -3,10 +3,13 @@
     <h2 class="text-center my-5">Ma team</h2>
     <div class="col-md-6 offset-md-3">
       <%= simple_form_for current_user do |f| %>
-        <%= f.association :team %>
+        <%= f.input :team_id, collection: current_user.all_teams.map { |t| [t.name, t.id] }, label: "Sélectionner ma team", required: true %>
         <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
       <% end %>
       <br>
+
+      <h3 class="text-center py-4">OU</h3>
+
       <hr>
       <p>
       Je suis le 1er de ma team à me connecté, celle-ci n'est pas encore dans la liste. Je la créer la team maintenant

@@ -6,6 +6,7 @@ class TeamsController < ApplicationController
 
   def create
     @team = Team.new(team_params)
+    @team.user = current_user
     authorize @team
     if @team.save
       current_user.team.destroy if current_user.team&.users&.count == 1

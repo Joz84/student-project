@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_02_043915) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_02_093410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -196,7 +196,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_02_043915) do
     t.string "trello_link"
     t.datetime "meeting_date"
     t.string "meeting_place"
+    t.bigint "user_id", null: false
     t.index ["project_id"], name: "index_teams_on_project_id"
+    t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
   create_table "tickets", force: :cascade do |t|
@@ -231,6 +233,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_02_043915) do
     t.boolean "reading"
     t.string "exam_nickname"
     t.bigint "batch_id", null: false
+    t.boolean "drop", default: false
     t.index ["batch_id"], name: "index_users_on_batch_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -254,6 +257,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_02_043915) do
   add_foreign_key "supervisions", "projects"
   add_foreign_key "supervisions", "users"
   add_foreign_key "teams", "projects"
+  add_foreign_key "teams", "users"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
   add_foreign_key "users", "batches"

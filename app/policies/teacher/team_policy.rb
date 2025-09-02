@@ -14,7 +14,7 @@ class Teacher::TeamPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve
-      scope.where(id: user.supervised_teams.map(&:id))
+      scope.all #where(id: user.supervised_teams.map(&:id))
     end
   end
 end

@@ -725,19 +725,44 @@
 #   name: "Pandas avancé, Plotly"
 # )
 
-Exercice.create!(
-  name: "Analyse et Visualisation des Pourboires", 
-  cw_token: nil, 
-  colab_link: "https://colab.research.google.com/drive/1gkwrA2rhwgwQ1gWn2USNGqWKrLlyuvpU?usp=sharing",
-  position: 1, 
-  course: Course.find_by(position: 5), 
-  kata: 8,
-  description: "## Description:
+# Exercice.create!(
+#   name: "Analyse et Visualisation des Pourboires", 
+#   cw_token: nil, 
+#   colab_link: "https://colab.research.google.com/drive/1gkwrA2rhwgwQ1gWn2USNGqWKrLlyuvpU?usp=sharing",
+#   position: 1, 
+#   course: Course.find_by(position: 5), 
+#   kata: 8,
+#   description: "## Description:
 
-Exercice reprenant les fondamentaux de Pandas et le tracage de graphiques avec Plotly.
+# Exercice reprenant les fondamentaux de Pandas et le tracage de graphiques avec Plotly.
 
-Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
+# Pour pouvoir sauvegarder votre travail, vous devez vous connecter à votre compte Google et enregistrer une copie de ce notebook dans votre Google Drive.
 
-Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
-"
+# Pour cela cliquer sur \"Fichier\", puis \"Enregistrer une copie dans Drive\" 
+# "
+# )
+
+
+Project.create!(
+ "name"=>"Chimie Extramet",
+ "description"=>
+  "Apprendre et maîtriser diverses techniques d’extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).\nCalculer les rendements d’extraction et les comparer pour chaque solvant et chaque échantillon étudié.\nUtiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.\nComparer la concentration d’une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.\nMaîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu’à leur caractérisation quantitative.",
+ "subject"=>"chimie",
+ "drive_link"=>nil,
+ "max_booking"=>1,
+ "author"=>"Raimana Ho",
+ "active"=>true,
+ "batch_id"=>3
+)
+
+Project.create!(
+ "name"=>"Robo Tiki",
+ "description"=>
+  "Apprendre et maîtriser diverses techniques d’extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).\nCalculer les rendements d’extraction et les comparer pour chaque solvant et chaque échantillon étudié.\nUtiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.\nComparer la concentration d’une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.\nMaîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu’à leur caractérisation quantitative.",
+ "subject"=>"chimie",
+ "drive_link"=>nil,
+ "max_booking"=>2,
+ "author"=>"Franco Ferrucci",
+ "active"=>true,
+ "batch_id"=>3
 )

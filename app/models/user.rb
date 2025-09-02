@@ -4,22 +4,30 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  belongs_to :team, optional: true
   belongs_to :batch
-  has_many :ratings
+  belongs_to :team, optional: true
+  has_many :teams, dependent: :destroy  #as team leader
+  has_many :ratings, dependent: :destroy 
   has_many :supervisions
   has_many :supervised_projects, through: :supervisions, source: :project
   has_many :supervised_teams, through: :supervised_projects, source: :teams
-  has_many :assignments
+  has_many :assignments, dependent: :destroy 
   has_many :cards, through: :assignments
-  has_many :attempts
-  has_many :tickets
-  has_many :messages
+  has_many :attempts, dependent: :destroy 
+  has_many :tickets, dependent: :destroy 
+  has_many :messages, dependent: :destroy 
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :student_number, presence: true
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
+  before_create :initialize_avatar_color
+  after_create :create_ratings
+
+  enum progress: [ :pending, :booked ]
+
+  scope :kept, -> { where(drop: false) }
+
 
   def self.ransackable_associations(auth_object = nil)
     ["assignments", "attempts", "cards", "ratings", "supervisions", "team", "tickets"]
@@ -29,11 +37,9 @@ class User < ApplicationRecord
     ["admin", "avatar_color", "created_at", "cw_nickname", "email", "encrypted_password", "first_name", "id", "id_value", "last_name", "progress", "remember_created_at", "reset_password_sent_at", "reset_password_token", "student_number", "teacher", "team_id", "updated_at"]
   end
 
-
-  before_create :initialize_avatar_color
-  after_create :create_ratings
-
-  enum progress: [ :pending, :booked ]
+  def all_teams
+    Team.where(user_id: self.batch.users.pluck(:id))
+  end
 
   def to_s
     "#{first_name.capitalize} #{last_name.capitalize}"
@@ -129,7 +135,7 @@ class User < ApplicationRecord
   private
 
   def create_ratings
-    Project.all.map(&:id).each do |project_id|
+    Project.where(batch: self.batch).map(&:id).each do |project_id|
       Rating.create(
         project_id: project_id, 
         user: self)

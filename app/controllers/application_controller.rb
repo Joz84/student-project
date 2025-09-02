@@ -37,13 +37,17 @@ class ApplicationController < ActionController::Base
       :first_name, 
       :last_name, 
       :student_number,
-      :cw_nickname
+      :cw_nickname,
+      :batch_id,
+      :batch
       ])
     devise_parameter_sanitizer.permit(:account_update, keys: [
       :first_name, 
       :last_name, 
       :student_number,
-      :cw_nickname
+      :cw_nickname,
+      :batch_id,
+      :batch
       ])
   end
 

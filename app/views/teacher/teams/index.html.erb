@@ -15,26 +15,26 @@
               <div class="col-md-4">
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'équipes créées</h6>
-                  <h5><%= Team.count %></h5>
+                  <h5><%= @teams.count %></h5>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'élèves en équipe</h6>
-                  <h5><%= User.where.not(team: nil).where(teacher: nil).count %></h5>
+                  <h5><%= User.where.not(team: nil).where(teacher: nil, drop: false).count %></h5>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="card bg-primary p-3 text-center mb-5">
                   <h6>Nombre d'élèves sans équipe</h6>
-                  <h5><%= User.where(teacher: nil, team: nil).count %></h5>
+                  <h5><%= User.where(teacher: nil, team: nil, drop: false).count %></h5>
                 </div>
               </div>
             </div>
             <div class="row">
             <h6>Elèves sans équipe</h6>
             <ul>
-              <% User.where(teacher: nil, team: nil).each do |user| %>
+              <% User.where(teacher: nil, team: nil, drop: false).each do |user| %>
                 <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.email %></li>
               <% end %>
             </ul>
@@ -44,7 +44,7 @@
               <div class="col-md-4">
                 <div class="card w-100 p-3 mb-2">
                   <h6 class="text-center"><%= team.name %></h6>
-                  <small class="text-grey text-center mb-2"><i>Nbr d'élèves : <%= team.users.count %></i></small>
+                  <small class="text-grey text-center mb-2"><i>Nbr d'élèves : <%= team.users.kept.count %></i></small>
                   <% project = team.project || team.project_ratings.select{ |p, r| r == team.project_ratings.values.max }.keys.first %>                    
                   <div class="rounded py-1 px-3 d-flex align-items-baseline" style="background: <%= project.color %>;">
                     <div class="color-progress me-1" style="background: <%= team.project.present? ? "black" : "white" %>"></div>
@@ -71,7 +71,7 @@
                     </a>
                     <div class="collapse mt-3 show" id="collapseTeamMembers<%= team.id %>">
                       <ul>
-                        <% team.users.each do |user| %>
+                        <% team.users.kept.each do |user| %>
                           <li><%= user.first_name %> <%= user.last_name %></li>
                         <% end %>
                       </ul>
@@ -106,18 +106,18 @@
         <h4 class="mt-5">Professeur <%= teacher.last_name.capitalize %></h4>
         
         <% teacher.supervised_projects.each do |project| %>
-          <% if project.teams.any? %>
+          <% if project.kept_teams.any? %>
             <h6><%= project.name %></h6>
             <div class="container-fluid">
               <div class="row">
-                <% project.teams.each do |team| %>
+                <% project.kept_teams.each do |team| %>
                   <div class="col-md-4">
                     <div class="card w-100 p-3 mb-2">
                       <h6 class="text-center"><%= team.name %></h6>
                       <small class="text-grey text-center"><i><%= team.project.name.capitalize %></i></small>
                       <ul>
                         
-                        <% team.users.each do |user| %>
+                        <% team.users.kept.each do |user| %>
                           <li><%= user.first_name %> <%= user.last_name %></li>
                         <% end %>
                         

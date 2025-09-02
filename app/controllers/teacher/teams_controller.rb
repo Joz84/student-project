@@ -1,6 +1,6 @@
 class Teacher::TeamsController < ApplicationController
   def index
-    @teams = policy_scope([:teacher, Team])
+    @teams = policy_scope([:teacher, Team]).kept
   end
 
   def show
