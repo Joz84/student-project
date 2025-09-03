@@ -14,9 +14,9 @@
 
 # Project.create!(
 #   name: "Totem", 
-#   description: " Réalisation d’un boitier de collecte de données sur un support (totem) pour évaluer la
-# performance de bâtiments portant sur les conditions de confort, la qualité de l’air (IAQ), la santé
-# cognitive des occupants et les consommations électriques. Ce totem sera basé sur l’utilisation de
+#   description: " Réalisation d'un boitier de collecte de données sur un support (totem) pour évaluer la
+# performance de bâtiments portant sur les conditions de confort, la qualité de l'air (IAQ), la santé
+# cognitive des occupants et les consommations électriques. Ce totem sera basé sur l'utilisation de
 # technologies (capteurs, contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
 #   subject: :physique, 
 #   max_booking: 4, 
@@ -26,7 +26,7 @@
 
 # Project.create!(
 #   name: "Robot Tiki", 
-#   description: "L'objectif principal de ce projet est de concevoir et construire un robot innovant capable de se mouvoir sur deux roues tout en maintenant son équilibre, grâce à un système de stabilisation utilisant un gyroscope connecté à un processeur Arduino. Ce robot, original par sa capacité à s’équilibrer et à se déplacer en autonomie, constitue une plateforme idéale pour expérimenter et appliquer des compétences pluridisciplinaires des sciences de l'ingénieur.", 
+#   description: "L'objectif principal de ce projet est de concevoir et construire un robot innovant capable de se mouvoir sur deux roues tout en maintenant son équilibre, grâce à un système de stabilisation utilisant un gyroscope connecté à un processeur Arduino. Ce robot, original par sa capacité à s'équilibrer et à se déplacer en autonomie, constitue une plateforme idéale pour expérimenter et appliquer des compétences pluridisciplinaires des sciences de l'ingénieur.", 
 #   subject: :physique, 
 #   max_booking: 4, 
 #   author: 'Franco Ferrucci', 
@@ -44,11 +44,11 @@
 
 # Project.create!(
 #   name: "Hydroponie", 
-#   description: "Réalisation d’installations de culture hydroponique (voir figure ci-dessous) intégrant une
-# gestion et une collecte de données permettant l’automatisation d’apport en nutriment ainsi qu’en
-# eau. L’alimentation se fera en prenant en compte l’environnement extérieur, les nutriments présents
-# dans un réservoir d’eau afin d’en améliorer la production végétale et organique des aliments ainsi
-# que des consommations d’énergie. Ce système sera basé sur l’utilisation de technologies (capteurs,
+#   description: "Réalisation d'installations de culture hydroponique (voir figure ci-dessous) intégrant une
+# gestion et une collecte de données permettant l'automatisation d'apport en nutriment ainsi qu'en
+# eau. L'alimentation se fera en prenant en compte l'environnement extérieur, les nutriments présents
+# dans un réservoir d'eau afin d'en améliorer la production végétale et organique des aliments ainsi
+# que des consommations d'énergie. Ce système sera basé sur l'utilisation de technologies (capteurs,
 # contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
 #   subject: :physique, 
 #   max_booking: 4, 
@@ -71,11 +71,11 @@
 
 # Project.create!(
 #   name: "Chimie Extramet", 
-#   description: "Apprendre et maîtriser diverses techniques d’extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).
-# Calculer les rendements d’extraction et les comparer pour chaque solvant et chaque échantillon étudié.
+#   description: "Apprendre et maîtriser diverses techniques d'extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).
+# Calculer les rendements d'extraction et les comparer pour chaque solvant et chaque échantillon étudié.
 # Utiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.
-# Comparer la concentration d’une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.
-# Maîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu’à leur caractérisation quantitative.", 
+# Comparer la concentration d'une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.
+# Maîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu'à leur caractérisation quantitative.", 
 #   subject: :chimie, 
 #   max_booking: 1, 
 #   author: 'Raimana Ho', 
@@ -315,7 +315,7 @@
 
 # Informations supplémentaires
 # - Seules des chaînes vous seront transmises.
-# - La chaîne peut contenir n’importe quel caractère de clavier standard.
+# - La chaîne peut contenir n'importe quel caractère de clavier standard.
 # - Les chaînes acceptées peuvent avoir n'importe quelle longueur, à condition qu'elles comportent 8 caractères ou plus.
 
 # "
@@ -742,27 +742,72 @@
 # "
 # )
 
+Referential.destroy_all
 
-Project.create!(
- "name"=>"Chimie Extramet",
- "description"=>
-  "Apprendre et maîtriser diverses techniques d’extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).\nCalculer les rendements d’extraction et les comparer pour chaque solvant et chaque échantillon étudié.\nUtiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.\nComparer la concentration d’une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.\nMaîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu’à leur caractérisation quantitative.",
- "subject"=>"chimie",
- "drive_link"=>nil,
- "max_booking"=>1,
- "author"=>"Raimana Ho",
- "active"=>true,
- "batch_id"=>3
+Referential.create!(
+  title: "LSPI-1 2024-2025", 
+  active: true,
+  batch: Batch.first
 )
 
-Project.create!(
- "name"=>"Robo Tiki",
- "description"=>
-  "Apprendre et maîtriser diverses techniques d’extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).\nCalculer les rendements d’extraction et les comparer pour chaque solvant et chaque échantillon étudié.\nUtiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.\nComparer la concentration d’une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.\nMaîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu’à leur caractérisation quantitative.",
- "subject"=>"chimie",
- "drive_link"=>nil,
- "max_booking"=>2,
- "author"=>"Franco Ferrucci",
- "active"=>true,
- "batch_id"=>3
-)
+
+skill_block_titles = [
+  "Identification d'un questionnement au sein d'un champ disciplinaire",
+  "Analyse d'un questionnement en mobilisant des concepts disciplinaires",
+  "Mise en oeuvre de méthodes et d'outils du champ disciplinaire",
+  "Usages digitaux et numériques",
+  "Exploitation de données à des fins d'analyse",
+  "Expression et communication écrites et orales",
+  "Positionnement vis-à-vis d'un champ professionnel",
+  "Action en responsabilité au sein d'une organisation professionnelle",
+  "Approches durables des techniques"
+]
+
+skill_block_titles.each_with_index do |title, index|
+  SkillBlock.create!(
+    title: title, 
+    position: index + 1,
+    referential: Referential.first
+  )
+end
+
+skills = [
+  [ 1, 3, "Identifier les principales familles de matériaux et leurs propriétés."],
+  [ 1, 3, "Mobiliser des concepts en mathématiques, en physique, en chimie, en thermodynamique, afin d'aborder des problèmes spécifiques aux différents domaines industriels."],
+  [ 2, 3, "Identifier le rôle et le champ d'application des sciences pour l'ingénieur dans tous les secteurs : milieux naturels, milieux industriels, transports, environnements urbains, etc.."],
+  [ 3, 3, "Valider un modèle par comparaison de ses prévisions aux résultats expérimentaux et apprécier ses limites de validité."],
+  [ 3, 3, "Mobiliser les outils mathématiques nécessaires à la modélisation."],
+  [ 3, 3, "Estimer les ordres de grandeur et manipuler correctement les unités."],
+  [ 3, 3, "Intégrer une vision correcte de l'espace et de ses représentations."],
+  [ 3, 3, "Isoler un système."],
+  [ 3, 3, "Mettre en oeuvre des techniques d'algorithmique et de programmation, notamment pour développer des applications simples d'acquisition et de traitements de données."],
+  [ 4, 3, "Utiliser les outils numériques de référence et les règles de sécurité informatique pour acquérir, traiter, produire et diffuser de l'information ainsi que pour collaborer en interne et en externe."],
+  [ 5, 3, "Identifier, sélectionner et analyser avec esprit critique diverses ressources dans son domaine de spécialité pour documenter un sujet et synthétiser ces données en vue de leur exploitation."],
+  [ 5, 3, "Analyser et synthétiser des données en vue de leur exploitation."],
+  [ 5, 3, "Développer une argumentation avec esprit critique."],
+  [ 6, 3, "Se servir aisément des différents registres d'expression écrite et orale de la langue française."],
+  [ 6, 0, "Communiquer par oral et par écrit, de façon claire et non-ambiguë, dans au moins une langue étrangère."],
+  [ 7, 3, "Identifier et situer les champs professionnels potentiellement en relation avec les acquis de la mention ainsi que les parcours possibles pour y accéder."],
+  [ 7, 3, "Caractériser et valoriser son identité, ses compétences et son projet professionnel en fonction d'un contexte."],
+  [ 7, 3, "Identifier le processus de production, de diffusion et de valorisation des savoirs."],
+  [ 8, 3, "Situer son rôle et sa mission au sein d'une organisation pour s'adapter et prendre des initiatives."],
+  [ 8, 3, "Respecter les principes d'éthique, de déontologie et de responsabilité environnementale."],
+  [ 8, 3, "Travailler en équipe et en réseau ainsi qu'en autonomie et responsabilité au service d'un projet."],
+  [ 8, 3, "Analyser ses actions en situation professionnelle, s'autoévaluer pour améliorer sa pratique."],
+  [ 8, 3, "S'appuyer sur la pensée critique et faire preuve de réflexivité."],
+  [ 9, 3, "Etre en mesure d'évaluer et identifier des solutions pour réduire les impacts environnementaux des techniques."],
+  [ 9, 3, "Articuler les savoir-faire de différents champs disciplinaires dans un contexte de décision ou d'action."],
+  [ 9, 3, "Maitriser les outils d'évaluation multicritères et transformer les outils existants."],
+  [ 9, 3, "Adopter une approche systémique."],
+  [ 9, 3, "Comprendre les scenarios existants et être capable d'engager une démarche prospective."],
+  [ 9, 3, "Tenir compte des risques et incertitudes dans les scénarios."]
+]
+																																	
+skills.each_with_index do |skill, index|
+  Skill.create!(
+    title: skill[2], 
+    position: index + 1,
+    skill_block: SkillBlock.find_by(position: skill[0]), 
+    evaluated: skill[1]
+  )
+end

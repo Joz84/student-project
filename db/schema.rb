@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -97,6 +97,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
     t.string "discord_invite_url"
   end
 
+  create_table "card_skills", force: :cascade do |t|
+    t.bigint "card_id", null: false
+    t.bigint "skill_id", null: false
+    t.integer "level"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id"], name: "index_card_skills_on_card_id"
+    t.index ["skill_id"], name: "index_card_skills_on_skill_id"
+  end
+
   create_table "cards", force: :cascade do |t|
     t.bigint "list_id", null: false
     t.string "name"
@@ -107,6 +117,10 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
     t.datetime "begin_at"
     t.datetime "end_at"
     t.integer "position"
+    t.boolean "archived"
+    t.integer "teacher_validation"
+    t.float "time_estimate"
+    t.string "time_unit"
     t.index ["list_id"], name: "index_cards_on_list_id"
   end
 
@@ -179,6 +193,34 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
     t.index ["user_id"], name: "index_ratings_on_user_id"
   end
 
+  create_table "referentials", force: :cascade do |t|
+    t.string "title"
+    t.boolean "active"
+    t.bigint "batch_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_id"], name: "index_referentials_on_batch_id"
+  end
+
+  create_table "skill_blocks", force: :cascade do |t|
+    t.string "title"
+    t.integer "position"
+    t.bigint "referential_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["referential_id"], name: "index_skill_blocks_on_referential_id"
+  end
+
+  create_table "skills", force: :cascade do |t|
+    t.string "title"
+    t.integer "position"
+    t.bigint "skill_block_id", null: false
+    t.integer "evaluated"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["skill_block_id"], name: "index_skills_on_skill_block_id"
+  end
+
   create_table "supervisions", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "project_id", null: false
@@ -248,6 +290,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
   add_foreign_key "assignments", "users"
   add_foreign_key "attempts", "exercices"
   add_foreign_key "attempts", "users"
+  add_foreign_key "card_skills", "cards"
+  add_foreign_key "card_skills", "skills"
   add_foreign_key "cards", "lists"
   add_foreign_key "exercices", "courses"
   add_foreign_key "lists", "teams"
@@ -256,6 +300,9 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_023230) do
   add_foreign_key "projects", "batches"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"
+  add_foreign_key "referentials", "batches"
+  add_foreign_key "skill_blocks", "referentials"
+  add_foreign_key "skills", "skill_blocks"
   add_foreign_key "supervisions", "projects"
   add_foreign_key "supervisions", "users"
   add_foreign_key "teams", "projects"
