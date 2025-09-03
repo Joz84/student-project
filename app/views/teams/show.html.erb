@@ -96,7 +96,44 @@
                 <p class="text-center mb-3"><strong><%= @team.name %></strong></p>
                 <small class="text-grey"><i><%= @team.project.subject.capitalize %></i></small>
                 <p><%= @team.project.description %></p>
-                <%= link_to "lien vers le drive du projet", @team.drive_link, target: "_blank" %>
+                
+                <% if @team.drive_link.blank? %>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#driveLinkModal">
+                    Ajouter un lien vers le drive
+                  </button>
+                <% else %>
+                  <%= link_to "lien vers le drive du projet", @team.drive_link, target: "_blank", class: "btn btn-primary text-white" %>
+                  <!-- Button trigger modal -->
+                  <button type="button" class="no-btn text-primary" data-bs-toggle="modal" data-bs-target="#driveLinkModal">
+                    Modifier le lien vers le drive
+                  </button>
+                <% end %>
+
+                <!-- Modal -->
+                <div class="modal fade" id="driveLinkModal" tabindex="-1" aria-labelledby="driveLinkModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="driveLinkModalLabel">Nouveau rdv</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <%= simple_form_for @team, html: { data: { turbo: true } } do |form| %>
+                          <div class="form-group">
+                            <%= form.input :drive_link, label: false, input_html: { class: 'form-control' } %>
+                          </div>
+
+                          <div class="form-group">
+                            <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
 
               <div class="card w-100 p-3 mb-3">

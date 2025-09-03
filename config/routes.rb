@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   #resources :cw_nicknames, only: [:edit, :update]
   #resources :tickets, only: [:index, :create, :update, :destroy]
   
-  resources :teams, only: [:new, :create, :show] do
+  resources :teams, only: [:new, :create, :show, :update] do
     resources :messages, only: [:create, :index]
     resource :meetings, only: [:update]
   end

@@ -19,7 +19,7 @@ class CardsController < ApplicationController
     @card = Card.find(params[:id])
     authorize @card
     @team = @card.team
-    flash[:alert] = @card.errors.messages.values.join(". ") if !@card.update(card_params)
+    flash[:alert] = @card.errors.messages.map{|k, v| "#{k.capitalize} #{v.join('et ')}"}.join(". ") if !@card.update(card_params)
     redirect_to @team
   end
 

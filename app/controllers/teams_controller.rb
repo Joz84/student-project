@@ -17,6 +17,18 @@ class TeamsController < ApplicationController
     end
   end
 
+  def update
+    @team = Team.find(params[:id])
+    authorize @team
+    if @team.update(team_params)
+      redirect_to @team
+    else
+      @card = Card.new
+      @assignment = Assignment.new
+      render "teams/show", status: :unprocessable_entity
+    end
+  end
+
   def show
     @team = Team.find(params[:id])
     authorize @team
@@ -27,6 +39,6 @@ class TeamsController < ApplicationController
   private
 
   def team_params
-    params.require(:team).permit(:name)
+    params.require(:team).permit(:name, :drive_link)
   end
 end

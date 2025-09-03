@@ -5,6 +5,7 @@ class MeetingsController < ApplicationController
     if @team.update(meeting_params)
       redirect_to @team
     else
+      @card = Card.new
       @assignment = Assignment.new
       render "teams/show", status: :unprocessable_entity
     end
