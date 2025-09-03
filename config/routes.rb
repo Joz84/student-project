@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   #resources :tickets, only: [:index, :create, :update, :destroy]
   
   resources :teams, only: [:new, :create, :show, :update] do
-    resources :messages, only: [:create, :index]
+    #resources :messages, only: [:create, :index]
     resource :meetings, only: [:update]
   end
 
@@ -33,7 +33,7 @@ Rails.application.routes.draw do
     resources :batches, only: [] do
       resources :teams, only: [:index]
     end
-    resources :messages, only: [:index, :create]
+    #resources :messages, only: [:index, :create]
   end
   
   # resources :courses, only: :show do

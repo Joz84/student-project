@@ -154,6 +154,15 @@
                 </div>
               </div>
 
+              <div class="card text-center w-100 p-3 mb-3">
+                <h6 class="mb-1">Messagerie Discord</h6>
+                <div class="text-center w-100">
+                  <%= image_tag "logo_discord.jpeg", class: "width-logo" %>
+                </div>
+                <%= link_to "Lien vers la messagerie", @team.project.batch.discord_server_url, target: "_blank" %>
+                <%= link_to "Invitation pour la messagerie", @team.project.batch.discord_invite_url, target: "_blank"  %>
+              </div>
+
             </div>
           </div>        
 
