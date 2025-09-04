@@ -3,11 +3,15 @@ class Team < ApplicationRecord
   belongs_to :user #team leader
   has_many :users, dependent: :nullify
   has_many :lists
+  has_many :cards, through: :lists
   has_many :messages
   has_many :cards, through: :lists
   validates :name, presence: true
   validates :name, uniqueness: true
 
+  def archived_cards
+    cards.where(archived: true)
+  end
 
   scope :kept, -> { joins(:users).merge(User.kept).distinct }
 

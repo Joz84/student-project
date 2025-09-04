@@ -1,0 +1,23 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <h2 class="text-center my-5">Progression de la team <%= @team.name %></h2>
+      <div class="card card-body">
+        <a class="" data-bs-toggle="collapse" href="#collapseReferential" role="button" aria-expanded="false" aria-controls="collapseReferential">
+          Le référentiel
+        </a>
+        <div class="collapse mt-3" id="collapseReferential">
+          <% @skill_blocks.each do |skill_block| %>
+            <h6 class="my-3"><%= skill_block.position %> <%= skill_block.title %></h6>
+            <ul>
+            <% skill_block.skills.each do |skill| %>
+              <li><%= skill_block.position %>.<%= skill.position %> - <%= skill.title %></li>
+            <% end %>
+            </ul>
+          <% end %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>  

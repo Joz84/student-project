@@ -14,10 +14,11 @@ Rails.application.routes.draw do
   resources :ratings, only: [:update]
   #resources :cw_nicknames, only: [:edit, :update]
   #resources :tickets, only: [:index, :create, :update, :destroy]
-  
+
   resources :teams, only: [:new, :create, :show, :update] do
     #resources :messages, only: [:create, :index]
     resource :meetings, only: [:update]
+    resources :progressions, only: [:index]
   end
 
   resources :lists, only: [] do
@@ -26,6 +27,7 @@ Rails.application.routes.draw do
   
   resources :cards, only: [] do
     resources :assignments, only: [:create, :destroy], shallow: true
+    resources :card_skills, only: [:create, :destroy], shallow: true    
   end
   
   namespace :teacher do

@@ -26,13 +26,26 @@
                 </div>
 
                 <div class="w-100" data-controller="dragndrop" data-dragndrop-target="cards" data-list-id="<%= list.id %>">
-                  <% list.cards.order(position: :asc).each do |card| %>
+                  <% list.active_cards.order(position: :asc).each do |card| %>
                     <%= render "teams/card", card: card %>
                   <% end %>
                 </div>
               </div>
             </div>
           <% end %>
+        </div>
+      </div>
+
+      <h2 class="text-center my-5">Mes tâches archivées</h2>
+      <div class="container">
+        <div class="row">
+          
+          <% @team.archived_cards.each do |card| %>
+            <div class="col-md-4">
+              <%= render "teams/card", card: card %>
+            </div>
+          <% end %>
+          
         </div>
       </div>
     </div>
@@ -115,7 +128,7 @@
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="driveLinkModalLabel">Nouveau rdv</h1>
+                        <h1 class="modal-title fs-5" id="driveLinkModalLabel">Lien vers le drive</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
@@ -152,6 +165,7 @@
                     <% end %>
                   </div>
                 </div>
+                <%= link_to "Progression de l'équipe", team_progressions_path(@team), class: "btn btn-primary text-white" %>
               </div>
 
               <div class="card text-center w-100 p-3 mb-3">

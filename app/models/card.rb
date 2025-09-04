@@ -2,6 +2,7 @@ class Card < ApplicationRecord
   belongs_to :list
   acts_as_list scope: :list
   has_many :assignments, dependent: :destroy
+  has_many :card_skills, dependent: :destroy  
   has_many :users, through: :assignments
   validates :name, presence: true
   validates :description, presence: true

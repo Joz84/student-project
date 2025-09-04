@@ -5,17 +5,41 @@ Options
   <div class="">
     <div class="accordion" id="accordion<%= card.id %>">
         <div class="accordion-item">
-        <h2 class="accordion-header">
-            <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%= card.id%>" aria-expanded="false" aria-controls="collapseOne<%= card.id%>">
-            Description
-            </button>
-        </h2>
-        <div id="collapseOne<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
+          <h2 class="accordion-header">
+              <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseZero<%= card.id%>" aria-expanded="false" aria-controls="collapseZero<%= card.id%>">
+              Description
+              </button>
+          </h2>
+          <div id="collapseZero<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
+              <div class="accordion-body">
+                <p><%= card.description %></p>            
+              </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+              <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%= card.id%>" aria-expanded="false" aria-controls="collapseOne<%= card.id%>">
+              Compétences visées
+              </button>
+          </h2>
+          <div id="collapseOne<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
             <div class="accordion-body">
-            <p><%= card.description %></p>            
+              <div class="d-flex justifify-content-start">
+                <% card.card_skills.each do |card_skill| %>
+                  <%= link_to "#{card_skill.skill.skill_block.position}.#{card_skill.skill.position} x", card_skill_path(card_skill), data: { "turbo-method": :delete, "turbo_confirm": "Êtes vous sûrs de vouloir retirer cette compétence?" }, class: "btn btn-primary text-white text-decoration-none border" %>
+                <% end %>
+              </div>
+              <hr>
+              <%= simple_form_for [card, CardSkill.new] do |f| %>
+                  <%= f.association :skill, label: "Ajouter une compétence", collection: card.list.team.project.batch.referentials.find_by(active: true).skills.map{|skill| [skill, skill.id]} %>
+                  <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
+              <% end %>              
             </div>
+          </div>
         </div>
-        </div>
+
+
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo<%= card.id%>" aria-expanded="false" aria-controls="collapseTwo<%= card.id%>">
