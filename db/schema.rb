@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
+ActiveRecord::Schema[7.1].define(version: 2025_09_05_025430) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -158,6 +158,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
     t.index ["team_id"], name: "index_lists_on_team_id"
   end
 
+  create_table "meetings", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.bigint "referential_id", null: false
+    t.string "place"
+    t.datetime "date"
+    t.integer "progress"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["referential_id"], name: "index_meetings_on_referential_id"
+    t.index ["team_id"], name: "index_meetings_on_team_id"
+  end
+
   create_table "messages", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "team_id", null: false
@@ -166,6 +178,16 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
     t.datetime "updated_at", null: false
     t.index ["team_id"], name: "index_messages_on_team_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "presences", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "meeting_id", null: false
+    t.integer "progress"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["meeting_id"], name: "index_presences_on_meeting_id"
+    t.index ["user_id"], name: "index_presences_on_user_id"
   end
 
   create_table "projects", force: :cascade do |t|
@@ -295,8 +317,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
   add_foreign_key "cards", "lists"
   add_foreign_key "exercices", "courses"
   add_foreign_key "lists", "teams"
+  add_foreign_key "meetings", "referentials"
+  add_foreign_key "meetings", "teams"
   add_foreign_key "messages", "teams"
   add_foreign_key "messages", "users"
+  add_foreign_key "presences", "meetings"
+  add_foreign_key "presences", "users"
   add_foreign_key "projects", "batches"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"

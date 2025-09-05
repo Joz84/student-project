@@ -17,6 +17,7 @@ class User < ApplicationRecord
   has_many :attempts, dependent: :destroy 
   has_many :tickets, dependent: :destroy 
   has_many :messages, dependent: :destroy 
+  has_many :presences, dependent: :destroy
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :student_number, presence: true

@@ -4,8 +4,8 @@ class Team < ApplicationRecord
   has_many :users, dependent: :nullify
   has_many :lists
   has_many :cards, through: :lists
-  has_many :messages
-  has_many :cards, through: :lists
+  # has_many :messages
+  has_many :meetings, dependent: :destroy
   validates :name, presence: true
   validates :name, uniqueness: true
 
