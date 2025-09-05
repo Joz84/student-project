@@ -35,7 +35,7 @@ Options
               </div>
               <hr>
               <%= simple_form_for [card, CardSkill.new] do |f| %>
-                  <%= f.association :skill, label: "Ajouter une compétence", collection: card.list.team.project.batch.referentials.find_by(active: true).skills.map{|skill| [skill, skill.id]} %>
+                  <%= f.association :skill, label: "Ajouter une compétence", collection: @all_skills.map{|skill| [skill, skill.id]} %>
                   <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
               <% end %>              
             </div>

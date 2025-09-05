@@ -58,8 +58,80 @@
 
       <div class="card w-100 p-3 mb-3">
         <h6 class="text-center">Le prochain rdv</h6>
-        <p class="text-center mb-3"><strong><%= @team.meeting_date&.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
-        <p class="text-center"><%= @team.meeting_place %></p>
+        
+        <% if @team.next_meeting %>          
+          <p class="text-center mb-3"><strong><%= @team.next_meeting.date&.strftime("Le %d/%m/%y à %Hh%M") %></strong></p>
+          <p class="text-center"><%= @team.next_meeting.place %></p>
+
+          <!-- Button trigger modal -->
+          
+          <% if !@team.next_meeting.progress.blank? || current_user.teacher? %>            
+            <button type="button" class="btn btn-primary text-white mb-3" data-bs-toggle="modal" data-bs-target="#updateMeeting">
+              Modifier le rdv
+            </button>
+          <% end %>
+          <% if @team.next_meeting.progress.blank? %>
+            <%= link_to "Supprimer", team_meeting_path(@team, @team.next_meeting), data: { "turbo-method": :delete, "turbo-confirm": "Êtes-vous sûr de vouloir supprimer ce rdv ?" }, class: "btn btn-supp mb-3" %>
+          <% end %>
+          
+
+          <!-- Modal -->
+          <div class="modal fade" id="updateMeeting" tabindex="-1" aria-labelledby="updateMeetingLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="updateMeetingLabel">Modifier le rdv</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <%= simple_form_for [@team, @team.next_meeting], html: { data: { turbo: false } } do |form| %>
+                    <%= form.error_notification %>
+                    
+                    <% if @team.next_meeting.progress.blank? %>
+                      <div class="form-group">
+                        <%= form.input :date, label: "Date du rdv", input_html: { class: 'form-control' } %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= form.input :place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
+                      </div>
+
+                      <div class="form-group">
+                        <%= form.input :note, label: "Note", input_html: { class: 'form-control' } %>
+                      </div>
+                    <% end %>
+
+                    <% if current_user.teacher? %>
+                      
+                      <div class="presences">
+                        <%= form.simple_fields_for :presences do |pf| %>
+                          <div class="presence-row">
+                            <strong><%= pf.object.user.try(:to_s) %></strong>
+                            <%= pf.input :progress, collection: Presence.progresses.map{|k, v| [k, k]} , label: false, input_html: { class: 'form-control' } %>
+                            <%= pf.hidden_field :id %>
+                          </div>
+                        <% end %>
+                      </div>                      
+                      
+                      <div class="form-group">
+                        <%= form.input :progress, collection: Meeting.progresses.map{|k, v| [k, k]} , label: "Statut", input_html: { class: 'form-control' } %>
+                      </div>
+                    <% end %>
+                     
+
+                    <div class="form-group">
+                      <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <% else %>
+          <p class="text-center mb-3"><strong>Aucun rdv de prévu</strong></p>
+        <% end %>
 
         <!-- Button trigger modal -->
         <button type="button" class="btn btn-primary text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -75,20 +147,22 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <%= simple_form_for @team, 
-                                    url: team_meetings_path(@team), 
-                                    method: :patch, 
-                                    html: { data: { turbo: true } } do |form| %>
+                <%= simple_form_for [@team, @meeting], html: { data: { turbo: false } } do |form| %>
+                  <%= form.error_notification %>
                   <div class="form-group">
-                    <%= form.input :meeting_date, as: :string, label: "Date du rdv", input_html: { type: 'datetime-local', class: 'form-control' } %>
+                    <%= form.input :date, as: :string, label: "Date du rdv", input_html: { type: 'datetime-local', class: 'form-control' } %>
                   </div>
 
                   <div class="form-group">
-                    <%= form.input :meeting_place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
+                    <%= form.input :place, label: "Lieu du rdv", input_html: { class: 'form-control' } %>
                   </div>
 
                   <div class="form-group">
-                    <%= form.button :submit, "Modifier", class: 'btn btn-primary text-white' %>
+                    <%= form.input :note, label: "Note", input_html: { class: 'form-control' } %>
+                  </div>
+
+                  <div class="form-group">
+                    <%= form.button :submit, "Créer", class: 'btn btn-primary text-white' %>
                   </div>
                 <% end %>
               </div>

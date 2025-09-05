@@ -17,8 +17,8 @@ Rails.application.routes.draw do
 
   resources :teams, only: [:new, :create, :show, :update] do
     #resources :messages, only: [:create, :index]
-    resource :meetings, only: [:update]
     resources :progressions, only: [:index]
+    resources :meetings, only: [:create, :update, :destroy]
   end
 
   resources :lists, only: [] do

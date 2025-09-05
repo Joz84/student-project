@@ -7,5 +7,9 @@ class Batch < ApplicationRecord
     "https://discord.com/channels/#{discord_server_id}" if discord_server_id.present?
   end
 
+  def current_referential
+    referentials.find_by(active: true)
+  end
+
 
 end

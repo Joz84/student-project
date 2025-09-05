@@ -13,6 +13,10 @@ class Team < ApplicationRecord
     cards.where(status: :archived)
   end
 
+  def next_meeting
+    meetings.where("date >= ?", DateTime.now).order(date: :asc).first
+  end
+
   scope :kept, -> { joins(:users).merge(User.kept).distinct }
 
   def self.ransackable_associations(auth_object = nil)

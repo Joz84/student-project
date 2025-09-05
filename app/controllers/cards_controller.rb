@@ -13,6 +13,8 @@ class CardsController < ApplicationController
       redirect_to @team
     else
       @assignment = Assignment.new
+      @meeting = Meeting.new
+      @all_skills = @team.project.batch.current_referential.skills
       render "teams/show", status: :unprocessable_entity
     end
   end
