@@ -4,7 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  belongs_to :batch
+  belongs_to :batch, optional: true # remove after migration
   belongs_to :team, optional: true
   has_many :teams, dependent: :destroy  #as team leader
   has_many :ratings, dependent: :destroy 
