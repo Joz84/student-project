@@ -1,5 +1,5 @@
 class Project < ApplicationRecord
-  belongs_to :batch, optional: true # remove after migration
+  belongs_to :batch #, optional: true # remove after migration
   has_many :teams
   has_many :ratings
   has_many :supervisions
