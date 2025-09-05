@@ -742,10 +742,33 @@
 # "
 # )
 
+
+kept_users = [
+  {:first_name=>"Hawaiki", :last_name=>"Tchen"},
+  {:first_name=>"Killian", :last_name=>"TEMAURI"},
+  {:first_name=>"Havaiki", :last_name=>"BOSSERT"},
+  {:first_name=>"Heremoana", :last_name=>"Dagues"},
+  {:first_name=>"Eric", :last_name=>"LAO KY SOI"},
+  {:first_name=>"Aotea", :last_name=>"TEFAATAU--GONIN"},
+  {:first_name=>"Oatea", :last_name=>"Tarrats"},
+  {:first_name=>"Keona", :last_name=>"Duval"},
+  {:first_name=>"Ariimihinoa", :last_name=>"Lai Ah Che"},
+  {:first_name=>"Rahan", :last_name=>"TCHAN"},
+  {:first_name=>"Teani", :last_name=>"CUZACQ--CARRASSET"},
+  {:first_name=>"Kalei", :last_name=>"TETUAMANUHIRI "},
+  {:first_name=>"Bryan", :last_name=>"LIVINE"},
+  {:first_name=>"Marunui", :last_name=>"TERIIEROOITERAI"},
+  {:first_name=>"Manutahi", :last_name=>"Maono"}
+]
+
+kept_users.each do |user|
+  User.find_by(user).update!(drop: false)
+end  
+
 Referential.destroy_all
 
 Referential.create!(
-  title: "LSPI-1 2024-2025", 
+  title: "LSPI-2 2025-2026", 
   active: true,
   batch: Batch.first
 )
