@@ -6,7 +6,11 @@ class Card < ApplicationRecord
   has_many :users, through: :assignments
   validates :name, presence: true
   validates :description, presence: true
+  validates :time_estimate, presence: true
+  validates :time_unit, presence: true
 
+  enum status: [ :active, :archived, :hidden ]
+  enum teacher_validation: [ :pending, :refused, :one, :two, :three, :accepted ]
   def self.ransackable_attributes(auth_object = nil)
     ["begin_at", "created_at", "description", "drive_link", "end_at", "id", "id_value", "list_id", "name", "position", "updated_at"]
   end

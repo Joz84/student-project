@@ -5,7 +5,7 @@ class List < ApplicationRecord
   validates :name, uniqueness: { scope: :team }
 
   def active_cards
-    cards.where(archived: nil)
+    cards.where(status: :active)
   end
 
   def self.ransackable_attributes(auth_object = nil)

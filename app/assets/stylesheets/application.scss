@@ -113,3 +113,31 @@ h1, h2, h3, h4, h5, h6 {
 .width-logo {
   width: 30px;
 }
+
+.accepted {
+  background: #CEF0A5;
+}
+
+.refused {
+  background: #FED6D9;
+}
+
+.pending {
+  background: white;
+} 
+
+.one {
+  background: #ffe5c1;
+} 
+
+.two {
+  background: #FFF4C1;
+} 
+
+.three {
+  background: #f7ffc1;
+}
+
+.border-selected {
+  border: 2px solid black !important;
+}

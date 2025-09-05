@@ -17,6 +17,9 @@ Options
           </div>
         </div>
 
+        
+        <% if card.pending? %>
+          
         <div class="accordion-item">
           <h2 class="accordion-header">
               <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%= card.id%>" aria-expanded="false" aria-controls="collapseOne<%= card.id%>">
@@ -38,7 +41,6 @@ Options
             </div>
           </div>
         </div>
-
 
         <div class="accordion-item">
         <h2 class="accordion-header">
@@ -74,25 +76,76 @@ Options
             <%= simple_form_for card do |f| %>
             <%= f.input :name %>
             <%= f.input :description %>
-            <%= f.input :drive_link %>                   
+            <%= f.input :drive_link %>
+            <div class="d-flex justify-content-between">
+              <%= f.input :time_estimate %>
+              <%= f.input :time_unit, collection: ["jour(s)", "semaine(s)", "mois"]  %>               
+            </div>
             <%= f.button :submit, "Valider", class: "btn btn-danger text-white w-100" %>
             <% end %>
         </div>
         </div>
 
+        <% else %>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne<%= card.id%>" aria-expanded="false" aria-controls="collapseOne<%= card.id%>">
+                Compétences visées
+                </button>
+            </h2>
+            <div id="collapseOne<%= card.id%>" class="accordion-collapse collapse" data-bs-parent="#accordion<%= card.id %>">
+              <div class="accordion-body">
+                <div class="d-flex justifify-content-start">
+                  <% card.card_skills.each do |card_skill| %>
+                    <div class="btn btn-primary text-white text-decoration-none border"><%= "#{card_skill.skill.skill_block.position}.#{card_skill.skill.position}" %></div>
+                  <% end %>
+                </div>            
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour<%= card.id%>" aria-expanded="false" aria-controls="collapseFour<%= card.id%>">
-            Supprimer la tâche
+            Changer le statut de la tâche
             </button>
         </h2>
         <div id="collapseFour<%= card.id%>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
+            
+          <% if card.active? %>
+            <%= link_to "Archiver la tâche", card_path(card, card: {status: :archived}), data: { "turbo-method": :patch, "turbo_confirm": "Êtes vous sûrs de vouloir archiver cette tâche?" }, class: "btn btn-primary  text-white w-100 mb-1" %>
+          <% elsif card.archived? %>
+            <%= link_to "Déarchiver la tâche", card_path(card, card: {status: :active}), data: { "turbo-method": :patch, "turbo_confirm": "Êtes vous sûrs de vouloir archiver cette tâche?" }, class: "btn btn-primary  text-white w-100 mb-1" %>
+          <% end %>
+          
+          <% if card.pending? %>
             <%= link_to "Supprimer la tâche", card_path(card), data: { "turbo-method": :delete, "turbo_confirm": "Êtes vous sûrs de vouloir supprimer cette tâche?" }, class: "btn btn-supp w-100" %>
+          <% else %>
+            <%= link_to "Supprimer la tâche", card_path(card, card: {status: :hidden}), data: { "turbo-method": :patch, "turbo_confirm": "Êtes vous sûrs de vouloir supprimer cette tâche?" }, class: "btn btn-supp w-100" %>
+          <% end %>
+            
         </div>
         </div>
     </div>
   </div>
 </div>
 
-
+<% if current_user.teacher? %>
+  <p class="my-2"><b>Évaluation Enseignant</b></p>
+  <div class="d-flex justify-content-between">
+    <% Card.teacher_validations.each do |teacher_validation, index| %>
+      <% if index > 0 %>         
+        <%= link_to index, card_path(card, card: {teacher_validation: teacher_validation}), data: { "turbo-method": :patch, "turbo_confirm": "Êtes vous sûrs de vouloir faire cette action?" }, class: "btn #{teacher_validation} #{'border-selected' if card.teacher_validation == teacher_validation} w-100" %>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="d-flex justify-content-between">
+    <% if !card.pending? %>         
+      <%= link_to "Annuler la validation", card_path(card, card: {teacher_validation: :pending}), data: { "turbo-method": :patch, "turbo_confirm": "Êtes vous sûrs de vouloir faire cette action?" }, class: "btn btn-primary text-white w-100 mt-3" %>
+    <% end %>
+  </div>
+<% end %>
 

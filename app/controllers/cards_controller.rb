@@ -7,7 +7,9 @@ class CardsController < ApplicationController
     @card.list = @list
     authorize @card
     @team = @card.team
-    if @card.save
+    if card_params[:teacher_validation].present? && !current_user.teacher?
+      flash[:alert] = "Vous n'êtes pas autorisé à créer cette tâche."
+    elsif @card.save
       redirect_to @team
     else
       @assignment = Assignment.new
@@ -19,7 +21,11 @@ class CardsController < ApplicationController
     @card = Card.find(params[:id])
     authorize @card
     @team = @card.team
-    flash[:alert] = @card.errors.messages.map{|k, v| "#{k.capitalize} #{v.join('et ')}"}.join(". ") if !@card.update(card_params)
+    if card_params[:teacher_validation].present? && !current_user.teacher?
+      flash[:alert] = "Vous n'êtes pas autorisé à valider cette tâche."
+    elsif !@card.update(card_params)
+      flash[:alert] = @card.errors.messages.map{|k, v| "#{k.capitalize} #{v.join('et ')}"}.join(". ") 
+    end
     redirect_to @team
   end
 
@@ -62,7 +68,11 @@ class CardsController < ApplicationController
     params.require(:card).permit(
       :name, 
       :description, 
-      :drive_link
+      :drive_link,
+      :status,
+      :teacher_validation,
+      :time_estimate,
+      :time_unit
     )
   end
 end

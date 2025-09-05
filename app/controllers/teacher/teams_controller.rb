@@ -1,9 +1,9 @@
 class Teacher::TeamsController < ApplicationController
   def index
+    @batches = current_user.supervised_batches
     @teams = policy_scope([:teacher, Team])
     @batch_id = params[:batch_id] || session[:batch_id] || @batches.last.id
     if @batch_id
-      @batches = current_user.supervised_batches
       @batch = Batch.find(@batch_id)
       session[:batch_id] = @batch_id
       @teams = @teams

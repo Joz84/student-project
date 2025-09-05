@@ -10,7 +10,7 @@ class Team < ApplicationRecord
   validates :name, uniqueness: true
 
   def archived_cards
-    cards.where(archived: true)
+    cards.where(status: :archived)
   end
 
   scope :kept, -> { joins(:users).merge(User.kept).distinct }

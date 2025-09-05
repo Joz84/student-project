@@ -18,7 +18,11 @@
                       <%= simple_form_for [list, @card] do |f| %>
                         <%= f.input :name %>
                         <%= f.input :description %>
-                        <%= f.input :drive_link %>                   
+                        <%= f.input :drive_link %> 
+                        <div class="d-flex justify-content-between">
+                          <%= f.input :time_estimate %>
+                          <%= f.input :time_unit, collection: ["jour(s)", "semaine(s)", "mois"]  %>               
+                        </div>                  
                         <%= f.button :submit, "Valider", class: "btn btn-danger text-white" %>
                       <% end %>
                     </div>

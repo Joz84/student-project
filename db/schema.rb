@@ -117,8 +117,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_03_084238) do
     t.datetime "begin_at"
     t.datetime "end_at"
     t.integer "position"
-    t.boolean "archived"
-    t.integer "teacher_validation"
+    t.integer "status", default: 0
+    t.integer "teacher_validation", default: 0
     t.float "time_estimate"
     t.string "time_unit"
     t.index ["list_id"], name: "index_cards_on_list_id"

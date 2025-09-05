@@ -10,7 +10,6 @@
       <% if user_signed_in? %>
         <% if current_user.teacher %>
           <%= link_to "Espace Enseignant", teacher_teams_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
-          <%= link_to "Messagerie", current_user.batch.discord_server_url, class: "navbar-mihivai-item navbar-mihivai-link" %>
 
           <%# <div class="notifs-bg"> %>
             <%#= link_to "Messagerie", teacher_messages_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
@@ -23,7 +22,9 @@
         <% if current_user.team.present? && !current_user.teacher %>
 
           <div class="notifs-bg">
-            <%= link_to "Messagerie", team_messages_path(current_user.team), class: "navbar-mihivai-item navbar-mihivai-link" %>
+            
+            <%= link_to "Messagerie", current_user.batch.discord_server_url, class: "navbar-mihivai-item navbar-mihivai-link" %>
+            
             <% if current_user.new_team_messages_count > 0 %>
               <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
             <% end %>
@@ -58,7 +59,6 @@
               
               <% if current_user.teacher %>
                 <%= link_to "Espace Enseignant", teacher_teams_path, class: "navbar-link" %>
-                <%= link_to "Messagerie", current_user.batch.discord_server_url, class: "navbar-link" %>
 
                 <%# <div class="notifs-bg"> %>
                   <%#= link_to "Messagerie", teacher_messages_path, class: "navbar-link" %>
@@ -71,7 +71,7 @@
               <% if current_user.team.present? && !current_user.teacher %>
 
                 <div class="notifs-bg">
-                  <%= link_to "Messagerie", team_messages_path(current_user.team), class: "navbar-link" %>
+                  <%= link_to "Messagerie", current_user.batch.discord_server_url, class: "navbar-link" %>
                   <% if current_user.new_team_messages_count > 0 %>
                     <div class="notifs-nbr"><%= current_user.new_team_messages_count %></div>
                   <% end %>
