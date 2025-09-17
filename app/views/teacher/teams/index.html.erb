@@ -16,7 +16,7 @@
       <div class="col-md-8 offset-md-2">
         <div class="d-flex justify-content-center my-5">
           <% @batches.each do |batch| %>
-            <%= link_to batch.title, teacher_batch_teams_path(batch), class: "btn text-white mx-2 #{batch == @batch ? 'btn-primary' : 'btn-danger'}" %>
+            <%= link_to batch.title, teacher_batch_teams_path(batch), class: "btn text-white mx-2 btn-danger #{batch == @batch ? 'border-selected' : ''}" %>
           <% end %>
         </div>
 
