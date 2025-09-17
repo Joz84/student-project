@@ -8,8 +8,10 @@
           <div class="col-md-4">
             <div class="card w-100 p-3 mb-2">
               <h6 class="text-center"><%= project.name %></h6>
-              <small class="text-grey"><i><%= project.subject.capitalize %></i></small>
-              <p><%= project.description %></p>
+              <div class="d-flex justify-content-center mb-3">
+                <small class="text-grey text-center card w-50 bg-<%= project.subject.downcase %>"><i><%= project.subject.capitalize %></i></small>
+              </div>
+              <p class="text-justify"><%= project.description %></p>
               <%#= link_to "lien vers le drive", project.drive_link, target: "_blank" %>
             </div>
           </div>

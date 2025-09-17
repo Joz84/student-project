@@ -20,7 +20,8 @@ class User < ApplicationRecord
   has_many :presences, dependent: :destroy
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :student_number, presence: true
+  validates :student_number, presence: true,
+            format: { with: /\A\d{8}\z/, message: "doit contenir exactement 8 chiffres" }
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
   before_create :initialize_avatar_color

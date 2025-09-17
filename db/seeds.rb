@@ -43,7 +43,7 @@ Project.create!(
 
 Project.create!(
   batch: batch,
-  name: "Station Météo", 
+  name: "Raquette connectée", 
   description: "Projet mené avec la Fédération polynésienne de ping-pong : concevoir une raquette connectée mesurant et transmettant en temps réel les gestes. IMU (gyro/accéléro), microcontrôleur (Arduino/ESP32), BLE/Wi-Fi et batterie intégrés au manche. Visualisation et analyse sur app, estimation vitesse/spin, détection d’impact, avec comparaison à une raquette du commerce. Objectif : précision, autonomie et ergonomie.",
   subject: :physique, 
   max_booking: 1, 
