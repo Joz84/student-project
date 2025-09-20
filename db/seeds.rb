@@ -196,31 +196,31 @@
 #   )
 # end
 
-batch = Batch.create!(
-  title: "L-STES 2025-2026",
-  discord_server_id: "1418791289377390686",
-  discord_invite_url: "https://discord.gg/z3GmuyMb"
-) 
+# batch = Batch.create!(
+#   title: "L-STES 2025-2026",
+#   discord_server_id: "1418791289377390686",
+#   discord_invite_url: "https://discord.gg/z3GmuyMb"
+# ) 
 
-ref = Referential.create!(
-  title: "L-STES 2025-2026", 
-  active: true,
-  batch: batch
-)
+# ref = Referential.create!(
+#   title: "L-STES 2025-2026", 
+#   active: true,
+#   batch: batch
+# )
 
-skill_block_titles = [
-  "APPRENDRE POUR COMPRENDRE : Appréhender les enjeux liés aux Transitions de façon systémique",
-  "COMPRENDRE POUR AGIR : Acquérir les outils, les méthodes pour la conduite du changement",
-  "AGIR POUR CONSTUIRE : Se projeter vers son avenir personnel, professionnel et citoyen"
-]
+# skill_block_titles = [
+#   "APPRENDRE POUR COMPRENDRE : Appréhender les enjeux liés aux Transitions de façon systémique",
+#   "COMPRENDRE POUR AGIR : Acquérir les outils, les méthodes pour la conduite du changement",
+#   "AGIR POUR CONSTUIRE : Se projeter vers son avenir personnel, professionnel et citoyen"
+# ]
 
-skill_block_titles.each_with_index do |title, index|
-  SkillBlock.create!(
-    title: title, 
-    position: index + 1,
-    referential: ref
-  )
-end
+# skill_block_titles.each_with_index do |title, index|
+#   SkillBlock.create!(
+#     title: title, 
+#     position: index + 1,
+#     referential: ref
+#   )
+# end
 
 skills = [
   [ 1, 3, "En mobilisant les connaissances et les concepts fondamentaux pour la compréhension globale des Transitions"],
