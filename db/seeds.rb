@@ -249,13 +249,13 @@ skills.each_with_index do |skill, index|
   Skill.create!(
     title: skill[2], 
     position: index + 1,
-    skill_block: SkillBlock.find_by(position: skill[0]), 
+    skill_block: Batch.last.referentials.last.skill_blocks.find_by(position: skill[0]), 
     evaluated: skill[1]
   )
 end
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Cegelec", 
   description: "", 
   subject: :stes, 
@@ -265,7 +265,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "AOA Polynésien Forests", 
   description: "", 
   subject: :stes, 
@@ -275,7 +275,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Ressourcerie", 
   description: "", 
   subject: :stes, 
@@ -285,7 +285,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Intercontinental", 
   description: "", 
   subject: :stes, 
@@ -295,7 +295,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Réseau UniC", 
   description: "", 
   subject: :stes, 
@@ -305,7 +305,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Lentille d’eau", 
   description: "", 
   subject: :stes, 
@@ -315,7 +315,7 @@ Project.create!(
 )
 
 Project.create!(
-  batch: batch,
+  batch: Batch.last,
   name: "Fenuama", 
   description: "", 
   subject: :stes, 
