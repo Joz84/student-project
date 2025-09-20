@@ -195,3 +195,131 @@
 #     evaluated: skill[1]
 #   )
 # end
+
+batch = Batch.create!(
+  title: "L-STES 2025-2026",
+  discord_server_id: "1418791289377390686",
+  discord_invite_url: "https://discord.gg/z3GmuyMb"
+) 
+
+ref = Referential.create!(
+  title: "L-STES 2025-2026", 
+  active: true,
+  batch: batch
+)
+
+skill_block_titles = [
+  "APPRENDRE POUR COMPRENDRE : Appréhender les enjeux liés aux Transitions de façon systémique",
+  "COMPRENDRE POUR AGIR : Acquérir les outils, les méthodes pour la conduite du changement",
+  "AGIR POUR CONSTUIRE : Se projeter vers son avenir personnel, professionnel et citoyen"
+]
+
+skill_block_titles.each_with_index do |title, index|
+  SkillBlock.create!(
+    title: title, 
+    position: index + 1,
+    referential: ref
+  )
+end
+
+skills = [
+  [ 1, 3, "En mobilisant les connaissances et les concepts fondamentaux pour la compréhension globale des Transitions"],
+  [ 1, 3, "En comprenant les enjeux des transitions spécifiques aux territoires multi-insulaires (risques et opportunités)."],
+  [ 1, 3, "En développant une vision transdisciplinaire et multiculturelle pour appréhender un système complexe"],
+  [ 1, 3, "En recherchant et en mobilisant diverses ressources de manière critique et contextualisée pour répondre à une problématique"],
+  [ 1, 3, "En identifiant la place des savoirs traditionnels dans la préservation de l’environnement"],
+  [ 1, 3, "En synthétisant des données pertinentes à des fins d’analyse et d’explication des phénomènes"],
+  [ 1, 3, "En analysant un cahier des charges, un bilan, un rapport d’études en mobilisant les concepts et les technologies/outils liés au développement durable et/ou à l’aménagement des territoires"],
+  [ 1, 3, "En appliquant une démarche prospective appliquée aux transitions dans les territoires multi-insulaires"],
+  [ 1, 3, "En évaluant les impacts sur le développement durable d’un produit, d’un service et/ou d’un projet de territoire"],
+  [ 2, 3, "En adoptant des pratiques de travail collaboratif et individuel pour mener les Transitions "],
+  [ 2, 3, "En s’exprimant et en communiquant à l’oral et à l’écrit dans un environnement multiculturel"],
+  [ 2, 3, "En concevant des projets et des actions adaptés aux besoins du territoire"],
+  [ 2, 3, "En conduisant et en gérant des projets liés aux transitions"],
+  [ 2, 3, "En élaborant des récits inspirants et des argumentaires convaincants"],
+  [ 2, 3, "En s’appropriant les outils d’aide à la décision (IA, BU, géomatique, Statistiques, bilan carbone...)"],
+  [ 3, 3, "En respectant les principes d’éthique, de déontologie et de responsabilité (sociale, environnementale…)"],
+  [ 3, 3, "En identifiant les champs professionnels à forte durabilité"],
+  [ 3, 3, "En approfondissant ses compétences en créativité, innovation, gestion de projet et entrepreneuriat"],
+  [ 3, 3, "En s'orientant dans le système des responsabilités au service de la durabilité"],
+  [ 3, 3, "En valorisant ses capacités spécifiques aux TEMMI au sein d’un réseau professionnel local ou international (stages, cv, prises de parole)"]
+]
+																																	
+skills.each_with_index do |skill, index|
+  Skill.create!(
+    title: skill[2], 
+    position: index + 1,
+    skill_block: SkillBlock.find_by(position: skill[0]), 
+    evaluated: skill[1]
+  )
+end
+
+Project.create!(
+  batch: batch,
+  name: "Cegelec", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "AOA Polynésien Forests", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "Ressourcerie", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "Intercontinental", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "Réseau UniC", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "Lentille d’eau", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
+
+Project.create!(
+  batch: batch,
+  name: "Fenuama", 
+  description: "", 
+  subject: :stes, 
+  max_booking: 1, 
+  author: 'Caroline DESBOIS-DALMON', 
+  active: true
+)
