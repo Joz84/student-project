@@ -31,7 +31,7 @@ class Team < ApplicationRecord
 
   def project_ratings
     div = users.kept.count.to_f * ((Project.count - 1) * 2 + 1) / 100
-    Project.all.map { |project|
+    user.batch.projects.all.map { |project|
       rating = project.ratings.where(user: users.kept).map(&:score).sum / div
       [project, rating.round(2)]
     }.to_h
