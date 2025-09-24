@@ -7,8 +7,8 @@ class Teacher::TeamsController < ApplicationController
       @batch = Batch.find(@batch_id)
       session[:batch_id] = @batch_id
       @teams = @teams
-        .joins(:project)
-        .where(projects: { batch_id: @batch_id })
+        .joins(:users)
+        .where(users: { batch_id: @batch_id })
         .distinct
         .kept
     end
