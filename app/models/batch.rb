@@ -23,7 +23,7 @@ class Batch < ApplicationRecord
 
   def scores_json
     project_count = projects.count
-    Rating.where( user: users.group_by{ |r| 
+    Rating.where( user: users).group_by{ |r| 
         ["#{r.user.slug}", "#{r.project.slug}"] 
       }.map{ |k, v| 
         [k, project_count - v.first.position + 1]}.to_h #.to_json

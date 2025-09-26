@@ -52,7 +52,7 @@ def viz(scores, assignations, html):
     if html == True:
         html_path = "assignations.html"
         with open(html_path, "w", encoding="utf-8") as f:
-            f.write(styler.to_html())
+            f.write(styler.render())
 
         print(f"Fichier HTML généré : {html_path}")
     
