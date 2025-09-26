@@ -48,6 +48,10 @@ class User < ApplicationRecord
     "#{first_name.capitalize} #{last_name.capitalize}"
   end
 
+  def slug
+    "#{id} -- #{to_s}"
+  end
+
   def cw_nickname_exist?(nickname=cw_nickname)
     code = 100
     begin

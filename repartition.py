@@ -8,10 +8,12 @@
 from ortools.linear_solver import pywraplp
 import math
 from typing import Dict, Iterable, Tuple, List, Optional, Set
+import json
+import ast 
 
 
 def solve_assignment(
-    scores: Dict[Tuple[str, str], float],
+    scores_json: str,
     students: Optional[Iterable[str]] = None,
     projects: Optional[Iterable[str]] = None,
     min_size: int = 3,
@@ -36,6 +38,9 @@ def solve_assignment(
       objective_value   : float                  (somme des notes)
     Lève ValueError si infaisable (ex: N ne peut pas être partitionné en [3..4]).
     """
+
+    tmp_dict = json.loads(scores_json)
+    scores = {tuple(ast.literal_eval(k)): v for k, v in tmp_dict.items()}
 
     # --- Déductions automatiques
     if students is None:
@@ -160,7 +165,7 @@ def solve_assignment(
         if (e, p) in scores
     )
 
-    return selected, assignment, final_score
+    return selected, assignment, final_score, scores
 
 
 # --------- EXEMPLE D'UTILISATION ---------

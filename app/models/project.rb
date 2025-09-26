@@ -15,6 +15,10 @@ class Project < ApplicationRecord
     teams.merge(Team.kept)
   end
 
+  def slug
+    "#{id} -- #{name}"
+  end
+
   def initialize_color
     r = rand(128..255)
     g = rand(128..255)

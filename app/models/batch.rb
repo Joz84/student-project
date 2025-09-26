@@ -13,5 +13,21 @@ class Batch < ApplicationRecord
     referentials.find_by(active: true)
   end
 
+  def project_slugs
+    projects.map(&:slug)
+  end
+
+  def user_slugs
+    users.map(&:slug)
+  end
+
+  def scores_json
+    project_count = projects.count
+    Rating.where( user: users.first(24) ).group_by{ |r| 
+        ["#{r.user.slug}", "#{r.project.slug}"] 
+      }.map{ |k, v| 
+        [k, project_count - v.first.position + 1]}.to_h #.to_json
+  end
+
 
 end
