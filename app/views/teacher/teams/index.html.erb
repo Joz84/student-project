@@ -113,7 +113,7 @@
           </div>
         </div>
         
-        <% @batch.teachers.joins(supervisions: { project: :teams }).distinct.each do |teacher| %>
+        <% @teachers.each do |teacher| %>
           <h4 class="mt-5">Professeur <%= teacher.last_name.capitalize %></h4>
           
           <% teacher.supervised_projects.where(batch: @batch).each do |project| %>

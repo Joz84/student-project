@@ -21,7 +21,7 @@ class Batch < ApplicationRecord
     users.map(&:slug)
   end
 
-  def scores_json
+  def scores
     project_count = projects.count
     Rating.where( user: users).group_by{ |r| 
         ["#{r.user.slug}", "#{r.project.slug}"] 

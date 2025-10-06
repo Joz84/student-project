@@ -11,6 +11,8 @@ class Teacher::TeamsController < ApplicationController
         .where(users: { batch_id: @batch_id })
         .distinct
         .kept
+      @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct
+      @teachers = @teachers.where(id: current_user.id) if !current_user.admin
     end
   end
 

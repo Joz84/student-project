@@ -254,72 +254,140 @@
 #   )
 # end
 
-Project.create!(
-  batch: Batch.last,
-  name: "Cegelec", 
-  description: "Cegelec",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Cegelec", 
+#   description: "Cegelec",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "AOA Polynésien Forests", 
-  description: "AOA Polynésien Forests",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "AOA Polynésien Forests", 
+#   description: "AOA Polynésien Forests",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "Ressourcerie", 
-  description: "Ressourcerie",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Ressourcerie", 
+#   description: "Ressourcerie",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "Intercontinental", 
-  description: "Intercontinental",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Intercontinental", 
+#   description: "Intercontinental",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "Réseau UniC", 
-  description: "Réseau UniC",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Réseau UniC", 
+#   description: "Réseau UniC",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "Lentille d’eau", 
-  description: "Lentille d’eau",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Lentille d’eau", 
+#   description: "Lentille d’eau",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
 
-Project.create!(
-  batch: Batch.last,
-  name: "Fenuama", 
-  description: "Fenuama",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Caroline DESBOIS-DALMON', 
-  active: true
-)
+# Project.create!(
+#   batch: Batch.last,
+#   name: "Fenuama", 
+#   description: "Fenuama",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Caroline DESBOIS-DALMON', 
+#   active: true
+# )
+
+# b = Batch.find_by(title: "LSPI 2025-2028")
+# b.update(discord_invite_url: "https://discord.gg/79d2K6CZ")
+
+# Project.create!(
+#   batch: 3,
+#   name: "BIOPACKAGING : Développement de matériaux BIO-SOURCES ET BIODEGRADABLE pour CONTENANT alimentaire en Polynésie", 
+#   description: "Contexte : La pollution plastique représente un enjeu environnemental majeur à l'échelle mondiale, particulièrement critique dans les écosystèmes insulaires fragiles comme la Polynésie française. Face à ce constat, une Loi du Pays (LOI DU PAYS n° 26-2024) a été votée pour interdire progressivement les contenants alimentaires à usage unique non dégradables à partir de 2026. Cela crée une urgence et un besoin de trouver des alternatives durables, locales et économiquement viables. Ce projet s'inscrit directement dans cette démarche en proposant une solution basée sur l'économie circulaire : valoriser des déchets agricoles ou autres ressources abondantes pour créer de la valeur, tout en répondant à un besoin essentiel de l'industrie alimentaire. Il donnera aux étudiants l'occasion de devenir des acteurs de l'innovation et du développement durable sur leur propre territoire.",  
+#   subject: :stes, 
+#   max_booking: 3, 
+#   author: 'Jeremy Yune', 
+#   active: true
+# )
+
+# [{:id=>342, :progress=>"booked"},
+#  {:id=>343, :progress=>"booked"},
+#  {:id=>302, :progress=>"booked"},
+#  {:id=>307, :progress=>"booked"},
+#  {:id=>316, :progress=>"booked"},
+#  {:id=>306, :progress=>"booked"},
+#  {:id=>318, :progress=>"booked"},
+#  {:id=>303, :progress=>"booked"},
+#  {:id=>304, :progress=>"booked"},
+#  {:id=>345, :progress=>"booked"},
+#  {:id=>321, :progress=>"booked"},
+#  {:id=>301, :progress=>"booked"},
+#  {:id=>305, :progress=>"booked"},
+#  {:id=>313, :progress=>"booked"},
+#  {:id=>320, :progress=>"booked"},
+#  {:id=>317, :progress=>"booked"},
+#  {:id=>326, :progress=>"booked"},
+#  {:id=>328, :progress=>"booked"},
+#  {:id=>309, :progress=>"booked"},
+#  {:id=>308, :progress=>"booked"},
+#  {:id=>332, :progress=>"booked"},
+#  {:id=>310, :progress=>"booked"},
+#  {:id=>319, :progress=>"booked"},
+#  {:id=>312, :progress=>"booked"},
+#  {:id=>314, :progress=>"booked"},
+#  {:id=>330, :progress=>"booked"},
+#  {:id=>329, :progress=>"booked"},
+#  {:id=>337, :progress=>"booked"},
+#  {:id=>331, :progress=>"booked"},
+#  {:id=>335, :progress=>"booked"},
+#  {:id=>334, :progress=>"booked"},
+#  {:id=>369, :progress=>"booked"},
+#  {:id=>339, :progress=>"booked"},
+#  {:id=>336, :progress=>"booked"},
+#  {:id=>341, :progress=>"booked"},
+#  {:id=>338, :progress=>"booked"},
+#  {:id=>340, :progress=>"booked"}]
+
+#  b_ids = [ 342, 343, 302, 307, 316, 306, 318, 303, 304, 345, 321, 301, 305, 313, 320, 317, 326, 328, 
+#    309, 308, 332, 310, 319, 312, 314, 330, 329, 337, 331, 335, 334, 369, 339, 336, 341, 338, 340]
+
+
+# b.projects
+# p = b.projects.find(46)
+# users= []
+
+# u = b.users.find_by(first_name: "")
+
+# users << u
+
+# t = Team.new(name: p.name, project: p, user: users.first)
+# t.save
+
+# users.each{|u| u.update(team: t)}
