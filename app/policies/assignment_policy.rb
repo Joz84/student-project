@@ -4,7 +4,7 @@ class AssignmentPolicy < ApplicationPolicy
   end
 
   def create?
-    record.team&.users&.include?(user)
+    record.team&.users&.include?(user) || user.teacher
   end
 
   class Scope < ApplicationPolicy::Scope
