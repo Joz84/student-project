@@ -9,6 +9,7 @@ class Teacher::TeamsController < ApplicationController
       @teams = @teams
         .joins(:users)
         .where(users: { batch_id: @batch_id })
+        .where.not(name: "En attente de projet")
         .distinct
         .kept
       @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct

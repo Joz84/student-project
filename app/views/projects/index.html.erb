@@ -40,7 +40,7 @@
             <% end %>
               <% current_user.ratings.order(:position).each do |rating| %>
               <div class="card height-rating w-100 p-3 mb-2" data-sortable-update-url="<%= rating_path(rating) %>">
-                <h6 class="text-center"><%= rating.project.name %></h6>
+                <h6 class="text-center"><%= rating.project.name.size > 40 ? "#{rating.project.name[0..40]}..." : rating.project.name %></h6>
               </div>
               <% end %>
             </div>
