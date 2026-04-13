@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
+ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -202,7 +202,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
     t.datetime "updated_at", null: false
     t.boolean "active"
     t.string "color"
-    t.bigint "batch_id", null: false
+    t.bigint "batch_id"
     t.index ["batch_id"], name: "index_projects_on_batch_id"
   end
 
@@ -263,7 +263,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
     t.string "trello_link"
     t.datetime "meeting_date"
     t.string "meeting_place"
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.index ["project_id"], name: "index_teams_on_project_id"
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
@@ -277,6 +277,17 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
     t.datetime "updated_at", null: false
     t.index ["course_id"], name: "index_tickets_on_course_id"
     t.index ["user_id"], name: "index_tickets_on_user_id"
+  end
+
+  create_table "user_skill_statuses", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "skill_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["skill_id"], name: "index_user_skill_statuses_on_skill_id"
+    t.index ["user_id", "skill_id"], name: "index_user_skill_statuses_on_user_id_and_skill_id", unique: true
+    t.index ["user_id"], name: "index_user_skill_statuses_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -299,7 +310,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
     t.datetime "reading_date"
     t.boolean "reading"
     t.string "exam_nickname"
-    t.bigint "batch_id", null: false
+    t.bigint "batch_id"
     t.boolean "drop", default: false
     t.index ["batch_id"], name: "index_users_on_batch_id"
     t.index ["email"], name: "index_users_on_email", unique: true
@@ -336,6 +347,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_09_06_051526) do
   add_foreign_key "teams", "users"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
+  add_foreign_key "user_skill_statuses", "skills"
+  add_foreign_key "user_skill_statuses", "users"
   add_foreign_key "users", "batches"
   add_foreign_key "users", "teams"
 end

@@ -9,7 +9,9 @@ Rails.application.routes.draw do
   patch '/update_card_position', to: 'cards#position', as: 'card_position'
 
   root to: 'pages#home'
-  resources :users, only: [:update]
+  resources :users, only: [:update] do
+    resources :user_skill_statuses, only: [:update], param: :skill_id
+  end
   resources :projects, only: [:index, :show]
   resources :ratings, only: [:update]
   #resources :cw_nicknames, only: [:edit, :update]

@@ -18,6 +18,182 @@
         </div>
       </div>
 
+      <h4 class="mt-5 mb-3">Score des membres</h4>
+      <% @users.each do |user| %>
+        <% scores = @skill_scores[user.id] %>
+        <% t_validated  = scores[:validated].values.sum %>
+        <% t_finalized  = scores[:finalized].values.sum %>
+        <% t_in_progress = scores[:in_progress].values.sum %>
+        <% total = t_validated + t_finalized + t_in_progress %>
+        <div class="mb-3">
+          <div class="d-flex align-items-center gap-3 mb-1">
+            <a class="fw-semibold text-decoration-none"
+               data-bs-toggle="collapse"
+               href="#skills-<%= user.id %>"
+               role="button"
+               aria-expanded="false">
+              <%= user.first_name %> <%= user.last_name %>
+            </a>
+            <div class="flex-grow-1">
+              <div class="progress" style="height: 20px;">
+                <div class="progress-bar bg-success"
+                     style="width: <%= (t_validated / @max_score * 100).round(1) %>%"
+                     title="<%= t_validated.round(2) %> sem. validées">
+                  <% if (t_validated / @max_score * 100) > 12 %>
+                    <%= t_validated.round(1) %>
+                  <% end %>
+                </div>
+                <div class="progress-bar bg-primary"
+                     style="width: <%= (t_finalized / @max_score * 100).round(1) %>%"
+                     title="<%= t_finalized.round(2) %> sem. finalisées">
+                  <% if (t_finalized / @max_score * 100) > 12 %>
+                    <%= t_finalized.round(1) %>
+                  <% end %>
+                </div>
+                <div class="progress-bar bg-primary bg-opacity-50"
+                     style="width: <%= (t_in_progress / @max_score * 100).round(1) %>%"
+                     title="<%= t_in_progress.round(2) %> sem. en cours">
+                  <% if (t_in_progress / @max_score * 100) > 12 %>
+                    <%= t_in_progress.round(1) %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-column small text-end" style="min-width: 160px;">
+              <span class="text-primary">
+                En cours&nbsp;: <strong><%= t_in_progress.round(2) %></strong> sem.
+              </span>
+              <span class="text-success">
+                Validées&nbsp;: <strong><%= t_validated.round(2) %></strong>&nbsp;/&nbsp;<%= @team_validated_weeks.round(2) %> sem.
+              </span>
+              <span class="text-dark">
+                Note&nbsp;:
+                <% note_weeks = scores[:note_total_weeks] %>
+                <% note = note_weeks > 0 ? (scores[:note_weighted_sum] / note_weeks).round(2) : nil %>
+                <strong><%= note ? "#{note} / 5" : '-' %></strong>
+              </span>
+            </div>
+          </div>
+
+          <div class="collapse mt-2" id="skills-<%= user.id %>">
+            <div class="card card-body py-3">
+              <div class="d-flex gap-3 mb-3 small">
+                <span><span style="color: #fd7e14; font-size: 1.1rem;">●</span> Découvert</span>
+                <span><span style="color: #ffc107; font-size: 1.1rem;">●</span> En cours d'acquisition</span>
+                <span><span style="color: #198754; font-size: 1.1rem;">●</span> Acquis</span>
+              </div>
+              <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Compétence</th>
+                    <th class="text-end">Semaines</th>
+                    <th class="text-center" style="width: 80px;">Niveau</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @skill_blocks.each do |skill_block| %>
+                    <% worked_skills = skill_block.skills.select { |s| (scores[:validated][s.id].to_f + scores[:finalized][s.id].to_f + scores[:in_progress][s.id].to_f) > 0 } %>
+                    <% next if worked_skills.empty? %>
+                    <tr class="table-secondary">
+                      <td colspan="3" class="fw-semibold small"><%= skill_block.position %>. <%= skill_block.title %></td>
+                    </tr>
+                    <% worked_skills.each do |skill| %>
+                      <% score = scores[:validated][skill.id].to_f + scores[:finalized][skill.id].to_f + scores[:in_progress][skill.id].to_f %>
+                      <% uss = @skill_statuses[[user.id, skill.id]] %>
+                      <% can_edit = current_user.teacher? || current_user == user %>
+                      <tr>
+                        <td class="small"><%= skill_block.position %>.<%= skill.position %> - <%= skill.title %></td>
+                        <td class="text-end small text-muted"><%= score > 0 ? score.round(2) : '-' %></td>
+                        <td class="text-center">
+                          <% current_status = uss&.status || 'none' %>
+                          <% if can_edit %>
+                            <div class="d-flex justify-content-center gap-1" data-user-id="<%= user.id %>" data-skill-id="<%= skill.id %>">
+                              <% [['discovered', '#fd7e14'], ['acquiring', '#ffc107'], ['acquired', '#198754']].each do |val, color| %>
+                                <span class="skill-status-dot"
+                                      data-value="<%= val %>"
+                                      data-url="<%= user_user_skill_status_path(user, skill.id) %>"
+                                      style="cursor: pointer; font-size: 1.2rem; color: <%= current_status == val ? color : '#dee2e6' %>;"
+                                      title="<%= val %>">●</span>
+                              <% end %>
+                            </div>
+                          <% else %>
+                            <% color = case current_status when 'discovered' then '#fd7e14' when 'acquiring' then '#ffc107' when 'acquired' then '#198754' else '#dee2e6' end %>
+                            <span style="color: <%= color %>; font-size: 1.2rem;">●</span>
+                          <% end %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+      <script>
+        document.querySelectorAll('.skill-status-dot').forEach(function(dot) {
+          dot.addEventListener('click', function() {
+            var container = dot.closest('[data-user-id]');
+            var url = dot.dataset.url;
+            var value = dot.dataset.value;
+            var colors = { discovered: '#fd7e14', acquiring: '#ffc107', acquired: '#198754' };
+
+            fetch(url, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+              },
+              body: JSON.stringify({ status: value })
+            }).then(function(r) { return r.json(); }).then(function(data) {
+              container.querySelectorAll('.skill-status-dot').forEach(function(d) {
+                d.style.color = d.dataset.value === data.status ? colors[data.status] : '#dee2e6';
+              });
+            });
+          });
+        });
+      </script>
+
+      <h4 class="mt-5 mb-3">Meetings de la team</h4>
+      <% if @meetings.any? %>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Lieu</th>
+              <th>Statut</th>
+              <th>Présences</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @meetings.each do |meeting| %>
+              <tr>
+                <td><%= meeting.date.strftime("%d/%m/%Y") %></td>
+                <td><%= meeting.place %></td>
+                <td>
+                  <% if meeting.past? %>
+                    <span class="badge bg-secondary">Passé</span>
+                  <% else %>
+                    <span class="badge bg-primary">À venir</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% meeting.presences.each do |presence| %>
+                    <span class="badge me-1
+                      <%= presence.present? ? 'bg-success' : presence.excused? ? 'bg-warning text-dark' : 'bg-danger' %>">
+                      <%= presence.user.first_name %>
+                    </span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-muted">Aucun meeting pour cette team.</p>
+      <% end %>
+
     </div>
   </div>
 </div>  

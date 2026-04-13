@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :tickets, dependent: :destroy 
   has_many :messages, dependent: :destroy 
   has_many :presences, dependent: :destroy
+  has_many :user_skill_statuses, dependent: :destroy
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :student_number, presence: true,
@@ -38,6 +39,40 @@ class User < ApplicationRecord
 
   def self.ransackable_attributes(auth_object = nil)
     ["admin", "avatar_color", "created_at", "cw_nickname", "email", "encrypted_password", "first_name", "id", "id_value", "last_name", "progress", "remember_created_at", "reset_password_sent_at", "reset_password_token", "student_number", "teacher", "team_id", "updated_at"]
+  end
+
+  VALIDATION_NOTES = { 'one' => 2, 'two' => 3, 'three' => 4, 'accepted' => 5 }.freeze
+
+  def skill_scores
+    result = { validated: Hash.new(0.0), finalized: Hash.new(0.0), in_progress: Hash.new(0.0),
+               note_weighted_sum: 0.0, note_total_weeks: 0.0 }
+    cards.includes(:card_skills, :assignments).each do |card|
+      weeks = case card.time_unit
+              when "jour(s)"    then card.time_estimate / 5.0
+              when "semaine(s)" then card.time_estimate
+              when "mois"       then card.time_estimate * 4.0
+              else 0.0
+              end
+      nb_users = card.assignments.size
+      next if nb_users.zero?
+      share = weeks / nb_users
+      category = if card.accepted?
+                   :validated
+                 elsif card.archived?
+                   :finalized
+                 else
+                   :in_progress
+                 end
+      card.card_skills.each do |card_skill|
+        result[category][card_skill.skill_id] += share
+      end
+      note = VALIDATION_NOTES[card.teacher_validation]
+      if note
+        result[:note_weighted_sum] += share * note
+        result[:note_total_weeks]  += share
+      end
+    end
+    result
   end
 
   def all_teams
