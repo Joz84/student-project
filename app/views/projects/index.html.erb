@@ -11,8 +11,8 @@
               <div class="d-flex justify-content-center mb-3">
                 <small class="text-grey text-center card w-50 bg-<%= project.subject.downcase %>"><i><%= project.subject.capitalize %></i></small>
               </div>
-              <p class="text-justify"><%= project.description %></p>
-              <%#= link_to "lien vers le drive", project.drive_link, target: "_blank" %>
+              <p class="text-justify"><%= truncate(project.description, length: 220, separator: " ") %></p>
+              <%= link_to "Voir le projet", project_path(project), class: "mt-auto" %>
             </div>
           </div>
         <% end %>
@@ -52,7 +52,7 @@
       <div class="container">
       <% if current_user.pending? %>
         <%= simple_form_for current_user do |f| %>
-          <%= f.input :team_id, :as => :hidden, :input_html => { :value => current_user.team.id }  %>
+          <%= f.input :team_id, :as => :hidden, :input_html => { :value => current_user.team&.id }  %>
           <%= f.input :progress, :as => :hidden, :input_html => { :value => :booked } %>
           <%= f.submit rank ? 'Valider ma liste' : 'Valider mon projet', data: {turbo_confirm: rank ? "Es tu sûr de vouloir valider ton classement? Celui-ci ne sera plus modifiable." : "Es tu sûr de vouloir valider ton projet? Celui-ci ne sera plus modifiable."}, class: "btn btn-danger text-white w-100" %>
         <% end %>

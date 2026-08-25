@@ -1,2 +1,36 @@
-<h1>Projects#show</h1>
-<p>Find me in app/views/projects/show.html.erb</p>
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+
+      <div class="my-4">
+        <%= link_to "← Retour aux projets", projects_path, class: "text-decoration-none" %>
+      </div>
+
+      <div class="card card-body p-4 mb-5">
+        <h2 class="text-center mb-3"><%= @project.name %></h2>
+
+        <div class="d-flex justify-content-center mb-4">
+          <small class="text-grey text-center card px-3 py-1 bg-<%= @project.subject.downcase %>">
+            <i><%= @project.subject.capitalize %></i>
+          </small>
+        </div>
+
+        <% if @project.author.present? %>
+          <p class="text-center text-grey mb-4"><i>Proposé par <%= @project.author %></i></p>
+        <% end %>
+
+        <div class="text-justify">
+          <%= simple_format @project.description %>
+        </div>
+
+        <% if @project.drive_link.present? %>
+          <div class="mt-4">
+            <%= link_to "Fiche complète du projet", @project.drive_link, target: "_blank",
+                        class: "btn btn-primary text-white" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>
