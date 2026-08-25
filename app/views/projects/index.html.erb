@@ -20,20 +20,21 @@
       </div>
     </div>
     <div class="col-md-3 bg-primary page-min-height pb-5">
-      <h2 class="text-center text-white my-5">Ton classement</h2>
+      <% rank = current_user.must_rank_projects? %>
+      <h2 class="text-center text-white my-5"><%= rank ? "Ton classement" : "Ton projet" %></h2>
       <div class="container">
         <div class="row g-0">
-          <div class="col-2">
-            <% current_user.ratings.order(:position).each do |rating| %>
-              <div class="card mb-2 height-rating d-flex justify-content-center align-items-center">
-                <h6><%= rating.position %></h6>
-              </div>
-            <% end %>
-
-
-          </div>
-          <div class="col-10">
-            <% if current_user.pending? %>
+          <% if rank %>
+            <div class="col-2">
+              <% current_user.ratings.order(:position).each do |rating| %>
+                <div class="card mb-2 height-rating d-flex justify-content-center align-items-center">
+                  <h6><%= rating.position %></h6>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="<%= rank ? "col-10" : "col-12" %>">
+            <% if current_user.pending? && rank %>
               <div data-controller="sortable" data-sortable-animation-value="150" data-sortable-resource-name-value="rating"> <%# data-controller="dragndrop" data-dragndrop-target="ratings" %>
             <% else %>
               <div>
@@ -53,11 +54,11 @@
         <%= simple_form_for current_user do |f| %>
           <%= f.input :team_id, :as => :hidden, :input_html => { :value => current_user.team.id }  %>
           <%= f.input :progress, :as => :hidden, :input_html => { :value => :booked } %>
-          <%= f.submit 'Valider ma liste', data: {turbo_confirm: "Es tu sûr de vouloir valider ton classemnt? Celui-ci ne sera plus modifiable."}, class: "btn btn-danger text-white w-100" %>
+          <%= f.submit rank ? 'Valider ma liste' : 'Valider mon projet', data: {turbo_confirm: rank ? "Es tu sûr de vouloir valider ton classement? Celui-ci ne sera plus modifiable." : "Es tu sûr de vouloir valider ton projet? Celui-ci ne sera plus modifiable."}, class: "btn btn-danger text-white w-100" %>
         <% end %>
         <% else %>
         <div class="card p-3 btn-supp">
-          <p>Ton classement est validé et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
+          <p><%= rank ? "Ton classement est validé" : "Ton projet est validé" %> et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
         </div>
         <% end %>
       </div>

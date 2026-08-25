@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :users, only: [:update] do
     resources :user_skill_statuses, only: [:update], param: :skill_id
   end
+  resource :speciality, only: [:edit, :update]
   resources :projects, only: [:index, :show]
   resources :ratings, only: [:update]
   #resources :cw_nicknames, only: [:edit, :update]

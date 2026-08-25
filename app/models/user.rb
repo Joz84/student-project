@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   belongs_to :batch #, optional: true # remove after migration
   belongs_to :team, optional: true
+  belongs_to :speciality, optional: true
   has_many :teams, dependent: :destroy  #as team leader
   has_many :ratings, dependent: :destroy 
   has_many :supervisions
@@ -26,7 +27,8 @@ class User < ApplicationRecord
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
   before_create :initialize_avatar_color
-  after_create :create_ratings
+  after_create :sync_ratings!
+  after_update :sync_ratings!, if: :saved_change_to_speciality_id?
 
   enum progress: [ :pending, :booked ]
 
@@ -34,11 +36,11 @@ class User < ApplicationRecord
 
 
   def self.ransackable_associations(auth_object = nil)
-    ["assignments", "attempts", "cards", "ratings", "supervisions", "team", "tickets"]
+    ["assignments", "attempts", "cards", "ratings", "speciality", "supervisions", "team", "tickets"]
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["admin", "avatar_color", "created_at", "cw_nickname", "email", "encrypted_password", "first_name", "id", "id_value", "last_name", "progress", "remember_created_at", "reset_password_sent_at", "reset_password_token", "student_number", "teacher", "team_id", "updated_at"]
+    ["admin", "avatar_color", "created_at", "cw_nickname", "email", "encrypted_password", "first_name", "id", "id_value", "last_name", "progress", "remember_created_at", "reset_password_sent_at", "reset_password_token", "speciality_id", "student_number", "teacher", "team_id", "updated_at"]
   end
 
   VALIDATION_NOTES = { 'one' => 2, 'two' => 3, 'three' => 4, 'accepted' => 5 }.freeze
@@ -73,6 +75,38 @@ class User < ApplicationRecord
       end
     end
     result
+  end
+
+  # L'étudiant doit répondre à la page de choix tant qu'il n'a rien répondu.
+  # "Indécis" est une spécialité à part entière : y répondre suffit à ne plus être renvoyé ici.
+  def must_choose_speciality?
+    speciality_id.nil? && batch.specialities.any?
+  end
+
+  # Les projets sur lesquels l'étudiant peut être affecté.
+  def eligible_projects
+    return batch.projects if batch.specialities.none?
+    return Project.none if speciality.nil?
+    speciality.eligible_projects
+  end
+
+  # Une filière à projet unique (les Maths) n'a rien à classer.
+  def must_rank_projects?
+    eligible_projects.count > 1
+  end
+
+  # Aligne les Rating sur les projets réellement accessibles. Rejoué à chaque
+  # changement de spécialité ; le classement est réouvert si l'offre a bougé.
+  def sync_ratings!
+    eligible_ids = eligible_projects.pluck(:id)
+    obsolete = ratings.where.not(project_id: eligible_ids)
+    changed = obsolete.any?
+    obsolete.destroy_all
+    missing = eligible_ids - ratings.pluck(:project_id)
+    changed ||= missing.any?
+    missing.each { |project_id| ratings.create(project_id: project_id) }
+    update_column(:progress, User.progresses[:pending]) if changed && booked?
+    changed
   end
 
   def all_teams
@@ -175,14 +209,6 @@ class User < ApplicationRecord
   end
 
   private
-
-  def create_ratings
-    Project.where(batch: self.batch).map(&:id).each do |project_id|
-      Rating.create(
-        project_id: project_id, 
-        user: self)
-    end
-  end
 
   def initialize_avatar_color
     r = rand(128..255)

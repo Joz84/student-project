@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
+ActiveRecord::Schema[7.1].define(version: 2026_08_24_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -191,6 +191,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
     t.index ["user_id"], name: "index_presences_on_user_id"
   end
 
+  create_table "project_specialities", force: :cascade do |t|
+    t.bigint "project_id", null: false
+    t.bigint "speciality_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "speciality_id"], name: "index_project_specialities_on_project_id_and_speciality_id", unique: true
+    t.index ["project_id"], name: "index_project_specialities_on_project_id"
+    t.index ["speciality_id"], name: "index_project_specialities_on_speciality_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -242,6 +252,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["skill_block_id"], name: "index_skills_on_skill_block_id"
+  end
+
+  create_table "specialities", force: :cascade do |t|
+    t.bigint "batch_id", null: false
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.integer "position"
+    t.bigint "parent_id"
+    t.integer "project_access", default: 0, null: false
+    t.boolean "exclusive_groups", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_id", "slug"], name: "index_specialities_on_batch_id_and_slug", unique: true
+    t.index ["batch_id"], name: "index_specialities_on_batch_id"
+    t.index ["parent_id"], name: "index_specialities_on_parent_id"
   end
 
   create_table "supervisions", force: :cascade do |t|
@@ -312,9 +337,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
     t.string "exam_nickname"
     t.bigint "batch_id"
     t.boolean "drop", default: false
+    t.bigint "speciality_id"
     t.index ["batch_id"], name: "index_users_on_batch_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["speciality_id"], name: "index_users_on_speciality_id"
     t.index ["team_id"], name: "index_users_on_team_id"
   end
 
@@ -335,12 +362,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
   add_foreign_key "messages", "users"
   add_foreign_key "presences", "meetings"
   add_foreign_key "presences", "users"
+  add_foreign_key "project_specialities", "projects"
+  add_foreign_key "project_specialities", "specialities"
   add_foreign_key "projects", "batches"
   add_foreign_key "ratings", "projects"
   add_foreign_key "ratings", "users"
   add_foreign_key "referentials", "batches"
   add_foreign_key "skill_blocks", "referentials"
   add_foreign_key "skills", "skill_blocks"
+  add_foreign_key "specialities", "batches"
+  add_foreign_key "specialities", "specialities", column: "parent_id"
   add_foreign_key "supervisions", "projects"
   add_foreign_key "supervisions", "users"
   add_foreign_key "teams", "projects"
@@ -350,5 +381,6 @@ ActiveRecord::Schema[7.1].define(version: 2026_04_13_121325) do
   add_foreign_key "user_skill_statuses", "skills"
   add_foreign_key "user_skill_statuses", "users"
   add_foreign_key "users", "batches"
+  add_foreign_key "users", "specialities"
   add_foreign_key "users", "teams"
 end

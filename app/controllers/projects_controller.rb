@@ -10,6 +10,8 @@ class ProjectsController < ApplicationController
     authorize Project.new
     if current_user.teacher
       redirect_to teacher_teams_path
+    elsif current_user.must_choose_speciality?
+      redirect_to edit_speciality_path
     elsif current_user.team_id.nil?
       #redirect_to new_team_path
       current_user.update(team: Team.find_by(name: "En attente de projet"))

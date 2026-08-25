@@ -551,3 +551,28 @@ En vue de mutualiser les compétences des SPI et des STES, et à partir de l’�
 end
 
 Team.create!(name: "En attente de projet", user: User.find_by(email: "jonathan.serafini@gmail.com"))
+
+####################
+# Spécialités (par promo)
+#
+# "Indécis" est une spécialité à part entière : y répondre suffit à ne plus être
+# renvoyé sur la page de choix. Elle n'est jamais taggée sur un projet, son accès
+# est porté par project_access: :all_projects.
+# PEIP n'a pas de projet propre : parent = SI, donc il hérite des projets taggés SI.
+# Une promo sans spécialité garde le comportement actuel (tous les projets, pas de
+# page de choix).
+
+# batch = Batch.last
+
+# maths = Speciality.create!(batch: batch, name: "Spécialité Mathématiques", slug: "maths", position: 1)
+# si    = Speciality.create!(batch: batch, name: "Spécialité Sciences pour l'ingénieur", slug: "si", position: 2)
+# peip  = Speciality.create!(batch: batch, name: "PEIP", slug: "peip", position: 3,
+#                            parent: si, exclusive_groups: true)
+#         Speciality.create!(batch: batch, name: "Je n'ai pas encore choisi ma spécialité",
+#                            slug: "undecided", position: 4, project_access: :all_projects)
+
+# Tagging des projets : seuls maths et si sont attachés à des projets.
+# Le nombre d'équipes qu'un projet peut accueillir se règle sur project.max_booking
+# (un projet Maths unique portant plusieurs groupes de 3-4 → max_booking élevé).
+# batch.projects.find(XX).update!(specialities: [maths], max_booking: 4)
+# batch.projects.find(YY).update!(specialities: [si])

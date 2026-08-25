@@ -2,6 +2,8 @@ class Project < ApplicationRecord
   belongs_to :batch #, optional: true # remove after migration
   has_many :teams
   has_many :ratings
+  has_many :project_specialities, dependent: :destroy
+  has_many :specialities, through: :project_specialities
   has_many :supervisions
   has_many :teachers, through: :supervisions, source: :user
   validates :name, presence: true

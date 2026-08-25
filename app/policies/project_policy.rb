@@ -6,7 +6,7 @@ class ProjectPolicy < ApplicationPolicy
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve
-      scope.where(batch: user.batch)
+      scope.where(id: user.eligible_projects)
     end
   end
 end
