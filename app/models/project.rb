@@ -9,7 +9,7 @@ class Project < ApplicationRecord
   validates :name, presence: true
   validates :description, presence: true
 
-  enum subject: [ :physique, :chimie, :stes ]
+  enum subject: [ :physique, :chimie, :stes, :maths ]
 
   before_create :initialize_color
 
