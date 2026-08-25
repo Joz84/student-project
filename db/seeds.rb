@@ -396,22 +396,184 @@
 ####################
 
 
+# batch = Batch.create!(
+#   title: "L1-STES 2025-2026",
+#   discord_server_id: "1418791289377390686",
+#   discord_invite_url: "https://discord.gg/z3GmuyMb"
+# ) 
+
+# ref = Referential.create!(
+#   title: "L1-STES 2025-2026", 
+#   active: true,
+#   batch: batch
+# )
+
+# skill_block_titles = [
+#   "APPRENDRE POUR COMPRENDRE : Appréhender les enjeux liés aux Transitions de façon systémique",
+#   "COMPRENDRE POUR AGIR : Acquérir les outils, les méthodes pour la conduite du changement",
+#   "AGIR POUR CONSTUIRE : Se projeter vers son avenir personnel, professionnel et citoyen"
+# ]
+
+# skill_block_titles.each_with_index do |title, index|
+#   SkillBlock.create!(
+#     title: title, 
+#     position: index + 1,
+#     referential: ref
+#   )
+# end
+
+# skills = [
+#   [ 1, 3, "En mobilisant les connaissances et les concepts fondamentaux pour la compréhension globale des Transitions"],
+#   [ 1, 3, "En comprenant les enjeux des transitions spécifiques aux territoires multi-insulaires (risques et opportunités)."],
+#   [ 1, 3, "En développant une vision transdisciplinaire et multiculturelle pour appréhender un système complexe"],
+#   [ 1, 3, "En recherchant et en mobilisant diverses ressources de manière critique et contextualisée pour répondre à une problématique"],
+#   [ 1, 3, "En identifiant la place des savoirs traditionnels dans la préservation de l’environnement"],
+#   [ 1, 3, "En synthétisant des données pertinentes à des fins d’analyse et d’explication des phénomènes"],
+#   [ 1, 3, "En analysant un cahier des charges, un bilan, un rapport d’études en mobilisant les concepts et les technologies/outils liés au développement durable et/ou à l’aménagement des territoires"],
+#   [ 1, 3, "En appliquant une démarche prospective appliquée aux transitions dans les territoires multi-insulaires"],
+#   [ 1, 3, "En évaluant les impacts sur le développement durable d’un produit, d’un service et/ou d’un projet de territoire"],
+#   [ 2, 3, "En adoptant des pratiques de travail collaboratif et individuel pour mener les Transitions "],
+#   [ 2, 3, "En s’exprimant et en communiquant à l’oral et à l’écrit dans un environnement multiculturel"],
+#   [ 2, 3, "En concevant des projets et des actions adaptés aux besoins du territoire"],
+#   [ 2, 3, "En conduisant et en gérant des projets liés aux transitions"],
+#   [ 2, 3, "En élaborant des récits inspirants et des argumentaires convaincants"],
+#   [ 2, 3, "En s’appropriant les outils d’aide à la décision (IA, BU, géomatique, Statistiques, bilan carbone...)"],
+#   [ 3, 3, "En respectant les principes d’éthique, de déontologie et de responsabilité (sociale, environnementale…)"],
+#   [ 3, 3, "En identifiant les champs professionnels à forte durabilité"],
+#   [ 3, 3, "En approfondissant ses compétences en créativité, innovation, gestion de projet et entrepreneuriat"],
+#   [ 3, 3, "En s'orientant dans le système des responsabilités au service de la durabilité"],
+#   [ 3, 3, "En valorisant ses capacités spécifiques aux TEMMI au sein d’un réseau professionnel local ou international (stages, cv, prises de parole)"]
+# ]
+																																	
+# skills.each_with_index do |skill, index|
+#   Skill.create!(
+#     title: skill[2], 
+#     position: index + 1,
+#     skill_block: SkillBlock.find_by(position: skill[0], referential: Referential.last), 
+#     evaluated: skill[1]
+#   )
+# end
+
+# p1 = Project.create!(
+#   batch: Batch.last,
+#   name: "Réalisation d'une boite pédagogique (ou d'un livret d'information) sur le compostage en Polynésie", 
+#   description: "Depuis plusieurs années, Nīnamu Solutions mène des actions de sensibilisation et de formation au compostage en Polynésie, notamment auprès des écoles, des associations et des collectivités. Ces expériences de terrain ont mis en évidence un réel intérêt pour la thématique du compostage, mais aussi un manque d’outils pédagogiques ludiques, concrets et réellement adaptés au contexte polynésien.
+# L’objectif de ce projet est donc de réfléchir à la création d’une boîte pédagogique sur le compostage, pensée comme un outil clé en main, utilisable par des personnes formées, afin de faciliter et de multiplier les actions de sensibilisation sur le territoire.
+# ",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Ninamu Solutions', 
+#   active: true
+# )
+
+# p2 = Project.create!(
+#   batch: Batch.last,
+#   name: "Rechargement Solaire des Véhicules Electriques : Installation de panneaux photovoltaïques sur le parking du personnel de l’UPF ", 
+#   description: "
+#     Ce projet s’inscrit dans la démarche de transition énergétique portée par l’UPF. Il vise à contribuer à la décarbonation des trajets domicile-travail du personnel de l’université. En effet, l’UPF compte plus de XXX salariés qui se rendent quotidiennement sur le campus, ce qui pèse significativement sur son bilan carbone. Plusieurs agents pourraient souhaiter s’engager dans cette transition en investissant dans un véhicule électrique. Toutefois, l’intérêt environnemental de ce dernier n’est pleinement réalisé que lorsqu’il est alimenté par une énergie renouvelable. Or, le personnel étant présent sur le campus durant la journée, la recharge des véhicules s’effectue le plus souvent le soir à domicile, sur un réseau encore majoritairement alimenté par des centrales au fioul, ce qui en limite fortement l’impact positif.
+#   ",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'UPF', 
+#   active: true
+# )
+
+# p3 = Project.create!(
+#   batch: Batch.last,
+#   name: "Accompagner l’entreprise dans la sensibilisation de son personnel aux transitions et la promotion de pratiques durables, en s’appuyant sur les résultats de l’audit RSE AFNOR et les enjeux climatiques en Polynésie française.", 
+#   description: "Dans une dynamique de transition environnementale et sociétale, Cegelec Polynésie souhaite renforcer sa culture interne autour des enjeux du développement durable. À la suite de son dernier audit RSE réalisé par le Label Engagé AFNOR, l’entreprise a identifié des leviers d’amélioration et des points forts à pérenniser. Ce projet tutoré s’inscrit dans cette volonté de transformation, en mobilisant les étudiants autour d’une mission concrète : accompagner l’entreprise dans la sensibilisation de ses collaborateurs aux transitions, tout en valorisant ses engagements et en favorisant l’émergence de pratiques durables au quotidien.",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Cegelec', 
+#   active: true
+# )
+
+# p4 = Project.create!(
+#   batch: Batch.last,
+#   name: "Organisation d’une journée technique agronomique & REX destiné aux agriculteurs clients potentiels", 
+#   description: "Dans le cadre du projet d’« essais agronomiques » portés par TECHNIVAL, il est prévu l’organisation de journées techniques : visite des installations de valorisation des déchets verts de TECHNIVAL, visite d’une exploitation agricole partenaire, temps d’échanges…",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'Technival', 
+#   active: true
+# )
+
+# p5 = Project.create!(
+#   batch: Batch.last,
+#   name: "Réalisation de capsules video de témoignages de porteurs de projets sur la possibilité d’intégrer de manière simple et accessible, des actions écoresponsables dans leur activité professionnelle ", 
+#   description: "Dans un monde où la transition écologique devient un enjeu majeur, il est essentiel d’accompagner les professionnels vers des pratiques plus durables. 
+# Ce projet vise à réaliser des capsules vidéos d’interviews par lequel les entrepreneurs témoigneront la possibilité d’intégrer des actions écoresponsables dans leur activité professionnelle de manière simple et accessible. 
+# L’objectif est d’offrir un accompagnement pertinent et concret, permettant aux professionnels de mieux comprendre les enjeux environnementaux et d’agir efficacement dans leur domaine.
+# ",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'ADIE', 
+#   active: true
+# )
+
+# p6 = Project.create!(
+#   batch: Batch.last,
+#   name: "Préparation Semaine d'intégration ", 
+#   description: "La rentrée à l’université est un moment crucial pour tout nouveau bachelier. La semaine d’intégration a pour vocation de faciliter l’entrée des nouveaux étudiants en première année de la licence STES, avec ses deux parcours, de créer de la cohésion au sein des promotions et de renforcer leur insertion sociale dans le campus. C’est également – et avant tout – l’occasion pour eux d’avoir une première approche, par la pratique, des grands défis environnementaux et sociaux ainsi que des 17 ODD de l’ONU. ",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'UPF', 
+#   active: true
+# )
+
+# p7 = Project.create!(
+#   batch: Batch.last,
+#   name: "Nudger tri sélectif à l'UPF", 
+#   description: "Le tri des déchets n’est pas effectué actuellement par les étudiants sur le campus, l’objectif est de dynamiser cette pratique en mettant en place de nouveaux affichages inspirés de la théorie de la rationalité limitée.",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'UPF', 
+#   active: true
+# )
+
+# p8 = Project.create!(
+#   batch: Batch.last,
+#   name: "Mesurer l'acceptabilité d’une solution technique qui rendrait potable et bénéfique à la consommation l’eau présente dans les atolls  (Lentille eau/SPI)", 
+#   description: "La licence SPI, comme la licence STES, intègre la méthodologie projet et les projets étudiants dans ses enseignements. En partenariat avec le groupe d’écoles Polytech, les étudiants L1 SPI mènent un projet visant à améliorer des systèmes existant d’osmoseurs afin de pouvoir les utiliser dans les atolls afin et rendre potable et favorable à la consommation (donc également suffisamment minéralisée) l’eau présente sur site. 
+# Les étudiants de L1 SPI ont commencé en S1 à faire un état lieu de l’existant technique et des potentiels.
+# En vue de mutualiser les compétences des SPI et des STES, et à partir de l’état des lieux réalisé par la SPI, il est proposé un groupe de L1 STES de mesurer l’acceptabilité des populations ciblées pour une solution de transformation de l’eau présente dans les atolls afin de la rendre potable. ",  
+#   subject: :stes, 
+#   max_booking: 1, 
+#   author: 'UPF', 
+#   active: true
+# )
+
+# [p2, p3, p4, p5, p6, p7, p8].each do |p|
+#   Supervision.create!(
+#     project: p,
+#     user: User.find_by(email: "jonathan.serafini@gmail.com")
+#   )
+# end
+
+# Team.create!(name: "En attente de projet", user: User.find_by(email: "jonathan.serafini@gmail.com"))
+
 batch = Batch.create!(
-  title: "L1-STES 2025-2026",
-  discord_server_id: "1418791289377390686",
-  discord_invite_url: "https://discord.gg/z3GmuyMb"
-) 
+  title: "LSPI 2026-2029",
+  discord_server_id: "1412629379552641037",
+  discord_invite_url: "https://discord.gg/79d2K6CZ"
+)
 
 ref = Referential.create!(
-  title: "L1-STES 2025-2026", 
+  title: "LSPI-1 2026-2029", 
   active: true,
   batch: batch
 )
 
 skill_block_titles = [
-  "APPRENDRE POUR COMPRENDRE : Appréhender les enjeux liés aux Transitions de façon systémique",
-  "COMPRENDRE POUR AGIR : Acquérir les outils, les méthodes pour la conduite du changement",
-  "AGIR POUR CONSTUIRE : Se projeter vers son avenir personnel, professionnel et citoyen"
+  "Identification d'un questionnement au sein d'un champ disciplinaire",
+  "Analyse d'un questionnement en mobilisant des concepts disciplinaires",
+  "Mise en œuvre de méthodes et d'outils du champ disciplinaire",
+  "Usages digitaux et numériques",
+  "Exploitation de données à des fins d'analyse",
+  "Expression et communication écrites et orales",
+  "Positionnement vis-à-vis d'un champ professionnel",
+  "Action en responsabilité au sein d'une organisation professionnelle",
+  "Approches durables des techniques"
 ]
 
 skill_block_titles.each_with_index do |title, index|
@@ -423,156 +585,310 @@ skill_block_titles.each_with_index do |title, index|
 end
 
 skills = [
-  [ 1, 3, "En mobilisant les connaissances et les concepts fondamentaux pour la compréhension globale des Transitions"],
-  [ 1, 3, "En comprenant les enjeux des transitions spécifiques aux territoires multi-insulaires (risques et opportunités)."],
-  [ 1, 3, "En développant une vision transdisciplinaire et multiculturelle pour appréhender un système complexe"],
-  [ 1, 3, "En recherchant et en mobilisant diverses ressources de manière critique et contextualisée pour répondre à une problématique"],
-  [ 1, 3, "En identifiant la place des savoirs traditionnels dans la préservation de l’environnement"],
-  [ 1, 3, "En synthétisant des données pertinentes à des fins d’analyse et d’explication des phénomènes"],
-  [ 1, 3, "En analysant un cahier des charges, un bilan, un rapport d’études en mobilisant les concepts et les technologies/outils liés au développement durable et/ou à l’aménagement des territoires"],
-  [ 1, 3, "En appliquant une démarche prospective appliquée aux transitions dans les territoires multi-insulaires"],
-  [ 1, 3, "En évaluant les impacts sur le développement durable d’un produit, d’un service et/ou d’un projet de territoire"],
-  [ 2, 3, "En adoptant des pratiques de travail collaboratif et individuel pour mener les Transitions "],
-  [ 2, 3, "En s’exprimant et en communiquant à l’oral et à l’écrit dans un environnement multiculturel"],
-  [ 2, 3, "En concevant des projets et des actions adaptés aux besoins du territoire"],
-  [ 2, 3, "En conduisant et en gérant des projets liés aux transitions"],
-  [ 2, 3, "En élaborant des récits inspirants et des argumentaires convaincants"],
-  [ 2, 3, "En s’appropriant les outils d’aide à la décision (IA, BU, géomatique, Statistiques, bilan carbone...)"],
-  [ 3, 3, "En respectant les principes d’éthique, de déontologie et de responsabilité (sociale, environnementale…)"],
-  [ 3, 3, "En identifiant les champs professionnels à forte durabilité"],
-  [ 3, 3, "En approfondissant ses compétences en créativité, innovation, gestion de projet et entrepreneuriat"],
-  [ 3, 3, "En s'orientant dans le système des responsabilités au service de la durabilité"],
-  [ 3, 3, "En valorisant ses capacités spécifiques aux TEMMI au sein d’un réseau professionnel local ou international (stages, cv, prises de parole)"]
+  [ 1, 3, "Identifier les principales familles de matériaux et leurs propriétés."],
+  [ 1, 3, "Mobiliser des concepts en mathématiques, en physique, en chimie, en thermodynamique, afin d'aborder des problèmes spécifiques aux différents domaines industriels."],
+  [ 2, 3, "Identifier le rôle et le champ d'application des sciences pour l'ingénieur dans tous les secteurs : milieux naturels, milieux industriels, transports, environnements urbains, etc."],
+  [ 3, 3, "Valider un modèle par comparaison de ses prévisions aux résultats expérimentaux et apprécier ses limites de validité."],
+  [ 3, 3, "Mobiliser les outils mathématiques nécessaires à la modélisation."],
+  [ 3, 3, "Estimer les ordres de grandeur et manipuler correctement les unités."],
+  [ 3, 3, "Intégrer une vision correcte de l'espace et de ses représentations."],
+  [ 3, 3, "Isoler un système."],
+  [ 3, 3, "Mettre en œuvre des techniques d'algorithmique et de programmation, notamment pour développer des applications simples d'acquisition et de traitements de données."],
+  [ 4, 3, "Utiliser les outils numériques de référence et les règles de sécurité informatique pour acquérir, traiter, produire et diffuser de l'information ainsi que pour collaborer en interne et en externe."],
+  [ 5, 3, "Identifier, sélectionner et analyser avec esprit critique diverses ressources dans son domaine de spécialité pour documenter un sujet et synthétiser ces données en vue de leur exploitation."],
+  [ 5, 3, "Analyser et synthétiser des données en vue de leur exploitation."],
+  [ 5, 3, "Développer une argumentation avec esprit critique."],
+  [ 6, 3, "Se servir aisément des différents registres d'expression écrite et orale de la langue française."],
+  [ 6, 0, "Communiquer par oral et par écrit, de façon claire et non-ambiguë, dans au moins une langue étrangère."],
+  [ 7, 3, "Identifier et situer les champs professionnels potentiellement en relation avec les acquis de la mention ainsi que les parcours possibles pour y accéder."],
+  [ 7, 3, "Caractériser et valoriser son identité, ses compétences et son projet professionnel en fonction d'un contexte."],
+  [ 7, 3, "Identifier le processus de production, de diffusion et de valorisation des savoirs."],
+  [ 8, 3, "Situer son rôle et sa mission au sein d'une organisation pour s'adapter et prendre des initiatives."],
+  [ 8, 3, "Respecter les principes d'éthique, de déontologie et de responsabilité environnementale."],
+  [ 8, 3, "Travailler en équipe et en réseau ainsi qu'en autonomie et responsabilité au service d'un projet."],
+  [ 8, 3, "Analyser ses actions en situation professionnelle, s'autoévaluer pour améliorer sa pratique."],
+  [ 8, 3, "S'appuyer sur la pensée critique et faire preuve de réflexivité."],
+  [ 9, 3, "Être en mesure d'évaluer et identifier des solutions pour réduire les impacts environnementaux des techniques."],
+  [ 9, 3, "Articuler les savoir-faire de différents champs disciplinaires dans un contexte de décision ou d'action."],
+  [ 9, 3, "Maîtriser les outils d'évaluation multicritères et transformer les outils existants."],
+  [ 9, 3, "Adopter une approche systémique."],
+  [ 9, 3, "Comprendre les scénarios existants et être capable d'engager une démarche prospective."],
+  [ 9, 3, "Tenir compte des risques et incertitudes dans les scénarios."]
 ]
 																																	
-skills.each_with_index do |skill, index|
-  Skill.create!(
-    title: skill[2], 
-    position: index + 1,
-    skill_block: SkillBlock.find_by(position: skill[0], referential: Referential.last), 
-    evaluated: skill[1]
-  )
+skills.group_by(&:first).each do |block_position, block_skills|
+  block = SkillBlock.find_by(position: block_position, referential: ref)
+  block_skills.each_with_index do |(_, evaluated, title), index|
+    Skill.create!(
+      title: title.strip,
+      position: index + 1,
+      skill_block: block,
+      evaluated: evaluated
+    )
+  end
 end
 
-p1 = Project.create!(
-  batch: Batch.last,
-  name: "Réalisation d'une boite pédagogique (ou d'un livret d'information) sur le compostage en Polynésie", 
-  description: "Depuis plusieurs années, Nīnamu Solutions mène des actions de sensibilisation et de formation au compostage en Polynésie, notamment auprès des écoles, des associations et des collectivités. Ces expériences de terrain ont mis en évidence un réel intérêt pour la thématique du compostage, mais aussi un manque d’outils pédagogiques ludiques, concrets et réellement adaptés au contexte polynésien.
-L’objectif de ce projet est donc de réfléchir à la création d’une boîte pédagogique sur le compostage, pensée comme un outil clé en main, utilisable par des personnes formées, afin de faciliter et de multiplier les actions de sensibilisation sur le territoire.
-",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Ninamu Solutions', 
+projects = []
+
+projects << Project.create!(
+  batch: batch,
+  name: "Totem", 
+  description: "Réalisation d'un boîtier de collecte de données sur un support (totem) pour évaluer la
+performance de bâtiments portant sur les conditions de confort, la qualité de l'air (IAQ), la santé
+cognitive des occupants et les consommations électriques. Ce totem sera basé sur l'utilisation de
+technologies (capteurs, contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Franck Lucas', 
   active: true
 )
 
-p2 = Project.create!(
-  batch: Batch.last,
-  name: "Rechargement Solaire des Véhicules Electriques : Installation de panneaux photovoltaïques sur le parking du personnel de l’UPF ", 
-  description: "
-    Ce projet s’inscrit dans la démarche de transition énergétique portée par l’UPF. Il vise à contribuer à la décarbonation des trajets domicile-travail du personnel de l’université. En effet, l’UPF compte plus de XXX salariés qui se rendent quotidiennement sur le campus, ce qui pèse significativement sur son bilan carbone. Plusieurs agents pourraient souhaiter s’engager dans cette transition en investissant dans un véhicule électrique. Toutefois, l’intérêt environnemental de ce dernier n’est pleinement réalisé que lorsqu’il est alimenté par une énergie renouvelable. Or, le personnel étant présent sur le campus durant la journée, la recharge des véhicules s’effectue le plus souvent le soir à domicile, sur un réseau encore majoritairement alimenté par des centrales au fioul, ce qui en limite fortement l’impact positif.
-  ",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'UPF', 
+projects << Project.create!(
+  batch: batch,
+  name: "E-Foil", 
+  description: "Remise en service d'une planche électrique à foil à partir d'un kit existant : moteur brushless immergé, contrôleur, batterie et télécommande étanche. En première année, les étudiants vérifient le câblage, la sécurité électrique et l'étanchéité de l'ensemble, remettent la planche en état de marche, puis l'instrumentent pour relever vitesse, consommation et autonomie lors d'essais encadrés. Les promotions suivantes reprendront la programmation du contrôleur et la fabrication de pièces par impression 3D.", 
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Franck Lucas', 
   active: true
 )
 
-p3 = Project.create!(
-  batch: Batch.last,
-  name: "Accompagner l’entreprise dans la sensibilisation de son personnel aux transitions et la promotion de pratiques durables, en s’appuyant sur les résultats de l’audit RSE AFNOR et les enjeux climatiques en Polynésie française.", 
-  description: "Dans une dynamique de transition environnementale et sociétale, Cegelec Polynésie souhaite renforcer sa culture interne autour des enjeux du développement durable. À la suite de son dernier audit RSE réalisé par le Label Engagé AFNOR, l’entreprise a identifié des leviers d’amélioration et des points forts à pérenniser. Ce projet tutoré s’inscrit dans cette volonté de transformation, en mobilisant les étudiants autour d’une mission concrète : accompagner l’entreprise dans la sensibilisation de ses collaborateurs aux transitions, tout en valorisant ses engagements et en favorisant l’émergence de pratiques durables au quotidien.",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Cegelec', 
+projects << Project.create!(
+  batch: batch,
+  name: "Raquette connectée", 
+  description: "Projet mené avec la Fédération polynésienne de ping-pong : concevoir une raquette connectée mesurant et transmettant en temps réel les gestes. IMU (gyro/accéléro), microcontrôleur (Arduino/ESP32), BLE/Wi-Fi et batterie intégrés au manche. Visualisation et analyse sur app, estimation vitesse/spin, détection d’impact, avec comparaison à une raquette du commerce. Objectif : précision, autonomie et ergonomie.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Jonathan Serafini', 
   active: true
 )
 
-p4 = Project.create!(
-  batch: Batch.last,
-  name: "Organisation d’une journée technique agronomique & REX destiné aux agriculteurs clients potentiels", 
-  description: "Dans le cadre du projet d’« essais agronomiques » portés par TECHNIVAL, il est prévu l’organisation de journées techniques : visite des installations de valorisation des déchets verts de TECHNIVAL, visite d’une exploitation agricole partenaire, temps d’échanges…",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'Technival', 
+projects << Project.create!(
+  batch: batch,
+  name: "Ressource en eau dans les atolls", 
+  description: "En partenariat avec le groupe d'écoles Polytech, étude des systèmes d'osmose inverse permettant de rendre potable, et suffisamment minéralisée pour la consommation, l'eau de la lentille d'eau douce des atolls. En première année, les étudiants dressent l'état des lieux de l'existant technique, mettent en service un osmoseur de démonstration et mesurent la qualité de l'eau produite : conductivité, pH, minéralisation, débit. Leurs relevés alimentent le projet mené en parallèle par la licence STES sur l'acceptabilité de la solution par les populations concernées.",
+  subject: :chimie, 
+  max_booking: 4, 
+  author: 'Jeremy Yune', 
   active: true
 )
 
-p5 = Project.create!(
-  batch: Batch.last,
-  name: "Réalisation de capsules video de témoignages de porteurs de projets sur la possibilité d’intégrer de manière simple et accessible, des actions écoresponsables dans leur activité professionnelle ", 
-  description: "Dans un monde où la transition écologique devient un enjeu majeur, il est essentiel d’accompagner les professionnels vers des pratiques plus durables. 
-Ce projet vise à réaliser des capsules vidéos d’interviews par lequel les entrepreneurs témoigneront la possibilité d’intégrer des actions écoresponsables dans leur activité professionnelle de manière simple et accessible. 
-L’objectif est d’offrir un accompagnement pertinent et concret, permettant aux professionnels de mieux comprendre les enjeux environnementaux et d’agir efficacement dans leur domaine.
-",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'ADIE', 
+projects << Project.create!(
+  batch: batch,
+  name: "Hydroponie", 
+  description: "Réalisation d'installations de culture hydroponique (voir figure ci-dessous) intégrant une
+gestion et une collecte de données permettant l'automatisation d'apport en nutriment ainsi qu'en
+eau. L'alimentation se fera en prenant en compte l'environnement extérieur, les nutriments présents
+dans un réservoir d'eau afin d'en améliorer la production végétale et organique des aliments ainsi
+que des consommations d'énergie. Ce système sera basé sur l'utilisation de technologies (capteurs,
+contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Anthony Utahia', 
   active: true
 )
 
-p6 = Project.create!(
-  batch: Batch.last,
-  name: "Préparation Semaine d'intégration ", 
-  description: "La rentrée à l’université est un moment crucial pour tout nouveau bachelier. La semaine d’intégration a pour vocation de faciliter l’entrée des nouveaux étudiants en première année de la licence STES, avec ses deux parcours, de créer de la cohésion au sein des promotions et de renforcer leur insertion sociale dans le campus. C’est également – et avant tout – l’occasion pour eux d’avoir une première approche, par la pratique, des grands défis environnementaux et sociaux ainsi que des 17 ODD de l’ONU. ",  
-  subject: :stes, 
+projects << Project.create!(
+  batch: batch,
+  name: "Chimie Accepe", 
+  description: "Comprendre les mécanismes de production des substances naturelles (métabolites secondaires) dans les plantes.
+Comparer la composition chimique de différentes plantes récoltées sur plusieurs sites présentant des conditions environnementales contrastées.
+Étudier l'influence de paramètres environnementaux (température, humidité, composition du sol, exposition à la lumière, pollution, etc.) sur la concentration des métabolites secondaires dans les plantes.
+Maîtriser des techniques analytiques comme la chromatographie et la spectroscopie pour l'analyse chimique.
+Réaliser des analyses statistiques pour comparer les résultats obtenus selon les sites et les conditions étudiées.", 
+  subject: :chimie, 
   max_booking: 1, 
-  author: 'UPF', 
+  author: 'Raimana Ho', 
   active: true
 )
 
-p7 = Project.create!(
-  batch: Batch.last,
-  name: "Nudger tri sélectif à l'UPF", 
-  description: "Le tri des déchets n’est pas effectué actuellement par les étudiants sur le campus, l’objectif est de dynamiser cette pratique en mettant en place de nouveaux affichages inspirés de la théorie de la rationalité limitée.",  
-  subject: :stes, 
+projects << Project.create!(
+  batch: batch,
+  name: "Chimie Extramet", 
+  description: "Apprendre et maîtriser diverses techniques d'extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).
+Calculer les rendements d'extraction et les comparer pour chaque solvant et chaque échantillon étudié.
+Utiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.
+Comparer la concentration d'une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.
+Maîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu'à leur caractérisation quantitative.", 
+  subject: :chimie, 
   max_booking: 1, 
-  author: 'UPF', 
+  author: 'Raimana Ho', 
   active: true
 )
 
-p8 = Project.create!(
-  batch: Batch.last,
-  name: "Mesurer l'acceptabilité d’une solution technique qui rendrait potable et bénéfique à la consommation l’eau présente dans les atolls  (Lentille eau/SPI)", 
-  description: "La licence SPI, comme la licence STES, intègre la méthodologie projet et les projets étudiants dans ses enseignements. En partenariat avec le groupe d’écoles Polytech, les étudiants L1 SPI mènent un projet visant à améliorer des systèmes existant d’osmoseurs afin de pouvoir les utiliser dans les atolls afin et rendre potable et favorable à la consommation (donc également suffisamment minéralisée) l’eau présente sur site. 
-Les étudiants de L1 SPI ont commencé en S1 à faire un état lieu de l’existant technique et des potentiels.
-En vue de mutualiser les compétences des SPI et des STES, et à partir de l’état des lieux réalisé par la SPI, il est proposé un groupe de L1 STES de mesurer l’acceptabilité des populations ciblées pour une solution de transformation de l’eau présente dans les atolls afin de la rendre potable. ",  
-  subject: :stes, 
-  max_booking: 1, 
-  author: 'UPF', 
+
+projects << Project.create!(
+  batch: batch,
+  name: "Un robot qui tient debout tout seul",
+  description: "Projet fil rouge : le même système accompagne l'étudiant sur les trois années de licence — en L1 on fabrique, en L2 on mesure et on modélise, en L3 on fait marcher.
+Un robot pendule inversé sur deux roues, grand classique de la robotique dont les plans et les tutoriels sont en accès libre. C'est le problème du gyropode dans les rues de Papeete, ou du lanceur qui revient se poser : un système qui, laissé seul, tombe, et qu'un ordinateur maintient debout en mesurant, calculant et corrigeant environ mille fois par seconde.
+En première année, les étudiants fabriquent le châssis par impression 3D, montent l'électronique et programment le robot, avec l'assistance de l'IA de leur choix. L'objectif de l'année est simple et vérifiable : ça tourne. Le mesurer et le modéliser viendra en L2, le faire tenir debout en L3.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Franco Ferrucci', 
   active: true
 )
 
-[p2, p3, p4, p5, p6, p7, p8].each do |p|
+projects << Project.create!(
+  batch: batch,
+  name: "Nombres premiers et chiffrement RSA",
+  description: "Multiplier deux grands nombres premiers est immédiat ; retrouver ces deux facteurs à partir de leur produit ne l'est pas, et c'est sur cet écart que repose le chiffrement RSA. Le projet prend pour objet les restes de la division par un entier n : on y met en évidence une structure de groupe, on cherche quels éléments sont inversibles et ce que donnent leurs puissances successives, et on aboutit au chiffrement RSA.
+Premier semestre : arithmétique de ℤ (algorithme d'Euclide étendu, Bézout, lemme de Gauss, décomposition en facteurs premiers, crible d'Ératosthène programmé en Python), congruences et structure de groupe, sous-groupes, ordre et générateurs.
+Second semestre : groupe des inversibles et indicatrice d'Euler, petit théorème de Fermat puis théorème d'Euler, génération de clés, chiffrement, déchiffrement et signature, exponentiation rapide par carrés successifs. Les fonctions sont écrites par les étudiants, le calcul formel étant réservé à la vérification.
+Prérequis : programme de spécialité mathématiques de terminale. Aucune algèbre générale n'est supposée, groupe et sous-groupe sont construits dans le projet.",
+  subject: :maths,
+  max_booking: 7,
+  author: 'Kéva Djambaé',
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Racines n-ièmes de l'unité",
+  description: "L'équation z^n = 1 possède exactement n solutions complexes, aux sommets d'un polygone régulier inscrit dans le cercle unité. Le projet prend cet ensemble pour objet : on y met en évidence une structure de groupe, on cherche quels éléments l'engendrent par puissances successives, et on aboutit aux polynômes cyclotomiques.
+Premier semestre : résolution de z^n = 1 et tracés en Python, tables de multiplication et définition du groupe abélien, sous-groupes, ordre et générateurs — le critère pgcd(k, n) = 1 se conjecture sur les figures avant d'être démontré par Bézout.
+Second semestre : polynômes cyclotomiques et factorisation de z^n − 1 sur les diviseurs de n, division euclidienne dans ℂ[z] pratiquée à la main, indicatrice d'Euler et degré de Φ_n, implémentation en Python.
+Prérequis : spécialité mathématiques expertes, pour ses deux volets — nombres complexes (module, argument, Moivre et Euler, résolution de z^n = a) et arithmétique (division euclidienne, congruences, pgcd, Bézout, lemme de Gauss).",
+  subject: :maths,
+  max_booking: 7,
+  author: 'Kéva Djambaé',
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Travail bibliographique sur un article scientifique",
+  description: "Lecture, analyse et restitution d'un article de recherche en mathématiques, dont le support sera défini ultérieurement. Les étudiants replacent l'article dans son contexte, reconstituent les résultats annoncés et les démonstrations qui les portent, identifient les prérequis qui leur manquent et vont les chercher, puis en proposent une présentation accessible à leur promotion. Rapport rédigé en LaTeX et exposé oral, comme pour les autres sujets de la spécialité.",
+  subject: :maths,
+  max_booking: 7,
+  author: 'Jonathan Serafini',
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Fabriquer une maquette de TP",
+  description: "Projet fil rouge : le même système accompagne l'étudiant sur les trois années de licence — en L1 on fabrique, en L2 on mesure et on modélise, en L3 on fait marcher.
+Le même problème d'équilibre que le robot à deux roues, monté cette fois sur un axe qui tourne : un pendule inversé rotatif, maquette utilisée dans le monde entier pour apprendre la commande des systèmes. Le modèle du commerce coûte environ 500 000 XPF ; le pari du projet est d'en fabriquer une version imprimée en 3D pour environ 10 000 XPF.
+La maquette restera au laboratoire : les étudiants qui l'auront construite en L1 et L2 s'en serviront eux-mêmes en TP en L3.
+En première année, il s'agit de la concevoir et de l'imprimer. La motorisation et l'instrumentation viennent en L2, la commande en L3.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Franco Ferrucci', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Un banc hybride imprimé en 3D",
+  description: "Projet fil rouge : le même système accompagne l'étudiant sur les trois années de licence — en L1 on fabrique, en L2 on mesure et on modélise, en L3 on fait marcher.
+Une maquette de table qui reproduit le principe de la transmission hybride Toyota : un train épicycloïdal relie trois moteurs — l'un joue le rôle du thermique, les deux autres celui des machines électriques — sans boîte de vitesses ni embrayage. Une batterie de moto se vide et se recharge au freinage, et un quatrième moteur simule la charge : la route, le vent, la pente. L'objectif à terme est de reproduire les modes de fonctionnement réels d'un véhicule hybride : démarrage électrique, mode hybride, freinage récupératif.
+En première année, les étudiants dessinent et impriment les engrenages, jusqu'à ce que ça tourne. Brancher les moteurs et la batterie pour que ça roule est le travail de L2 ; répartir la puissance entre les trois machines, ce qui rend l'ensemble réellement hybride, celui de L3.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Franco Ferrucci', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Lampe à gravité", 
+  description: "Assemblage et mise au point d'une lampe alimentée par la descente d'une masse : la charge suspendue entraîne, via une démultiplication, une génératrice qui alimente des LED. En première année, les étudiants montent le dispositif à partir d'éléments existants, mesurent l'énergie effectivement restituée et la durée d'éclairage obtenue, puis confrontent ces relevés au calcul d'énergie potentielle. Un support très direct pour travailler les ordres de grandeur et la notion de rendement.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Jonathan Serafini', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Capteur qualité de l'air", 
+  description: "Mise en service d'une station de mesure de la qualité de l'air à partir de capteurs low cost existants — particules fines PM2.5 et PM10, CO2, température, humidité — pilotés par un microcontrôleur. En première année, les étudiants câblent et configurent le kit, vérifient la cohérence des mesures entre capteurs et mettent en place l'enregistrement des données. Les relevés effectués sur le campus servent ensuite de base à l'analyse des conditions de confort et de la qualité de l'air intérieur.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Marania Hopuare-klouman', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Instrumentation d'un lagon",
+  description: "Projet mené avec Eve Rebouillat, doctorante à l'UPF, dont la thèse porte sur la réponse des lagons de Polynésie française aux phénomènes océaniques et météorologiques — houles, marées, vents, fortes pluies — dont certains peuvent s'intensifier avec le réchauffement climatique. Comprendre comment un lagon réagit à ces forçages est un levier de résilience pour les territoires insulaires.
+La démarche de l'équipe combine trois volets : déployer des capteurs sur le terrain pour quantifier les phénomènes, analyser les données déjà disponibles, et construire des modèles théoriques pour les expliquer.
+En première année, les étudiants prennent en main les mêmes types d'instruments : enregistreurs autonomes de pression, dont on tire le niveau d'eau et les vagues, et sondes de température. Ils les configurent, les étalonnent, vérifient leur tenue à l'immersion, les déploient sur un site accessible puis récupèrent les enregistrements. Le dépouillement des séries temporelles occupe la seconde moitié du travail : séparer la marée de la houle, retrouver un épisode météorologique dans le signal, et discuter ce que le capteur mesure réellement.
+Les campagnes menées sur les sites de la thèse mobilisent des plongeurs scientifiques : les étudiants contribuent à la préparation des instruments et à l'exploitation des données, pas aux plongées.
+Un aperçu des travaux en vidéo (15 min) : https://www.youtube.com/watch?v=KJGuiFMOSuE",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Eve Rebouillat', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Station météorologique", 
+  description: "Mise en service d'une station météorologique construite autour de capteurs low cost (température, humidité, pression, pluviométrie, vent) et d'un microcontrôleur. En première année, les étudiants assemblent le kit existant, vérifient l'étalonnage des capteurs et mettent en place la collecte puis l'archivage des relevés. Les séries obtenues sur le campus sont ensuite exploitées pour caractériser le climat local et repérer les valeurs aberrantes.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Jonathan Serafini', 
+  active: true
+)
+
+projects << Project.create!(
+  batch: batch,
+  name: "Sismographe Raspberry Shake",
+  description: "Projet mené en partenariat avec le Laboratoire de Géophysique de Tahiti, où travaille Anthony Jamelot, sismologue impliqué dans le centre d'alerte aux tsunamis de Polynésie française et dans les campagnes de terrain menées après les tsunamis chiliens de 2010 et 2015.
+L'instrument est un Raspberry Shake (raspberryshake.org) : un sismographe de qualité professionnelle construit autour d'un Raspberry Pi, raccordé à un réseau mondial de plus de 1 400 stations qui diffusent leurs données en direct. Selon le modèle retenu, le RS1D mesure la vitesse du sol sur l'axe vertical au moyen d'un géophone, le RS4D y ajoute trois accéléromètres et couvre des secousses beaucoup plus fortes.
+En première année, les étudiants mettent la station en service : couplage au sol, isolation des vibrations parasites, vérification de la réponse à des excitations contrôlées, puis raccordement au réseau. Ils apprennent à lire un sismogramme, à distinguer les ondes P des ondes S et à en déduire la distance à l'épicentre.
+Les enregistrements sont ensuite confrontés à ceux des stations du réseau polynésien pour évaluer la sensibilité réellement atteinte. L'enjeu est concret : la Polynésie est exposée aux tsunamis d'origine lointaine, dont la propagation transpacifique est précisément l'objet des travaux du laboratoire partenaire.",
+  subject: :physique, 
+  max_booking: 4, 
+  author: 'Anthony Jamelot', 
+  active: true
+)
+
+
+projects.each do |p|
   Supervision.create!(
     project: p,
     user: User.find_by(email: "jonathan.serafini@gmail.com")
   )
 end
 
-Team.create!(name: "En attente de projet", user: User.find_by(email: "jonathan.serafini@gmail.com"))
+# Spécialités de la promo.
+# PEIP n'a pas de projet propre : parent = si_spe, donc il hérite des projets SI,
+# mais exclusive_groups le contraint à des groupes composés uniquement de PEIP.
+# "Indécis" n'est jamais taggée sur un projet : son accès à tout est porté par
+# project_access, et y répondre suffit à ne plus revoir la page de choix.
+maths_spe = Speciality.create!(
+  batch: batch,
+  name: "Spécialité Mathématiques",
+  slug: "maths",
+  position: 1
+)
 
-####################
-# Spécialités (par promo)
-#
-# "Indécis" est une spécialité à part entière : y répondre suffit à ne plus être
-# renvoyé sur la page de choix. Elle n'est jamais taggée sur un projet, son accès
-# est porté par project_access: :all_projects.
-# PEIP n'a pas de projet propre : parent = SI, donc il hérite des projets taggés SI.
-# Une promo sans spécialité garde le comportement actuel (tous les projets, pas de
-# page de choix).
+si_spe = Speciality.create!(
+  batch: batch,
+  name: "Spécialité Sciences pour l'ingénieur",
+  slug: "si",
+  position: 2
+)
 
-# batch = Batch.last
+Speciality.create!(
+  batch: batch,
+  name: "PEIP",
+  slug: "peip",
+  position: 3,
+  parent: si_spe,
+  exclusive_groups: true
+)
 
-# maths = Speciality.create!(batch: batch, name: "Spécialité Mathématiques", slug: "maths", position: 1)
-# si    = Speciality.create!(batch: batch, name: "Spécialité Sciences pour l'ingénieur", slug: "si", position: 2)
-# peip  = Speciality.create!(batch: batch, name: "PEIP", slug: "peip", position: 3,
-#                            parent: si, exclusive_groups: true)
-#         Speciality.create!(batch: batch, name: "Je n'ai pas encore choisi ma spécialité",
-#                            slug: "undecided", position: 4, project_access: :all_projects)
+Speciality.create!(
+  batch: batch,
+  name: "Je n'ai pas encore choisi ma spécialité",
+  slug: "undecided",
+  position: 4,
+  project_access: :all_projects
+)
 
-# Tagging des projets : seuls maths et si sont attachés à des projets.
-# Le nombre d'équipes qu'un projet peut accueillir se règle sur project.max_booking
-# (un projet Maths unique portant plusieurs groupes de 3-4 → max_booking élevé).
-# batch.projects.find(XX).update!(specialities: [maths], max_booking: 4)
-# batch.projects.find(YY).update!(specialities: [si])
+projects.each { |p| p.specialities << (p.maths? ? maths_spe : si_spe) }
