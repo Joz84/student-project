@@ -22,6 +22,8 @@
 
         <h2 class="text-center my-5">Les équipes</h2>
 
+        <%= render "repartition" if @repartition_rows.present? %>
+
         <div class="card card-body mb-3">
           <a data-bs-toggle="collapse" href="#collapseRepartition" role="button" aria-expanded="false" aria-controls="collapseRepartition">
             Répartition des élèves

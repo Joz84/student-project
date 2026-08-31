@@ -1,0 +1,91 @@
+<div class="card card-body mb-3">
+  <a data-bs-toggle="collapse" href="#collapseViz" role="button" aria-expanded="false" aria-controls="collapseViz">
+    Comment la répartition a été faite
+  </a>
+  <div class="collapse mt-3" id="collapseViz">
+
+    <p class="text-grey mb-4"><small>
+      Chaque ligne est un élève, chaque colonne un projet. La case indique le rang qu'il avait donné
+      à ce projet — plus c'est vert, plus le projet était haut dans sa liste. La case encadrée en noir
+      est le projet obtenu. Un tiret signifie que le projet n'était pas ouvert à sa spécialité.
+    </small></p>
+
+    <h6 class="mb-3">Vœux obtenus</h6>
+    <div class="mb-2">
+      <% total_eleves = @satisfaction.values.sum %>
+      <% @satisfaction.each do |rang, nb| %>
+        <div class="d-flex align-items-center mb-1" style="gap: .6rem;">
+          <span style="width: 5.5rem; font-size: .85rem;"><%= ordinal_voeu(rang) %></span>
+          <div style="flex: 1; background: #EEF1F4; height: 1.1rem; border-radius: 2px;">
+            <div style="width: <%= (100.0 * nb / total_eleves).round(1) %>%; height: 100%; background: <%= rank_color(rang, @repartition_projects.size) %>; border-radius: 2px;"></div>
+          </div>
+          <span style="width: 2.5rem; text-align: right; font-size: .85rem;"><strong><%= nb %></strong></span>
+        </div>
+      <% end %>
+    </div>
+    <p class="text-grey mb-4"><small>
+      Rang moyen obtenu : <strong><%= @average_rank %></strong> ·
+      <strong><%= @top_share %>&nbsp;%</strong> des élèves ont eu l'un de leurs trois premiers vœux ·
+      <%= total_eleves %> élèves répartis
+    </small></p>
+
+    <h6 class="mb-3">Détail par équipe</h6>
+    <div style="overflow-x: auto;">
+      <table style="border-collapse: collapse; font-size: .8rem;">
+        <thead>
+          <tr>
+            <th style="position: sticky; left: 0; background: #fff; z-index: 2; text-align: left; padding: 0 .6rem .4rem 0; min-width: 11rem;"></th>
+            <% @repartition_projects.each do |project| %>
+              <th title="<%= project.name %>"
+                  style="height: 9rem; width: 1.9rem; padding: 0 0 .4rem; vertical-align: bottom;">
+                <div style="writing-mode: vertical-rl; transform: rotate(180deg); font-weight: 500; white-space: nowrap; overflow: hidden; max-height: 8.6rem;">
+                  <%= project.name.truncate(26) %>
+                </div>
+              </th>
+            <% end %>
+            <th style="padding: 0 0 .4rem .6rem; white-space: nowrap; vertical-align: bottom;">Obtenu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @repartition_rows.each do |row| %>
+            <% if row[:first] %>
+              <tr>
+                <td colspan="<%= @repartition_projects.size + 2 %>"
+                    style="padding: .7rem .6rem .25rem 0; border-bottom: 1px solid #D3DBE3;">
+                  <strong><%= row[:team].name %></strong>
+                  <span class="text-grey">— <%= row[:team].project.name.truncate(60) %>
+                    (<%= row[:size] %> élèves)</span>
+                </td>
+              </tr>
+            <% end %>
+            <tr>
+              <td style="position: sticky; left: 0; background: #fff; z-index: 1; padding: .15rem .6rem .15rem 0; white-space: nowrap;">
+                <%= row[:user].first_name %> <%= row[:user].last_name %>
+              </td>
+              <% @repartition_projects.each do |project| %>
+                <% rang = row[:ranks][project.id] %>
+                <% assigned = project.id == row[:team].project_id %>
+                <td style="width: 1.9rem; height: 1.6rem; text-align: center;
+                           background: <%= rank_color(rang, row[:total]) || "#F7F8FA" %>;
+                           color: <%= rang ? rank_text_color(rang, row[:total]) : "#B9C2CB" %>;
+                           border: 1px solid #E3E8ED;
+                           <%= "box-shadow: inset 0 0 0 3px #16202A;" if assigned %>">
+                  <%= rang || "–" %>
+                </td>
+              <% end %>
+              <td style="padding-left: .6rem; white-space: nowrap;">
+                <% if row[:granted] %>
+                  <strong><%= ordinal_voeu(row[:granted]) %></strong>
+                  <span class="text-grey">/ <%= row[:total] %></span>
+                <% else %>
+                  <span class="text-grey">–</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

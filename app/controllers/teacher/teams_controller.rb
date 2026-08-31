@@ -64,6 +64,31 @@ class Teacher::TeamsController < ApplicationController
       .kept
     @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct
     @teachers = @teachers.where(id: current_user.id) if !current_user.admin
+    load_repartition
+  end
+
+  # Matrice « qui a eu quel vœu », pour expliquer aux élèves le choix de l'algorithme.
+  # Le rang du vœu est l'unité lisible : « tu as eu ton 2e vœu ».
+  def load_repartition
+    teams = @teams.includes(:project, users: :ratings).select(&:project)
+    return if teams.empty?
+
+    @repartition_projects = @batch.projects.order(:id).to_a
+    @repartition_rows = []
+    teams.sort_by { |t| [t.project.name, t.name] }.each do |team|
+      membres = team.users.reject { |u| u[:drop] }
+                    .sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] }
+      membres.each_with_index do |user, i|
+        ranks = user.ratings.each_with_object({}) { |r, h| h[r.project_id] = r.position }
+        @repartition_rows << { team: team, first: i.zero?, size: membres.size, user: user,
+                               ranks: ranks, total: ranks.size, granted: ranks[team.project_id] }
+      end
+    end
+
+    obtenus = @repartition_rows.filter_map { |r| r[:granted] }
+    @satisfaction = obtenus.tally.sort.to_h
+    @average_rank = obtenus.any? ? (obtenus.sum.to_f / obtenus.size).round(2) : nil
+    @top_share = obtenus.any? ? (100.0 * obtenus.count { |r| r <= 3 } / obtenus.size).round : nil
   end
 
   def team_params
