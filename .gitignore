@@ -30,4 +30,8 @@
 
 /config/credentials/production.key
 
-/repartition_algorithme
+# Le solveur est versionné, mais pas les données qu'on lui donne à manger :
+# le notebook, scores.json et assignations.html contiennent des noms d'étudiants.
+/repartition_algorithme/*
+!/repartition_algorithme/repartition.py
+!/repartition_algorithme/viz.py
