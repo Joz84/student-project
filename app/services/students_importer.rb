@@ -93,7 +93,9 @@ class StudentsImporter
         next
       end
 
-      ancien = User.where("lower(email) = ?", email).first
+      # Redoublant : compte hors de cette promo, repéré par e-mail OU par numéro
+      # étudiant — le second suffit même quand l'étudiant a changé d'adresse.
+      ancien = User.where("lower(email) = ? OR student_number = ?", email, code).first
       if ancien
         email = adresse_derivee(ancien, prenom, nom)
         redoublants << { code: code, nom: nom, prenom: prenom, avant: ancien, apres: email }
