@@ -690,31 +690,16 @@ contrôleurs) low cost et la réalisation de pièces par imprimante 3D.",
 
 projects << Project.create!(
   batch: batch,
-  name: "Chimie Accepe", 
-  description: "Comprendre les mécanismes de production des substances naturelles (métabolites secondaires) dans les plantes.
-Comparer la composition chimique de différentes plantes récoltées sur plusieurs sites présentant des conditions environnementales contrastées.
-Étudier l'influence de paramètres environnementaux (température, humidité, composition du sol, exposition à la lumière, pollution, etc.) sur la concentration des métabolites secondaires dans les plantes.
-Maîtriser des techniques analytiques comme la chromatographie et la spectroscopie pour l'analyse chimique.
-Réaliser des analyses statistiques pour comparer les résultats obtenus selon les sites et les conditions étudiées.", 
+  name: "Étude et conception d'une gamme de « Pani » marquisienne par éco-extraction", 
+  description: "Concevoir, développer et valider une nouvelle gamme de produits « Pani » — cosmétiques et cosméceutiques — entièrement à base d'ingrédients d'origine naturelle marquisiens : tiare, tamanu, roucou. Les principes actifs sont obtenus par éco-extraction, avec l'huile de coco vierge comme solvant biosourcé.
+Le travail va de l'extraction aux produits finis — huiles, baumes, lotions, sérums — qu'il faut formuler, tester et documenter, avec des preuves scientifiques des propriétés revendiquées : antioxydantes, anti-inflammatoires, cicatrisantes, colorantes naturelles, parfum.
+L'objectif pédagogique est l'acquisition progressive des savoirs techniques, des capacités de conception expérimentale et des compétences d'analyse.", 
   subject: :chimie, 
   max_booking: 1, 
   author: 'Raimana Ho', 
   active: true
 )
 
-projects << Project.create!(
-  batch: batch,
-  name: "Chimie Extramet", 
-  description: "Apprendre et maîtriser diverses techniques d'extraction de substances naturelles en utilisant des solvants variés (eau, éthanol, acétone).
-Calculer les rendements d'extraction et les comparer pour chaque solvant et chaque échantillon étudié.
-Utiliser la loi de Beer-Lambert pour quantifier les substances extraites par spectrophotométrie.
-Comparer la concentration d'une substance naturelle extraite à partir d'une source terrestre ou marine avec un produit commercial similaire.
-Maîtriser la démarche expérimentale complète depuis la préparation des extraits jusqu'à leur caractérisation quantitative.", 
-  subject: :chimie, 
-  max_booking: 1, 
-  author: 'Raimana Ho', 
-  active: true
-)
 
 
 projects << Project.create!(
@@ -724,7 +709,7 @@ projects << Project.create!(
 Un robot pendule inversé sur deux roues, grand classique de la robotique dont les plans et les tutoriels sont en accès libre. C'est le problème du gyropode dans les rues de Papeete, ou du lanceur qui revient se poser : un système qui, laissé seul, tombe, et qu'un ordinateur maintient debout en mesurant, calculant et corrigeant environ mille fois par seconde.
 En première année, les étudiants fabriquent le châssis par impression 3D, montent l'électronique et programment le robot, avec l'assistance de l'IA de leur choix. L'objectif de l'année est simple et vérifiable : ça tourne. Le mesurer et le modéliser viendra en L2, le faire tenir debout en L3.",
   subject: :physique, 
-  max_booking: 4, 
+  max_booking: 2, 
   author: 'Franco Ferrucci', 
   active: true
 )
@@ -773,7 +758,7 @@ Le même problème d'équilibre que le robot à deux roues, monté cette fois su
 La maquette restera au laboratoire : les étudiants qui l'auront construite en L1 et L2 s'en serviront eux-mêmes en TP en L3.
 En première année, il s'agit de la concevoir et de l'imprimer. La motorisation et l'instrumentation viennent en L2, la commande en L3.",
   subject: :physique, 
-  max_booking: 4, 
+  max_booking: 2, 
   author: 'Franco Ferrucci', 
   active: true
 )
@@ -785,7 +770,7 @@ projects << Project.create!(
 Une maquette de table qui reproduit le principe de la transmission hybride Toyota : un train épicycloïdal relie trois moteurs — l'un joue le rôle du thermique, les deux autres celui des machines électriques — sans boîte de vitesses ni embrayage. Une batterie de moto se vide et se recharge au freinage, et un quatrième moteur simule la charge : la route, le vent, la pente. L'objectif à terme est de reproduire les modes de fonctionnement réels d'un véhicule hybride : démarrage électrique, mode hybride, freinage récupératif.
 En première année, les étudiants dessinent et impriment les engrenages, jusqu'à ce que ça tourne. Brancher les moteurs et la batterie pour que ça roule est le travail de L2 ; répartir la puissance entre les trois machines, ce qui rend l'ensemble réellement hybride, celui de L3.",
   subject: :physique, 
-  max_booking: 4, 
+  max_booking: 2, 
   author: 'Franco Ferrucci', 
   active: true
 )
