@@ -21,6 +21,12 @@ from typing import Dict, Iterable, Tuple, List, Optional, Set
 # ce qui garde les sorties identiques aux versions précédentes.
 SLOT_SEP = " || groupe "
 
+# Plafond de la phase 2 (minimiser le nombre de groupes). Le score, lui, est
+# décidé en phase 1 : c'est elle qui mérite le budget de temps.
+# Une catégorie à groupes homogènes comptant exactement ce nombre d'élèves forme
+# un groupe unique de cette taille : 5 ne se découpe ni en 3+2 ni en 4+1.
+EXCEPTION_SIZE = 5
+
 
 def slot_label(project: str, index: int, n_slots: int) -> str:
     return project if n_slots == 1 else f"{project}{SLOT_SEP}{index + 1}"
@@ -129,13 +135,17 @@ def _check_feasibility(students, projects, scores, n_slots,
                 f"Augmentez max_booking sur ces projets."
             )
 
-    # Une spécialité à groupes homogènes doit pouvoir se partitionner seule.
+    # Une catégorie à groupes homogènes doit pouvoir se partitionner seule.
+    # Cas particulier accepté : exactement 5, qui forme un unique groupe de 5.
     for g in exclusive:
         n = sum(1 for e in students if speciality_of.get(e) == g)
+        if n == 0 or n == EXCEPTION_SIZE:
+            continue
         if math.ceil(n / max_size) > math.floor(n / min_size):
             raise ValueError(
-                f"La spécialité '{g}' impose des groupes homogènes mais compte {n} élève(s), "
-                f"ce qui ne se partitionne pas en groupes de {min_size} à {max_size}."
+                f"La catégorie '{g}' impose des groupes homogènes mais compte {n} élève(s), "
+                f"ce qui ne se partitionne pas en groupes de {min_size} à {max_size} "
+                f"(seul {EXCEPTION_SIZE} est toléré en plus, sous forme d'un groupe unique)."
             )
 
 
@@ -147,6 +157,9 @@ def solve_assignment(
     max_size: int = 4,
     k_projects: Optional[int] = None,
     lexicographic: bool = True,
+    time_limit_s: float = 60,
+    duplicate_penalty: Optional[float] = None,
+    return_status: bool = False,
 ):
     """
     Résout l'affectation avec contraintes de taille de groupe ∈ [min_size, max_size].
@@ -157,6 +170,18 @@ def solve_assignment(
     - lexicographic :
         * True  → 2 phases : (1) max score, (2) à score optimal, min #groupes
         * False → une seule phase (max score)
+    - time_limit_s : temps maximal par phase. Phase 1 : le moins de groupes
+      possible, donc le plus de groupes de 4 — c'est la règle prioritaire.
+      Phase 2 : à ce nombre de groupes, le meilleur respect des vœux, en préférant
+      des projets différents. Passé le délai, on garde la meilleure solution
+      trouvée, qui reste valide.
+    - duplicate_penalty : coût d'ouvrir un deuxième groupe sur un projet déjà pris.
+      Par défaut il dépasse la somme de tous les scores, ce qui en fait une règle
+      et non une préférence : un doublon n'est ouvert que s'il est structurellement
+      inévitable. Abaissez-le pour autoriser un doublon qui améliore les vœux.
+    - lexicographic : conservé pour compatibilité, sans effet — la résolution est
+      toujours en deux temps (nombre de groupes, puis vœux).
+    - return_status : renvoie un 5e élément décrivant le déroulé de la résolution.
 
     Retourne:
       selected        : set[str]                 (libellés des créneaux ouverts)
@@ -221,11 +246,14 @@ def solve_assignment(
     # y[s] = 1 si le créneau s est ouvert (c'est un groupe)
     y = {s: solver.BoolVar(f"y_{s[0]}_{s[1]}") for s in slots}
 
-    # --- Objectif (phase 1) : maximiser la somme des notes
-    objective = solver.Objective()
-    for (e, s), var in x.items():
-        objective.SetCoefficient(var, scores[(e, s[0])])
-    objective.SetMaximization()
+    # z[g][s] = 1 si le créneau s est réservé à la catégorie exclusive g
+    tailles_exclusives = {g: sum(1 for e in students if speciality_of.get(e) == g)
+                          for g in exclusive}
+    z = {g: {s: solver.BoolVar(f"z_{g}_{s[0]}_{s[1]}") for s in slots} for g in exclusive}
+
+    # doublons : tout créneau au-delà du premier d'un projet
+    doublons = [y[(p, k)] for p in projects for k in range(1, n_slots[p])]
+
 
     # --- Contraintes
     # 1) Chaque élève est affecté exactement à un créneau
@@ -236,11 +264,16 @@ def solve_assignment(
     for (e, s), var in x.items():
         solver.Add(var <= y[s])
 
-    # 3) Bornes min et max par créneau ouvert
-    for s in slots:
-        load_s = solver.Sum(x[(e, s)] for e in students if (e, s) in x)
-        solver.Add(load_s <= max_size * y[s])
-        solver.Add(load_s >= min_size * y[s])
+    # 6bis) Un créneau réservé à une catégorie doit être ouvert. Sans cela le
+    #       surdimensionnement de l'exception « groupe de 5 » serait mal borné.
+    #       (les variables z sont créées plus bas, on prépare ici leur usage)
+    pass
+
+    # 3) Bornes min et max par créneau ouvert, avec l'exception des catégories de 5
+    #    dont le créneau réservé peut accueillir un élève de plus.
+    def cap_for(slot):
+        extra = [z[g][slot] for g in exclusive if tailles_exclusives[g] == EXCEPTION_SIZE]
+        return max_size * y[slot] + solver.Sum(extra) * (EXCEPTION_SIZE - max_size)
 
     # 4) Nombre de groupes
     if k_projects is not None:
@@ -251,12 +284,11 @@ def solve_assignment(
         for k in range(n_slots[p] - 1):
             solver.Add(y[(p, k)] >= y[(p, k + 1)])
 
-    # 6) Groupes homogènes : un créneau marqué pour une spécialité exclusive
+    # 6) Groupes homogènes : un créneau marqué pour une catégorie exclusive
     #    n'accueille qu'elle, et ses élèves ne vont que sur des créneaux marqués.
-    z = {}
     for g in exclusive:
-        z[g] = {s: solver.BoolVar(f"z_{g}_{s[0]}_{s[1]}") for s in slots}
         for s in slots:
+            solver.Add(z[g][s] <= y[s])
             for e in students:
                 if (e, s) not in x:
                     continue
@@ -264,39 +296,74 @@ def solve_assignment(
                     solver.Add(x[(e, s)] <= z[g][s])
                 else:
                     solver.Add(x[(e, s)] <= 1 - z[g][s])
-    if len(exclusive) > 1:
-        for s in slots:
+    for s in slots:
+        if len(exclusive) > 1:
             solver.Add(solver.Sum(z[g][s] for g in exclusive) <= 1)
+        load_s = solver.Sum(x[(e, s)] for e in students if (e, s) in x)
+        solver.Add(load_s <= cap_for(s))
+        solver.Add(load_s >= min_size * y[s])
 
-    # --- Phase 1 : Max score
+    ok = (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE)
+    etat = {"phase1": None, "phase2": None, "groupes": None, "borne_min": None,
+            "proven_optimal": False}
+
+    # --- Phase 1 : le moins de groupes possible, donc le plus de groupes de 4.
+    #     C'est la règle prioritaire : elle passe avant les vœux.
+    obj1 = solver.Objective()
+    for s in slots:
+        obj1.SetCoefficient(y[s], 1.0)
+    obj1.SetMinimization()
+    solver.SetTimeLimit(int(time_limit_s * 1000))
     status = solver.Solve()
-    if status not in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
+    if status not in ok:
         raise RuntimeError("Modèle infaisable. Vérifiez les données/capacités.")
+    etat["phase1"] = "optimal" if status == pywraplp.Solver.OPTIMAL else "faisable"
 
-    best_score = solver.Objective().Value()
+    n_groupes = k_projects if k_projects is not None else round(solver.Objective().Value())
+    etat["groupes"] = n_groupes
 
-    # --- Phase 2 (optionnelle) : à score optimal, minimiser le nombre de groupes
-    if k_projects is None and lexicographic:
-        eps = 1e-6
-        score_expr = solver.Sum(scores[(e, s[0])] * x[(e, s)] for (e, s) in x.keys())
-        solver.Add(score_expr >= best_score - eps)
+    # Borne inférieure calculable : chaque catégorie exclusive occupe ses propres
+    # groupes, le reste se remplit au mieux par paquets de max_size. Si la solution
+    # l'atteint, elle est minimale — inutile d'attendre que CBC le prouve.
+    reste = len(students) - sum(tailles_exclusives.values())
+    borne = math.ceil(reste / max_size) if reste > 0 else 0
+    for g, n in tailles_exclusives.items():
+        borne += 1 if n == EXCEPTION_SIZE else math.ceil(n / max_size) if n else 0
+    etat["borne_min"] = borne
+    if n_groupes <= borne:
+        etat["phase1"] = "optimal"
+    xv = {k: v.solution_value() for k, v in x.items()}
+    yv = {k: v.solution_value() for k, v in y.items()}
 
-        new_obj = solver.Objective()
-        for s in slots:
-            new_obj.SetCoefficient(y[s], 1.0)
-        new_obj.SetMinimization()
+    # --- Phase 2 : à nombre de groupes fixé, satisfaire au mieux les vœux, en
+    #     préférant des projets différents avant d'en doubler un.
+    solver.Add(solver.Sum(y[s] for s in slots) == n_groupes)
+    obj2 = solver.Objective()
+    for (e, s), var in x.items():
+        obj2.SetCoefficient(var, scores[(e, s[0])])
+    # Dominant par construction : aucun gain de vœux ne peut payer un doublon.
+    penalite = sum(scores.values()) + 1 if duplicate_penalty is None else duplicate_penalty
+    for var in doublons:
+        obj2.SetCoefficient(var, -float(penalite))
+    obj2.SetMaximization()
 
-        status2 = solver.Solve()
-        if status2 not in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
-            # Très rare : on retombe sur la solution phase 1
-            pass
+    solver.SetTimeLimit(int(time_limit_s * 1000))
+    status2 = solver.Solve()
+    if status2 in ok:
+        etat["phase2"] = "optimal" if status2 == pywraplp.Solver.OPTIMAL else "faisable"
+        xv = {k: v.solution_value() for k, v in x.items()}
+        yv = {k: v.solution_value() for k, v in y.items()}
+    else:
+        etat["phase2"] = "abandonnée"
+
+    etat["proven_optimal"] = etat["phase1"] == "optimal" and etat["phase2"] == "optimal"
 
     # --- Extraction de la solution
-    selected: Set[str] = {labels[s] for s in slots if y[s].solution_value() > 0.5}
+    selected: Set[str] = {labels[s] for s in slots if yv[s] > 0.5}
     assignment: Dict[str, List[str]] = {}
     for e in students:
         for s in slots:
-            if (e, s) in x and x[(e, s)].solution_value() > 0.5:
+            if (e, s) in x and xv[(e, s)] > 0.5:
                 assignment.setdefault(labels[s], []).append(e)
                 break
 
@@ -308,6 +375,8 @@ def solve_assignment(
         for e in es
     )
 
+    if return_status:
+        return selected, assignment, final_score, scores, etat
     return selected, assignment, final_score, scores
 
 
@@ -366,7 +435,13 @@ def summary(assignment: Dict[str, List[str]], score: float, payload: dict) -> st
             suffixe = f"  [{', '.join(filieres)}]" if filieres else ""
             lignes.append(f"  {len(g)}  {project[:52]}{suffixe}")
     total = sum(len(g) for g in assignment.values())
-    lignes += ["", f"{total} élèves affectés"]
+    tailles = {}
+    for g in assignment.values():
+        tailles[len(g)] = tailles.get(len(g), 0) + 1
+    distincts = len(groups_by_project(assignment))
+    detail = ", ".join(f"{n} groupe(s) de {t}" for t, n in sorted(tailles.items(), reverse=True))
+    lignes += ["", f"{total} élèves affectés — {detail}",
+               f"{distincts} projets distincts utilisés sur {len(payload.get('projects') or {}) or distincts}"]
     return "\n".join(lignes)
 
 
@@ -397,6 +472,11 @@ def main(argv=None):
     ap.add_argument("--max-size", type=int, default=4, help="taille maximale d'un groupe (4)")
     ap.add_argument("--groupes", type=int, default=None,
                     help="impose un nombre exact de groupes (sinon minimisé)")
+    ap.add_argument("--time-limit", type=float, default=60,
+                    help="temps maximal par phase, en secondes (60)")
+    ap.add_argument("--duplicate-penalty", type=float, default=None,
+                    help="coût d'un 2e groupe sur un même projet (par défaut : dominant, "
+                         "les doublons ne servent qu'en dernier recours)")
     ap.add_argument("--demo", action="store_true", help="tourne sur des données synthétiques")
     args = ap.parse_args(argv)
 
@@ -409,9 +489,10 @@ def main(argv=None):
         payload = json.load(f)
 
     try:
-        selected, assignment, score, _ = solve_assignment(
+        selected, assignment, score, _, etat = solve_assignment(
             payload, min_size=args.min_size, max_size=args.max_size,
-            k_projects=args.groupes, lexicographic=args.groupes is None)
+            k_projects=args.groupes, time_limit_s=args.time_limit,
+            duplicate_penalty=args.duplicate_penalty, return_status=True)
     except (ValueError, RuntimeError) as exc:
         raise SystemExit(f"\nRépartition impossible.\n{exc}")
 
@@ -421,6 +502,15 @@ def main(argv=None):
 
     print()
     print(summary(assignment, score, payload))
+    if etat["phase1"] != "optimal":
+        print()
+        print(f"Note    : nombre minimal de groupes non prouvé en {args.time_limit:.0f} s.")
+        print("          Il reste peut-être moins de groupes possible, donc plus de groupes de 4.")
+    elif etat["phase2"] != "optimal":
+        print()
+        print(f"Note    : {etat['groupes']} groupes, c'est prouvé le minimum. En revanche le")
+        print(f"          respect des vœux n'est pas prouvé optimal dans le délai de")
+        print(f"          {args.time_limit:.0f} s ; relancez avec --time-limit plus élevé si besoin.")
     print()
     print(f"Sortie  : {os.path.basename(out)}")
     print("À téléverser dans Espace enseignant -> Répartition des élèves -> Importer.")

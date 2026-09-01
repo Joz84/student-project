@@ -14,6 +14,9 @@
 class TeamsImporter
   MIN_SIZE = 3
   MAX_SIZE = 4
+  # Une catégorie à groupes homogènes comptant exactement 5 élèves forme un groupe
+  # unique de 5 : 5 ne se découpe ni en 3+2 ni en 4+1. Même règle que le solveur.
+  EXCEPTION_SIZE = 5
   SLOT_SEP = " || groupe "
   WAITING_TEAM = "En attente de projet"
 
@@ -81,6 +84,24 @@ class TeamsImporter
 
   def students = @students ||= @batch.users.kept.where(teacher: nil).index_by(&:id)
 
+  # Catégorie de groupement : la spécialité, sauf pour les élèves qui n'ont pas
+  # validé leur classement, qu'on ne mélange pas avec ceux qui ont joué le jeu.
+  def categorie(user)
+    user.pending? ? Batch::SANS_CHOIX : user.speciality&.slug
+  end
+
+  def categorie_exclusive?(slug)
+    return false if slug.nil?
+    return true if slug == Batch::SANS_CHOIX
+    @exclusives ||= @batch.specialities.where(exclusive_groups: true).pluck(:slug)
+    @exclusives.include?(slug)
+  end
+
+  def taille_categorie(slug)
+    @tailles ||= students.values.group_by { |u| categorie(u) }.transform_values(&:size)
+    @tailles[slug].to_i
+  end
+
   def id_of(slug) = slug.to_s.split(" -- ").first.to_i
 
   def build_groups
@@ -112,23 +133,28 @@ class TeamsImporter
 
     groups.each do |g|
       n = g.members.size
-      unless n.between?(@min_size, @max_size)
-        @errors << "groupe de #{n} sur « #{g.project.name} » (attendu #{@min_size} à #{@max_size})"
+      cats = g.members.map { |u| categorie(u) }.uniq
+      exception = n == EXCEPTION_SIZE && cats.size == 1 &&
+                  categorie_exclusive?(cats.first) &&
+                  taille_categorie(cats.first) == EXCEPTION_SIZE
+      unless n.between?(@min_size, @max_size) || exception
+        @errors << "groupe de #{n} sur « #{g.project.name} » (attendu #{@min_size} à #{@max_size}, " \
+                   "ou #{EXCEPTION_SIZE} pour une catégorie qui en compte exactement #{EXCEPTION_SIZE})"
       end
 
-      hors = g.members.reject { |u| u.eligible_projects.exists?(g.project.id) }
+      # Les élèves sans classement n'ont exprimé aucune préférence : tous les
+      # projets de la promo leur sont ouverts.
+      hors = g.members.reject { |u| u.pending? || u.eligible_projects.exists?(g.project.id) }
       hors.each do |u|
         @errors << "#{u.slug} (#{u.speciality&.slug || 'sans spécialité'}) n'a pas accès à " \
                    "« #{g.project.name} »"
       end
 
-      exclusives = g.members.map(&:speciality).compact.select(&:exclusive_groups?).uniq
-      exclusives.each do |spe|
-        intrus = g.members.reject { |u| u.speciality_id == spe.id }
-        if intrus.any?
-          @errors << "« #{g.project.name} » mêle #{spe.slug} et #{intrus.map { |u| u.speciality&.slug || '?' }.uniq.join(', ')} " \
-                     "alors que #{spe.slug} impose des groupes homogènes"
-        end
+      cats.select { |c| categorie_exclusive?(c) }.each do |cat|
+        intrus = g.members.reject { |u| categorie(u) == cat }
+        next if intrus.empty?
+        @errors << "« #{g.project.name} » mêle #{cat} et #{intrus.map { |u| categorie(u) || '?' }.uniq.join(', ')} " \
+                   "alors que #{cat} impose des groupes homogènes"
       end
     end
 
