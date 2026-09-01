@@ -64,7 +64,18 @@ class Teacher::TeamsController < ApplicationController
       .kept
     @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct
     @teachers = @teachers.where(id: current_user.id) if !current_user.admin
+    @project_demand = @batch.project_demand
+    load_avancement
     load_repartition
+  end
+
+  # Où en est chaque élève dans le classement de ses vœux.
+  def load_avancement
+    eleves = @batch.users.kept.where(teacher: nil)
+                   .includes(:ratings, :speciality)
+                   .order(:last_name, :first_name)
+    @valides, en_cours = eleves.partition(&:booked?)
+    @modifies, @non_modifies = en_cours.partition(&:ratings_reordered?)
   end
 
   # Matrice « qui a eu quel vœu », pour expliquer aux élèves le choix de l'algorithme.

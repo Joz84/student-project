@@ -22,6 +22,7 @@
 
         <h2 class="text-center my-5">Les équipes</h2>
 
+        <%= render "project_scores" if @project_demand.present? %>
         <%= render "repartition" if @repartition_rows.present? %>
 
         <div class="card card-body mb-3">
@@ -87,12 +88,36 @@
                 </div>
               </div>
               <div class="row">
-                <h6>Elèves sans équipe</h6>
-                <ul>
-                  <% User.where(teacher: nil, team: nil, batch: @batch).kept.each do |user| %>
-                    <li><%= user.first_name.capitalize %> <%= user.last_name.capitalize %> - <%= user.email %></li>
-                  <% end %>
-                </ul>
+                <% [["Étudiants n'ayant pas modifié leurs choix", @non_modifies, "#FFE0E0",
+                     "Leur classement est resté dans l'ordre proposé par défaut."],
+                    ["Étudiants ayant modifié leurs choix", @modifies, "#FFF4C1",
+                     "Ils ont réordonné leurs vœux mais ne les ont pas encore validés."],
+                    ["Étudiants ayant validé leurs choix", @valides, "#C7F0D8",
+                     "Classement validé, il n'est plus modifiable."]].each do |titre, liste, teinte, aide| %>
+                  <div class="mb-4">
+                    <h6 class="d-flex align-items-center" style="gap: .5rem;">
+                      <span style="display: inline-block; width: .8rem; height: .8rem;
+                                   border-radius: 2px; background: <%= teinte %>;"></span>
+                      <%= titre %>
+                      <span class="text-grey">(<%= liste.size %>)</span>
+                    </h6>
+                    <p class="text-grey mb-2"><small><%= aide %></small></p>
+                    <% if liste.any? %>
+                      <ul class="mb-0">
+                        <% liste.each do |user| %>
+                          <li>
+                            <%= user.first_name.capitalize %> <%= user.last_name.capitalize %>
+                            <span class="text-grey">— <%= user.email %>
+                              <% if user.speciality %>· <%= user.speciality.name %><% else %>· <em>sans spécialité</em><% end %>
+                            </span>
+                          </li>
+                        <% end %>
+                      </ul>
+                    <% else %>
+                      <p class="text-grey mb-0"><small><em>Aucun</em></small></p>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
               <div class="row">
                 <%# @teams.each do |team| %>

@@ -146,6 +146,14 @@ h1, h2, h3, h4, h5, h6 {
   text-align: justify;
 }
 
+.chip-sujet {
+  display: inline-block;
+  font-size: .68rem;
+  padding: .05rem .4rem;
+  border-radius: 2px;
+  margin-right: .35rem;
+  color: #16202A;
+}
 .bg-physique {
   background: #E2C1FF;
 }

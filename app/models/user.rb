@@ -90,6 +90,15 @@ class User < ApplicationRecord
     speciality.eligible_projects
   end
 
+  # A-t-il touché à son classement ? Les Rating sont créés dans un ordre donné et
+  # acts_as_list les numérote à la suite : tant que l'élève n'a rien déplacé,
+  # l'ordre des positions est celui de la création.
+  def ratings_reordered?
+    rs = ratings.to_a
+    return false if rs.size < 2
+    rs.sort_by { |r| r.position.to_i }.map(&:id) != rs.sort_by(&:id).map(&:id)
+  end
+
   # Une filière à projet unique (les Maths) n'a rien à classer.
   def must_rank_projects?
     eligible_projects.count > 1

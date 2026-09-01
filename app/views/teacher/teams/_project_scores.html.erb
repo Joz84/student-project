@@ -1,0 +1,67 @@
+<div class="card card-body mb-3">
+  <a data-bs-toggle="collapse" href="#collapseScores" role="button" aria-expanded="false" aria-controls="collapseScores">
+    Attrait des projets
+  </a>
+  <div class="collapse mt-3" id="collapseScores">
+
+    <p class="text-grey mb-4"><small>
+      Score moyen sur 100, calculé sur les vœux déjà enregistrés. Le 1<sup>er</sup> vœu d'un élève
+      vaut 100 et son dernier 0, quelle que soit la longueur de sa liste : un projet de maths,
+      classé parmi 3, se compare ainsi à un projet SI classé parmi 14.
+      « Places » est le nombre d'élèves que le projet peut accueillir
+      (<%= TeamsImporter::MAX_SIZE %> par équipe).
+    </small></p>
+
+    <div style="overflow-x: auto;">
+      <table class="table table-sm" style="font-size: .85rem;">
+        <thead>
+          <tr>
+            <th>Projet</th>
+            <th class="text-end">Score</th>
+            <th class="text-end">Classé par</th>
+            <th class="text-end">1<sup>er</sup> vœu</th>
+            <th class="text-end">Top 3</th>
+            <th class="text-end">Places</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @project_demand.each do |d| %>
+            <tr>
+              <td>
+                <span class="chip-sujet bg-<%= d[:project].subject.downcase %>"><%= d[:project].subject.capitalize %></span>
+                <%= link_to d[:project].name.truncate(52), project_path(d[:project]),
+                            class: "text-decoration-none", target: "_blank" %>
+              </td>
+              <td style="min-width: 8rem;">
+                <% if d[:mean] %>
+                  <div class="d-flex align-items-center" style="gap: .5rem;">
+                    <div style="flex: 1; background: #EEF1F4; height: .8rem; border-radius: 2px;">
+                      <div style="width: <%= d[:mean] %>%; height: 100%; border-radius: 2px;
+                                  background: <%= rank_color(101 - d[:mean], 100) %>;"></div>
+                    </div>
+                    <strong style="width: 2rem; text-align: right;"><%= d[:mean] %></strong>
+                  </div>
+                <% else %>
+                  <span class="text-grey">–</span>
+                <% end %>
+              </td>
+              <td class="text-end"><%= d[:ranked] %></td>
+              <td class="text-end"><strong><%= d[:first] %></strong></td>
+              <td class="text-end"><%= d[:top3] %></td>
+              <td class="text-end <%= "text-danger" if d[:first] > d[:seats] %>">
+                <%= d[:seats] %>
+                <span class="text-grey">(<%= d[:teams] %> éq.)</span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-grey mb-0"><small>
+      Une valeur en rouge signale un projet demandé en 1<sup>er</sup> vœu par plus d'élèves
+      qu'il ne peut en accueillir.
+    </small></p>
+
+  </div>
+</div>
