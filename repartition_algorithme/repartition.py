@@ -87,7 +87,7 @@ def _parse_payload(payload):
 
 def _check_feasibility(students, projects, scores, n_slots,
                        min_size, max_size, k_projects,
-                       speciality_of, exclusive):
+                       speciality_of, exclusive, sans_pref=frozenset(), min_choosers=0):
     """Diagnostics lisibles, avant de laisser le solveur répondre « infaisable »."""
     N = len(students)
     total_slots = sum(n_slots[p] for p in projects)
@@ -135,6 +135,18 @@ def _check_feasibility(students, projects, scores, n_slots,
                 f"Augmentez max_booking sur ces projets."
             )
 
+    if min_choosers > 0:
+        n_choix = sum(1 for e in students if speciality_of.get(e) not in sans_pref)
+        g_max = n_choix // min_choosers
+        g_min = math.ceil(len(students) / max_size)
+        if g_min > g_max:
+            raise ValueError(
+                f"Impossible d'avoir {min_choosers} élève(s) ayant classé dans chaque groupe : "
+                f"{len(students)} élèves demandent au moins {g_min} groupes (taille max {max_size}), "
+                f"or {n_choix} élèves ont classé, ce qui n'en permet que {g_max}. "
+                f"Baissez min_choosers, augmentez max_size, ou obtenez plus de classements."
+            )
+
     # Une catégorie à groupes homogènes doit pouvoir se partitionner seule.
     # Cas particulier accepté : exactement 5, qui forme un unique groupe de 5.
     for g in exclusive:
@@ -159,6 +171,7 @@ def solve_assignment(
     lexicographic: bool = True,
     time_limit_s: float = 60,
     duplicate_penalty: Optional[float] = None,
+    min_choosers: int = 0,
     return_status: bool = False,
 ):
     """
@@ -181,6 +194,9 @@ def solve_assignment(
       inévitable. Abaissez-le pour autoriser un doublon qui améliore les vœux.
     - lexicographic : conservé pour compatibilité, sans effet — la résolution est
       toujours en deux temps (nombre de groupes, puis vœux).
+    - min_choosers : nombre minimal d'élèves ayant exprimé des vœux par groupe. Les
+      autres — ceux marqués no_preference dans les spécialités — viennent compléter
+      les groupes sans jamais les composer à eux seuls.
     - return_status : renvoie un 5e élément décrivant le déroulé de la résolution.
 
     Retourne:
@@ -226,9 +242,12 @@ def solve_assignment(
         if (meta or {}).get("exclusive_groups")
         and any(speciality_of.get(e) == g for e in students)
     ]
+    sans_pref = {g for g, meta in specialities_meta.items() if (meta or {}).get("no_preference")}
+    choisisseurs = [e for e in students if speciality_of.get(e) not in sans_pref]
 
     _check_feasibility(students, projects, scores, n_slots,
-                       min_size, max_size, k_projects, speciality_of, exclusive)
+                       min_size, max_size, k_projects, speciality_of, exclusive,
+                       sans_pref, min_choosers)
 
     # --- Construction du solveur
     solver = pywraplp.Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING")
@@ -302,6 +321,9 @@ def solve_assignment(
         load_s = solver.Sum(x[(e, s)] for e in students if (e, s) in x)
         solver.Add(load_s <= cap_for(s))
         solver.Add(load_s >= min_size * y[s])
+        if min_choosers > 0:
+            avec_voeux = solver.Sum(x[(e, s)] for e in choisisseurs if (e, s) in x)
+            solver.Add(avec_voeux >= min_choosers * y[s])
 
     ok = (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE)
     etat = {"phase1": None, "phase2": None, "groupes": None, "borne_min": None,
@@ -428,12 +450,16 @@ def output_path(payload_path: str, explicit: Optional[str] = None) -> str:
 
 def summary(assignment: Dict[str, List[str]], score: float, payload: dict) -> str:
     spec = {e: (m or {}).get("speciality") for e, m in (payload.get("students") or {}).items()}
+    sans = {g for g, m in (payload.get("specialities") or {}).items() if (m or {}).get("no_preference")}
     lignes = [f"{len(assignment)} groupes, score total {score:.0f}", ""]
     for project, groupes in sorted(groups_by_project(assignment).items()):
         for g in groupes:
-            filieres = sorted({spec.get(e) for e in g if spec.get(e)})
+            filieres = sorted({spec.get(e) for e in g if spec.get(e) and spec.get(e) not in sans})
+            nb_sans = sum(1 for e in g if spec.get(e) in sans)
             suffixe = f"  [{', '.join(filieres)}]" if filieres else ""
-            lignes.append(f"  {len(g)}  {project[:52]}{suffixe}")
+            if nb_sans:
+                suffixe += f" +{nb_sans} sans choix"
+            lignes.append(f"  {len(g)}  {project[:44]}{suffixe}")
     total = sum(len(g) for g in assignment.values())
     tailles = {}
     for g in assignment.values():
@@ -472,6 +498,8 @@ def main(argv=None):
     ap.add_argument("--max-size", type=int, default=4, help="taille maximale d'un groupe (4)")
     ap.add_argument("--groupes", type=int, default=None,
                     help="impose un nombre exact de groupes (sinon minimisé)")
+    ap.add_argument("--min-choosers", type=int, default=0,
+                    help="minimum d'élèves ayant classé leurs vœux par groupe (0 = pas de règle)")
     ap.add_argument("--time-limit", type=float, default=60,
                     help="temps maximal par phase, en secondes (60)")
     ap.add_argument("--duplicate-penalty", type=float, default=None,
@@ -492,7 +520,8 @@ def main(argv=None):
         selected, assignment, score, _, etat = solve_assignment(
             payload, min_size=args.min_size, max_size=args.max_size,
             k_projects=args.groupes, time_limit_s=args.time_limit,
-            duplicate_penalty=args.duplicate_penalty, return_status=True)
+            duplicate_penalty=args.duplicate_penalty, min_choosers=args.min_choosers,
+            return_status=True)
     except (ValueError, RuntimeError) as exc:
         raise SystemExit(f"\nRépartition impossible.\n{exc}")
 

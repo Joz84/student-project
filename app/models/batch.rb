@@ -60,14 +60,12 @@ class Batch < ApplicationRecord
   end
 
   # Pseudo-spécialité des élèves qui n'ont pas validé leur classement : aucune
-  # préférence, accès à tous les projets, et groupes entre eux — on ne les mélange
-  # pas avec ceux qui ont joué le jeu.
+  # préférence, accès à tous les projets. Ils viennent compléter les groupes.
   SANS_CHOIX = "sans-choix".freeze
 
   # Entrée complète du solveur (repartition_algorithme/repartition.py).
   # Contrairement à `scores`, ne retient que les étudiants encore présents.
-  def solver_payload
-    student_scope = users.kept.where(teacher: nil)
+  def solver_payload(student_scope = users.kept.where(teacher: nil))
     ayant_choisi = student_scope.booked
     sans_choix = student_scope.pending
 
@@ -77,7 +75,9 @@ class Batch < ApplicationRecord
     end
 
     filieres = specialities.map { |s| [s.slug, { exclusive_groups: s.exclusive_groups }] }.to_h
-    filieres[SANS_CHOIX] = { exclusive_groups: true } if sans_choix.any?
+    # Ils ne sont plus groupés entre eux : ils complètent les groupes, et la
+    # contrainte min_choosers du solveur garantit assez d'élèves ayant classé.
+    filieres[SANS_CHOIX] = { exclusive_groups: false, no_preference: true } if sans_choix.any?
 
     {
       scores: notes,

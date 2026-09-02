@@ -13,10 +13,10 @@
 # transactionnelle : soit toutes les équipes, soit aucune.
 class TeamsImporter
   MIN_SIZE = 3
-  MAX_SIZE = 4
-  # Une catégorie à groupes homogènes comptant exactement 5 élèves forme un groupe
-  # unique de 5 : 5 ne se découpe ni en 3+2 ni en 4+1. Même règle que le solveur.
-  EXCEPTION_SIZE = 5
+  # Le solveur décide de la forme exacte des groupes ; l'import se contente de
+  # refuser les tailles aberrantes. 5 est atteint quand une catégorie homogène en
+  # compte exactement 5, ou quand des élèves sans classement complètent un groupe.
+  MAX_SIZE = 5
   SLOT_SEP = " || groupe "
   WAITING_TEAM = "En attente de projet"
 
@@ -134,12 +134,8 @@ class TeamsImporter
     groups.each do |g|
       n = g.members.size
       cats = g.members.map { |u| categorie(u) }.uniq
-      exception = n == EXCEPTION_SIZE && cats.size == 1 &&
-                  categorie_exclusive?(cats.first) &&
-                  taille_categorie(cats.first) == EXCEPTION_SIZE
-      unless n.between?(@min_size, @max_size) || exception
-        @errors << "groupe de #{n} sur « #{g.project.name} » (attendu #{@min_size} à #{@max_size}, " \
-                   "ou #{EXCEPTION_SIZE} pour une catégorie qui en compte exactement #{EXCEPTION_SIZE})"
+      unless n.between?(@min_size, @max_size)
+        @errors << "groupe de #{n} sur « #{g.project.name} » (attendu #{@min_size} à #{@max_size})"
       end
 
       # Les élèves sans classement n'ont exprimé aucune préférence : tous les
@@ -150,7 +146,7 @@ class TeamsImporter
                    "« #{g.project.name} »"
       end
 
-      cats.select { |c| categorie_exclusive?(c) }.each do |cat|
+      cats.select { |c| c != Batch::SANS_CHOIX && categorie_exclusive?(c) }.each do |cat|
         intrus = g.members.reject { |u| categorie(u) == cat }
         next if intrus.empty?
         @errors << "« #{g.project.name} » mêle #{cat} et #{intrus.map { |u| categorie(u) || '?' }.uniq.join(', ')} " \
