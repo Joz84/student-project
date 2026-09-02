@@ -107,6 +107,8 @@
                         <% liste.each do |user| %>
                           <li>
                             <%= user.first_name.capitalize %> <%= user.last_name.capitalize %>
+                            <% if user.td.present? %><span class="chip-sujet bg-maths"><%= user.td %></span><% end %>
+                            <% if user.tp.present? %><span class="chip-sujet bg-chimie"><%= user.tp %></span><% end %>
                             <span class="text-grey">— <%= user.email %>
                               <% if user.speciality %>· <%= user.speciality.name %><% else %>· <em>sans spécialité</em><% end %>
                             </span>

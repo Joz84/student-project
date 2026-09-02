@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_01_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_01_160000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -339,11 +339,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_01_120000) do
     t.boolean "drop", default: false
     t.bigint "speciality_id"
     t.boolean "imported", default: false, null: false
+    t.string "td"
+    t.string "tp"
     t.index ["batch_id"], name: "index_users_on_batch_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["speciality_id"], name: "index_users_on_speciality_id"
+    t.index ["td"], name: "index_users_on_td"
     t.index ["team_id"], name: "index_users_on_team_id"
+    t.index ["tp"], name: "index_users_on_tp"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
