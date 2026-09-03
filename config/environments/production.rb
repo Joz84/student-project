@@ -1,10 +1,21 @@
 require "active_support/core_ext/integer/time"
 
 Rails.application.configure do
-  config.action_mailer.default_url_options = { host: ENV['DOMAIN'] }
-  config.action_mailer.postmark_settings   = { api_token: ENV['POSTMARK_API_TOKEN'] }
-  config.action_mailer.delivery_method     = :postmark
-  config.action_mailer.default_url_options = { host: 'your-production-url.com' }
+  # Les liens des e-mails (réinitialisation de mot de passe notamment) sont
+  # construits à partir de DOMAIN. Sans lui, ils pointeraient dans le vide.
+  config.action_mailer.default_url_options = { host: ENV.fetch("DOMAIN", "www.upf-project.com"),
+                                               protocol: "https" }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              "smtp-relay.brevo.com",
+    port:                 587,
+    user_name:            ENV["BREVO_SMTP_LOGIN"],
+    password:             ENV["BREVO_SMTP_KEY"],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
+  config.action_mailer.perform_deliveries = ENV["BREVO_SMTP_KEY"].present?
+  config.action_mailer.raise_delivery_errors = true
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
