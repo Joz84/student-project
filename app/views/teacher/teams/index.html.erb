@@ -180,35 +180,23 @@
         </div>
         
         <% @teachers.each do |teacher| %>
-          <h4 class="mt-5">Professeur <%= teacher.last_name.capitalize %></h4>
-          
-          <% teacher.supervised_projects.where(batch: @batch).each do |project| %>
-            <% if project.kept_teams.any? %>
-              <h6><%= project.name %></h6>
-              <div class="container-fluid">
-                <div class="row">
-                  <% project.kept_teams.each do |team| %>
-                    <div class="col-md-4">
-                      <div class="card w-100 p-3 mb-2">
-                        <h6 class="text-center"><%= team.name %></h6>
-                        <small class="text-grey text-center"><i><%= team.project.name.capitalize %></i></small>
-                        <ul>
-                          
-                          <% team.users.kept.each do |user| %>
-                            <li><%= user.first_name %> <%= user.last_name %></li>
-                          <% end %>
-                          
-                        </ul>
-                        <%= link_to "lien", team, target: "_blank" %>
-                      </div>   
-                    </div>         
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-            
-          <% end %>
-          
+          <% equipes = @equipes_par_enseignant[teacher.id] || [] %>
+          <% next if equipes.empty? %>
+          <div class="teacher-block">
+            <div class="teacher-block__head">
+              <h4><%= teacher.first_name %> <%= teacher.last_name.capitalize %></h4>
+              <span class="teacher-block__count">
+                <%= equipes.size %> équipe<%= "s" if equipes.size > 1 %> ·
+                <%= equipes.sum { |t| t.users.kept.size } %> étudiants ·
+                <%= equipes.map(&:project_id).uniq.size %> projet<%= "s" if equipes.map(&:project_id).uniq.size > 1 %>
+              </span>
+            </div>
+            <div class="team-grid">
+              <% equipes.each do |team| %>
+                <%= render "teacher/teams/team_card", team: team %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
 
       </div>

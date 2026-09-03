@@ -64,6 +64,7 @@ class Teacher::TeamsController < ApplicationController
       .kept
     @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct
     @teachers = @teachers.where(id: current_user.id) if !current_user.admin
+    load_equipes_par_enseignant
     @project_demand = @batch.project_demand
     load_avancement
     load_repartition
@@ -76,6 +77,18 @@ class Teacher::TeamsController < ApplicationController
                    .order(:last_name, :first_name)
     @valides, en_cours = eleves.partition(&:booked?)
     @modifies, @non_modifies = en_cours.partition(&:ratings_reordered?)
+  end
+
+  # Les équipes de chaque enseignant, en une passe plutôt qu'une requête par projet.
+  def load_equipes_par_enseignant
+    equipes = @teams.includes(:project, :users).to_a
+    supervisions = Supervision.where(project_id: equipes.map(&:project_id).uniq)
+                              .pluck(:project_id, :user_id)
+                              .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(p, u), h| h[p] << u }
+    @equipes_par_enseignant = Hash.new { |h, k| h[k] = [] }
+    equipes.sort_by { |t| [t.project.name, t.name] }.each do |t|
+      supervisions[t.project_id].each { |uid| @equipes_par_enseignant[uid] << t }
+    end
   end
 
   # Matrice « qui a eu quel vœu », pour expliquer aux élèves le choix de l'algorithme.

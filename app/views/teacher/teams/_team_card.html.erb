@@ -1,0 +1,54 @@
+<% membres = team.users.kept.sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] } %>
+<% td = membres.map(&:td).compact.uniq %>
+<% tp = membres.map(&:tp).compact.uniq %>
+<% valides = membres.count(&:booked?) %>
+
+<div class="col">
+  <div class="team-card h-100">
+    <div class="team-card__bar bg-<%= team.project.subject.downcase %>"></div>
+
+    <div class="team-card__body">
+      <div class="team-card__top">
+        <span class="chip-sujet bg-<%= team.project.subject.downcase %>"><%= team.project.subject.capitalize %></span>
+        <span class="team-card__tags">
+          <% td.each do |v| %><span class="team-tag"><%= v %></span><% end %>
+          <% tp.each do |v| %><span class="team-tag"><%= v %></span><% end %>
+        </span>
+      </div>
+
+      <h6 class="team-card__title" title="<%= team.project.name %>"><%= team.project.name %></h6>
+      <p class="team-card__team">Équipe <%= team.name %></p>
+
+      <div class="team-card__people">
+        <div class="avatar-stack">
+          <% membres.each do |user| %>
+            <span class="avatar-sm" style="background: <%= user.avatar_color %>;"
+                  title="<%= user.first_name %> <%= user.last_name %>">
+              <%= "#{user.first_name.to_s.first}#{user.last_name.to_s.first}".upcase %>
+            </span>
+          <% end %>
+        </div>
+        <span class="team-card__count">
+          <%= membres.size %> étudiant<%= "s" if membres.size > 1 %>
+          <% if valides < membres.size %>
+            <span class="team-card__muted">· <%= valides %> ayant classé</span>
+          <% end %>
+        </span>
+      </div>
+
+      <ul class="team-card__list">
+        <% membres.each do |user| %>
+          <li>
+            <%= user.first_name %> <%= user.last_name %>
+            <% unless user.booked? %><span class="team-card__muted">sans classement</span><% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <%= link_to team, class: "team-card__link" do %>
+      Ouvrir le tableau de bord
+      <span aria-hidden="true">→</span>
+    <% end %>
+  </div>
+</div>

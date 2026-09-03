@@ -13,8 +13,11 @@ threads min_threads_count, max_threads_count
 
 # Specifies that the worker count should equal the number of processors in production.
 if ENV["RAILS_ENV"] == "production"
-  require "concurrent-ruby"
-  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
+  # Un dyno Heroku voit les coeurs de la machine hote, pas sa propre part : sur un
+  # Eco a 512 Mo, Concurrent.physical_processor_count renvoyait 4 et Puma lancait
+  # quatre processus Rails, d'ou des Error R14 en continu. On reste a un worker
+  # sauf si WEB_CONCURRENCY dit explicitement le contraire.
+  worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { 1 })
   workers worker_count if worker_count > 1
 end
 

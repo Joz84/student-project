@@ -166,3 +166,109 @@ h1, h2, h3, h4, h5, h6 {
 .bg-stes {
   background: #C7F0D8;
 }
+/* --- cartes d'équipe, espace enseignant --- */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1rem;
+}
+.team-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #E1E6EB;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: box-shadow .15s ease, transform .15s ease;
+}
+.team-card:hover {
+  box-shadow: 0 4px 14px rgba(22, 32, 42, .10);
+  transform: translateY(-2px);
+}
+.team-card__bar { height: 4px; }
+.team-card__body { padding: 1rem 1.1rem .9rem; flex: 1; }
+.team-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  margin-bottom: .6rem;
+}
+.team-card__tags { display: flex; gap: .3rem; }
+.team-tag {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: #5B6874;
+  background: #EEF1F4;
+  border-radius: 3px;
+  padding: .1rem .4rem;
+}
+.team-card__title {
+  font-size: .98rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0 0 .15rem;
+  color: #16202A;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.team-card__team { font-size: .8rem; color: #5B6874; margin: 0 0 .8rem; }
+.team-card__people {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding-bottom: .7rem;
+  border-bottom: 1px solid #EEF1F4;
+}
+.team-card__count { font-size: .8rem; color: #16202A; font-weight: 500; }
+.team-card__muted { color: #8A96A3; font-weight: 400; }
+.avatar-stack { display: flex; }
+.avatar-stack .avatar-sm:not(:first-child) { margin-left: -.5rem; }
+.avatar-sm {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .68rem;
+  font-weight: 600;
+  color: #16202A;
+  flex: 0 0 auto;
+}
+.team-card__list {
+  list-style: none;
+  margin: .7rem 0 0;
+  padding: 0;
+  font-size: .85rem;
+  color: #38424D;
+}
+.team-card__list li { padding: .1rem 0; }
+.team-card__list .team-card__muted { font-size: .75rem; margin-left: .3rem; }
+.team-card__link {
+  display: block;
+  padding: .6rem 1.1rem;
+  background: #F7F8FA;
+  border-top: 1px solid #EEF1F4;
+  font-size: .82rem;
+  font-weight: 600;
+  color: $blue;
+  text-decoration: none;
+}
+.team-card__link:hover { background: #EEF1F4; color: $blue; }
+
+.teacher-block { margin-top: 2.5rem; }
+.teacher-block__head {
+  display: flex;
+  align-items: baseline;
+  gap: .6rem;
+  padding-bottom: .5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #E1E6EB;
+}
+.teacher-block__head h4 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+.teacher-block__count { font-size: .82rem; color: #5B6874; }
