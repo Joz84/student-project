@@ -179,6 +179,29 @@
           </div>
         </div>
         
+        <% if @equipes_sans_projet.present? %>
+          <div class="teacher-block">
+            <div class="teacher-block__head">
+              <h4>Équipes sans projet</h4>
+              <span class="teacher-block__count">
+                <%= @equipes_sans_projet.size %> équipe<%= "s" if @equipes_sans_projet.size > 1 %> ·
+                aucun référent ne peut leur être associé
+              </span>
+            </div>
+            <ul class="orphan-list">
+              <% @equipes_sans_projet.sort_by { |t| t.name.to_s }.each do |t| %>
+                <li>
+                  <%= link_to t.name, t %>
+                  <span class="team-card__muted">
+                    <%= t.users.kept.size %> étudiant<%= "s" if t.users.kept.size > 1 %> —
+                    <%= t.users.kept.map { |u| "#{u.first_name} #{u.last_name}" }.join(", ") %>
+                  </span>
+                </li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
         <% @teachers.each do |teacher| %>
           <% equipes = @equipes_par_enseignant[teacher.id] || [] %>
           <% next if equipes.empty? %>

@@ -1,3 +1,4 @@
+<% return if team.project.nil? %>
 <% membres = team.users.kept.sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] } %>
 <% td = membres.map(&:td).compact.uniq %>
 <% tp = membres.map(&:tp).compact.uniq %>

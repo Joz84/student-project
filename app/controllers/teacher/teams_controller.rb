@@ -81,12 +81,15 @@ class Teacher::TeamsController < ApplicationController
 
   # Les équipes de chaque enseignant, en une passe plutôt qu'une requête par projet.
   def load_equipes_par_enseignant
-    equipes = @teams.includes(:project, :users).to_a
+    # Une équipe sans projet ne peut être rattachée à aucun référent — d'anciennes
+    # promos en comptent, créées avant qu'un projet leur soit attribué.
+    toutes = @teams.includes(:project, :users).to_a
+    equipes, @equipes_sans_projet = toutes.partition(&:project)
     supervisions = Supervision.where(project_id: equipes.map(&:project_id).uniq)
                               .pluck(:project_id, :user_id)
                               .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(p, u), h| h[p] << u }
     @equipes_par_enseignant = Hash.new { |h, k| h[k] = [] }
-    equipes.sort_by { |t| [t.project.name, t.name] }.each do |t|
+    equipes.sort_by { |t| [t.project.name.to_s, t.name.to_s] }.each do |t|
       supervisions[t.project_id].each { |uid| @equipes_par_enseignant[uid] << t }
     end
   end
