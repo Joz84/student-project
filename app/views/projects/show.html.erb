@@ -15,9 +15,14 @@
           </small>
         </div>
 
-        <% if @project.author.present? %>
-          <p class="text-center text-grey mb-4"><i>Proposé par <%= @project.author %></i></p>
-        <% end %>
+        <p class="text-center text-grey mb-4">
+          <% if @project.author.present? %>
+            <i>Référent <%= @project.author %></i>
+          <% end %>
+          <% if @project.partner.present? && @project.partner != @project.author %>
+            <i>· Partenaire <%= @project.partner %></i>
+          <% end %>
+        </p>
 
         <div class="text-justify">
           <%= simple_format @project.description %>

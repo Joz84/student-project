@@ -639,7 +639,8 @@ cognitive des occupants et les consommations électriques. Ce totem sera basé s
 technologies (capteurs, contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
   subject: :physique, 
   max_booking: 4, 
-  author: 'Franck Lucas', 
+  author: 'Jonathan Serafini',
+  partner: 'Franck Lucas',
   active: true
 )
 
@@ -649,7 +650,8 @@ projects << Project.create!(
   description: "Remise en service d'une planche électrique à foil à partir d'un kit existant : moteur brushless immergé, contrôleur, batterie et télécommande étanche. En première année, les étudiants vérifient le câblage, la sécurité électrique et l'étanchéité de l'ensemble, remettent la planche en état de marche, puis l'instrumentent pour relever vitesse, consommation et autonomie lors d'essais encadrés. Les promotions suivantes reprendront la programmation du contrôleur et la fabrication de pièces par impression 3D.", 
   subject: :physique, 
   max_booking: 4, 
-  author: 'Franck Lucas', 
+  author: 'Jonathan Serafini',
+  partner: 'Franck Lucas',
   active: true
 )
 
@@ -659,7 +661,8 @@ projects << Project.create!(
   description: "Projet mené avec la Fédération polynésienne de ping-pong : concevoir une raquette connectée mesurant et transmettant en temps réel les gestes. IMU (gyro/accéléro), microcontrôleur (Arduino/ESP32), BLE/Wi-Fi et batterie intégrés au manche. Visualisation et analyse sur app, estimation vitesse/spin, détection d’impact, avec comparaison à une raquette du commerce. Objectif : précision, autonomie et ergonomie.",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Jonathan Serafini', 
+  author: 'Jonathan Serafini',
+  partner: 'Fédération tahitienne de tennis de table',
   active: true
 )
 
@@ -669,7 +672,8 @@ projects << Project.create!(
   description: "En partenariat avec le groupe d'écoles Polytech, étude des systèmes d'osmose inverse permettant de rendre potable, et suffisamment minéralisée pour la consommation, l'eau de la lentille d'eau douce des atolls. En première année, les étudiants dressent l'état des lieux de l'existant technique, mettent en service un osmoseur de démonstration et mesurent la qualité de l'eau produite : conductivité, pH, minéralisation, débit. Leurs relevés alimentent le projet mené en parallèle par la licence STES sur l'acceptabilité de la solution par les populations concernées.",
   subject: :chimie, 
   max_booking: 4, 
-  author: 'Jeremy Yune', 
+  author: 'Anthony Utahia',
+  partner: 'Anthony Utahia',
   active: true
 )
 
@@ -684,7 +688,8 @@ que des consommations d'énergie. Ce système sera basé sur l'utilisation de te
 contrôleurs) low cost et la réalisation de pièces par imprimante 3D.", 
   subject: :physique, 
   max_booking: 4, 
-  author: 'Anthony Utahia', 
+  author: 'Anthony Utahia',
+  partner: 'Anthony Utahia',
   active: true
 )
 
@@ -696,7 +701,8 @@ Le travail va de l'extraction aux produits finis — huiles, baumes, lotions, s�
 L'objectif pédagogique est l'acquisition progressive des savoirs techniques, des capacités de conception expérimentale et des compétences d'analyse.", 
   subject: :chimie, 
   max_booking: 1, 
-  author: 'Raimana Ho', 
+  author: 'Raimana Ho',
+  partner: 'Raimana Ho',
   active: true
 )
 
@@ -710,7 +716,8 @@ Un robot pendule inversé sur deux roues, grand classique de la robotique dont l
 En première année, les étudiants fabriquent le châssis par impression 3D, montent l'électronique et programment le robot, avec l'assistance de l'IA de leur choix. L'objectif de l'année est simple et vérifiable : ça tourne. Le mesurer et le modéliser viendra en L2, le faire tenir debout en L3.",
   subject: :physique, 
   max_booking: 2, 
-  author: 'Franco Ferrucci', 
+  author: 'Franco Ferrucci',
+  partner: 'Franco Ferrucci',
   active: true
 )
 
@@ -723,7 +730,8 @@ Second semestre : groupe des inversibles et indicatrice d'Euler, petit théorèm
 Prérequis : programme de spécialité mathématiques de terminale. Aucune algèbre générale n'est supposée, groupe et sous-groupe sont construits dans le projet.",
   subject: :maths,
   max_booking: 7,
-  author: 'Kéva Djambaé',
+  author: 'Jonathan Serafini',
+  partner: 'Kéva Djambaé',
   active: true
 )
 
@@ -737,6 +745,7 @@ Prérequis : spécialité mathématiques expertes, pour ses deux volets — nomb
   subject: :maths,
   max_booking: 7,
   author: 'Kéva Djambaé',
+  partner: 'Kéva Djambaé',
   active: true
 )
 
@@ -747,6 +756,7 @@ projects << Project.create!(
   subject: :maths,
   max_booking: 7,
   author: 'Jonathan Serafini',
+  partner: 'Jonathan Serafini',
   active: true
 )
 
@@ -759,7 +769,8 @@ La maquette restera au laboratoire : les étudiants qui l'auront construite en L
 En première année, il s'agit de la concevoir et de l'imprimer. La motorisation et l'instrumentation viennent en L2, la commande en L3.",
   subject: :physique, 
   max_booking: 2, 
-  author: 'Franco Ferrucci', 
+  author: 'Franco Ferrucci',
+  partner: 'Franco Ferrucci',
   active: true
 )
 
@@ -771,7 +782,8 @@ Une maquette de table qui reproduit le principe de la transmission hybride Toyot
 En première année, les étudiants dessinent et impriment les engrenages, jusqu'à ce que ça tourne. Brancher les moteurs et la batterie pour que ça roule est le travail de L2 ; répartir la puissance entre les trois machines, ce qui rend l'ensemble réellement hybride, celui de L3.",
   subject: :physique, 
   max_booking: 2, 
-  author: 'Franco Ferrucci', 
+  author: 'Franco Ferrucci',
+  partner: 'Franco Ferrucci',
   active: true
 )
 
@@ -781,7 +793,8 @@ projects << Project.create!(
   description: "Assemblage et mise au point d'une lampe alimentée par la descente d'une masse : la charge suspendue entraîne, via une démultiplication, une génératrice qui alimente des LED. En première année, les étudiants montent le dispositif à partir d'éléments existants, mesurent l'énergie effectivement restituée et la durée d'éclairage obtenue, puis confrontent ces relevés au calcul d'énergie potentielle. Un support très direct pour travailler les ordres de grandeur et la notion de rendement.",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Jonathan Serafini', 
+  author: 'Jonathan Serafini',
+  partner: 'Jonathan Serafini',
   active: true
 )
 
@@ -791,7 +804,8 @@ projects << Project.create!(
   description: "Mise en service d'une station de mesure de la qualité de l'air à partir de capteurs low cost existants — particules fines PM2.5 et PM10, CO2, température, humidité — pilotés par un microcontrôleur. En première année, les étudiants câblent et configurent le kit, vérifient la cohérence des mesures entre capteurs et mettent en place l'enregistrement des données. Les relevés effectués sur le campus servent ensuite de base à l'analyse des conditions de confort et de la qualité de l'air intérieur.",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Marania Hopuare-klouman', 
+  author: 'Jonathan Serafini',
+  partner: 'Marania Hopuare-Klouman',
   active: true
 )
 
@@ -805,7 +819,8 @@ Les campagnes menées sur les sites de la thèse mobilisent des plongeurs scient
 Un aperçu des travaux en vidéo (15 min) : https://www.youtube.com/watch?v=KJGuiFMOSuE",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Eve Rebouillat', 
+  author: 'Jonathan Serafini',
+  partner: 'Eve Rebouillat',
   active: true
 )
 
@@ -815,7 +830,8 @@ projects << Project.create!(
   description: "Mise en service d'une station météorologique construite autour de capteurs low cost (température, humidité, pression, pluviométrie, vent) et d'un microcontrôleur. En première année, les étudiants assemblent le kit existant, vérifient l'étalonnage des capteurs et mettent en place la collecte puis l'archivage des relevés. Les séries obtenues sur le campus sont ensuite exploitées pour caractériser le climat local et repérer les valeurs aberrantes.",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Jonathan Serafini', 
+  author: 'Jonathan Serafini',
+  partner: 'Météo France',
   active: true
 )
 
@@ -828,7 +844,8 @@ En première année, les étudiants mettent la station en service : couplage au 
 Les enregistrements sont ensuite confrontés à ceux des stations du réseau polynésien pour évaluer la sensibilité réellement atteinte. L'enjeu est concret : la Polynésie est exposée aux tsunamis d'origine lointaine, dont la propagation transpacifique est précisément l'objet des travaux du laboratoire partenaire.",
   subject: :physique, 
   max_booking: 4, 
-  author: 'Anthony Jamelot', 
+  author: 'Jonathan Serafini',
+  partner: 'Anthony Jamelot',
   active: true
 )
 
