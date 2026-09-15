@@ -256,21 +256,6 @@ nav a:first-child {
   gap: .7rem;
   text-decoration: none;
 
-  // Au-delà du point de rupture, la marque est centrée dans la barre : les
-  // liens restent à droite sans la décaler, quel que soit leur nombre.
-  @media (min-width: 992px) {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
-// La marque sortant du flux, `space-between` n'a plus qu'un enfant à placer :
-// sans cela les liens repartiraient à gauche.
-@media (min-width: 992px) {
-  .navbar-mihivai {
-    justify-content: flex-end;
-  }
 }
 
 .brand__text {
