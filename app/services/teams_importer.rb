@@ -181,7 +181,7 @@ class TeamsImporter
     base = total > 1 ? "#{project.name} #{rank}" : project.name
     candidate = base
     n = 1
-    while Team.exists?(name: candidate)
+    while Team.joins(:project).exists?(name: candidate, projects: { batch_id: @batch.id })
       n += 1
       candidate = "#{base} (#{n})"
     end

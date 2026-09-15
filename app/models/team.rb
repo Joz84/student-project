@@ -7,7 +7,10 @@ class Team < ApplicationRecord
   # has_many :messages
   has_many :meetings, dependent: :destroy
   validates :name, presence: true
-  validates :name, uniqueness: true
+  # Deux promos peuvent porter le même nom d'équipe sans ambiguïté : « Hydroponie »
+  # en L1 et en L2 désignent des projets distincts. L'unicité ne vaut donc que
+  # dans une promotion, repérée par le projet de l'équipe.
+  validate :name_unique_within_batch
 
   def archived_cards
     cards.where(status: :archived)
@@ -38,6 +41,17 @@ class Team < ApplicationRecord
   end
 
   private
+
+  def name_unique_within_batch
+    return if name.blank?
+    homonymes = Team.where(name: name).where.not(id: id)
+    homonymes = if project
+      homonymes.joins(:project).where(projects: { batch_id: project.batch_id })
+    else
+      homonymes.where(project_id: nil)
+    end
+    errors.add(:name, "est déjà utilisé dans cette promotion") if homonymes.exists?
+  end
 
   def create_lists
     names = ["Tâches à faire", "Tâches en cours", "Tâches finalisées"]
