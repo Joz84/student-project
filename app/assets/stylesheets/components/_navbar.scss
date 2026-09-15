@@ -287,3 +287,16 @@ nav a:first-child {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+/* Mot-marque : « UPF » en blanc, « -Project » dans le vert de la charte. */
+.brand-word {
+  font-family: $headers-font;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  color: #fff;
+  margin: 0;
+  line-height: 1;
+
+  span { color: $danger; }
+}
