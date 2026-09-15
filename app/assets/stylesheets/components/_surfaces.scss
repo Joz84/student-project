@@ -2,49 +2,51 @@
 // la hiérarchie. Le fond porte désormais une texture, les contenus restent
 // blancs et opaques, et les bandeaux ajoutent un halo de marque.
 
-body {
+// Le fond de page est porté par `html` : `body` reste sans fond, sinon il
+// couvrirait l'ornement posé en dessous.
+html {
   background-color: $page;
+}
+
+body {
   color: $ink-soft;
 }
 
-// Bas de page : plutôt qu'un motif sur toute la surface, un dégradé qui monte
-// du pied de page et une trame de points qui n'apparaît qu'en s'en approchant.
-// Le haut de la zone est strictement transparent, le contenu n'est pas gêné.
-.page-tail {
-  position: relative;
-  height: 220px;
-  margin-top: auto;
-  overflow: hidden;
+// Ornement de bas de page, fixé au bas de la fenêtre : un lavis bleu qui
+// monte et une trame de points qui se révèle en descendant. Étant fixé, il
+// reste visible en permanence, sans avoir à faire défiler la page.
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 320px;
+  max-height: 42vh;
+  z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg,
-              rgba($blue, 0) 0%,
-              rgba($blue, .05) 55%,
-              rgba($blue, .11) 100%);
+  background-image:
+    radial-gradient(rgba($blue, .28) 1px, transparent 1px),
+    linear-gradient(180deg,
+      rgba($blue, 0) 0%,
+      rgba($blue, .05) 55%,
+      rgba($blue, .11) 100%);
+  background-size: 18px 18px, 100% 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 6%, #000 88%);
+  mask-image: linear-gradient(180deg, transparent 6%, #000 88%);
 }
 
-.page-tail::before {
+// Trait d'horizon, au ras du bas de la fenêtre.
+body::before {
   content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba($blue, .28) 1px, transparent 1px);
-  background-size: 18px 18px;
-  -webkit-mask-image: linear-gradient(180deg, transparent 8%, #000 92%);
-  mask-image: linear-gradient(180deg, transparent 8%, #000 92%);
-}
-
-// Trait d'horizon, juste avant le pied de page.
-.page-tail::after {
-  content: "";
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   height: 1px;
+  z-index: -1;
+  pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba($blue, .35), transparent);
-}
-
-.page-tail + .footer {
-  margin-top: 0;
 }
 
 // Bandeau : deux halos de marque translucides, posés par-dessus la trame
