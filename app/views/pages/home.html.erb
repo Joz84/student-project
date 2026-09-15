@@ -1,65 +1,71 @@
-<div class="container page-min-height">
+<div class="page-min-height">
 
-  <section class="hero">
-    <div>
-      <span class="hero__eyebrow">Université de la Polynésie française</span>
-      <h1 class="hero__title">
-        Les <em>projets tutorés</em><br>de la licence Sciences
-      </h1>
-      <p class="hero__lede">
-        Choisis ton sujet, retrouve ton équipe et suis l'avancement de ton
-        projet tout au long de l'année, au même endroit.
-      </p>
-      <div class="hero__actions">
-        <% if user_signed_in? %>
-          <%= link_to "Accéder à mon espace Projet", project_router_path,
-                      class: "btn btn-danger text-white px-4 py-3" %>
-        <% else %>
-          <%= link_to "Se connecter", new_user_session_path,
-                      class: "btn btn-danger text-white px-4 py-3" %>
-          <%= link_to "Créer un compte", new_user_registration_path,
-                      class: "btn btn-outline-ink px-4 py-3" %>
-        <% end %>
+  <section class="band band--edge">
+    <div class="container band__inner">
+      <div class="hero">
+        <div>
+          <span class="hero__eyebrow">Université de la Polynésie française</span>
+          <h1 class="hero__title">
+            Les <em>projets tutorés</em><br>de la licence Sciences
+          </h1>
+          <p class="hero__lede">
+            Choisis ton sujet, retrouve ton équipe et suis l'avancement de ton
+            projet tout au long de l'année, au même endroit.
+          </p>
+          <div class="hero__actions">
+            <% if user_signed_in? %>
+              <%= link_to "Accéder à mon espace Projet", project_router_path,
+                          class: "btn btn-danger text-white px-4 py-3" %>
+            <% else %>
+              <%= link_to "Se connecter", new_user_session_path,
+                          class: "btn btn-danger text-white px-4 py-3" %>
+              <%= link_to "Créer un compte", new_user_registration_path,
+                          class: "btn btn-outline-ink px-4 py-3" %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="hero__art d-none d-lg-block">
+          <%= render "pages/illustration" %>
+        </div>
       </div>
     </div>
+  </section>
 
-    <div class="hero__art d-none d-lg-block">
-      <%= render "pages/illustration" %>
+  <div class="container">
+    <div class="section-head">
+      <h2>Comment ça marche</h2>
+      <p>Trois étapes, de l'inscription à la soutenance.</p>
     </div>
-  </section>
 
-  <div class="section-head">
-    <h2>Comment ça marche</h2>
-    <p>Trois étapes, de l'inscription à la soutenance.</p>
+    <section class="steps">
+      <article class="step">
+        <span class="step__num">1</span>
+        <h3 class="step__title">Choisis ta spécialité</h3>
+        <p class="step__text">
+          Mathématiques, Sciences pour l'ingénieur ou PEIP : ta spécialité
+          détermine les sujets auxquels tu as accès.
+        </p>
+      </article>
+
+      <article class="step">
+        <span class="step__num">2</span>
+        <h3 class="step__title">Classe tes vœux</h3>
+        <p class="step__text">
+          Ordonne les projets du plus au moins souhaité, puis valide. La
+          répartition en équipes tient compte de tous les classements.
+        </p>
+      </article>
+
+      <article class="step">
+        <span class="step__num">3</span>
+        <h3 class="step__title">Fais vivre ton projet</h3>
+        <p class="step__text">
+          Tableau de tâches, réunions et compétences acquises : ton équipe
+          garde la trace de son travail jusqu'à la soutenance.
+        </p>
+      </article>
+    </section>
   </div>
-
-  <section class="steps">
-    <article class="step">
-      <span class="step__num">1</span>
-      <h3 class="step__title">Choisis ta spécialité</h3>
-      <p class="step__text">
-        Mathématiques, Sciences pour l'ingénieur ou PEIP : ta spécialité
-        détermine les sujets auxquels tu as accès.
-      </p>
-    </article>
-
-    <article class="step">
-      <span class="step__num">2</span>
-      <h3 class="step__title">Classe tes vœux</h3>
-      <p class="step__text">
-        Ordonne les projets du plus au moins souhaité, puis valide. La
-        répartition en équipes tient compte de tous les classements.
-      </p>
-    </article>
-
-    <article class="step">
-      <span class="step__num">3</span>
-      <h3 class="step__title">Fais vivre ton projet</h3>
-      <p class="step__text">
-        Tableau de tâches, réunions et compétences acquises : ton équipe
-        garde la trace de son travail jusqu'à la soutenance.
-      </p>
-    </article>
-  </section>
 
 </div>

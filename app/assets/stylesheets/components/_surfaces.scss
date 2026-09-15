@@ -1,0 +1,105 @@
+// Arrière-plans : le site reposait sur du blanc pur partout, ce qui écrasait
+// la hiérarchie. Le fond général devient un bleu très pâle, les contenus
+// remontent en blanc, et les bandeaux portent un dégradé de marque.
+
+body {
+  background: $page;
+  color: $ink-soft;
+}
+
+// Bandeau pleine largeur : dégradé de marque + trame de points très discrète.
+.band {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(52rem 26rem at 12% -12%, rgba($blue, .16), transparent 62%),
+    radial-gradient(38rem 22rem at 96% 4%, rgba($danger, .13), transparent 62%),
+    linear-gradient(180deg, #FFFFFF 0%, $page 100%);
+}
+
+.band::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba($ink, .06) 1px, transparent 1px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+  mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+  pointer-events: none;
+}
+
+.band__inner {
+  position: relative;
+  z-index: 1;
+}
+
+// Séparation douce entre un bandeau et la suite de la page.
+.band--edge {
+  border-bottom: 1px solid rgba($ink, .06);
+}
+
+// Bandeau sombre, pour les pages qui ont besoin d'un point d'appui fort.
+.band--ink {
+  background:
+    radial-gradient(40rem 22rem at 85% -20%, rgba($blue, .55), transparent 65%),
+    linear-gradient(180deg, $ink 0%, darken($ink, 3%) 100%);
+  color: rgba(#fff, .82);
+
+  h1, h2, h3 { color: #fff; }
+}
+
+// Les surfaces de contenu se détachent du fond teinté.
+.card,
+.project-card,
+.team-card,
+.step,
+.auth-card,
+.orphan-list li {
+  box-shadow: $shadow-sm;
+}
+
+// Colonne latérale du classement : dégradé plutôt qu'aplat.
+.bg-primary {
+  background: linear-gradient(180deg, $primary 0%, darken($primary, 8%) 100%) !important;
+}
+
+// Titre de section avec un filet d'accent, plus tenu qu'un titre nu.
+.section-head h2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: .7rem;
+}
+
+.section-head h2::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, $blue, $danger);
+}
+
+// Filet coloré en haut de carte, repris de .team-card__bar.
+.step {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow $ease, transform $ease;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, $blue, rgba($blue, .15));
+}
+
+.step:hover {
+  box-shadow: $shadow;
+  transform: translateY(-2px);
+}
