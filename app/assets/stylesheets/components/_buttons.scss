@@ -1,0 +1,43 @@
+// Boutons : mêmes couleurs, davantage de tenue.
+.btn {
+  font-family: $body-font;
+  font-weight: 600;
+  letter-spacing: .01em;
+  border-radius: $radius-sm;
+  transition: transform $ease, box-shadow $ease, background-color $ease;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: $shadow-sm;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:focus-visible {
+  outline: 3px solid rgba($blue, .35);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+// L'action principale du site est verte ($danger dans la palette d'origine).
+.btn-danger {
+  border: none;
+}
+
+.btn-danger:hover {
+  box-shadow: 0 4px 12px rgba($danger, .35);
+}
+
+.btn-outline-ink {
+  border: 1px solid $line;
+  background: #fff;
+  color: $ink;
+
+  &:hover {
+    border-color: $muted-soft;
+    color: $ink;
+  }
+}

@@ -39,3 +39,40 @@ $footer-height: 100px;
     }
   }
 }
+/* --- refonte : lisibilité et respiration --- */
+.footer {
+  background: $ink;
+  height: auto;
+  min-height: 100px;
+  padding: 1.6rem 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.footer-copyright,
+.footer-links a {
+  opacity: 1;
+  color: rgba(255, 255, 255, .55);
+  font-size: .8rem;
+  line-height: 1.7;
+
+  a {
+    opacity: 1;
+    color: rgba(255, 255, 255, .55);
+    transition: color $ease;
+
+    &:hover { color: #fff; }
+  }
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  color: #fff;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: .95rem;
+
+  img { height: 34px; }
+}

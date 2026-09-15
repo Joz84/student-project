@@ -1,27 +1,48 @@
 <div class="container-fluid page-min-height">
   <div class="row">
     <div class="col-md-9">
-      <h2 class="text-center my-5">Les projets</h2>
+      <div class="section-head">
+        <h2>Les projets</h2>
+        <p>
+          <%= pluralize(@projects.size, "sujet proposé", "sujets proposés") %>
+          <%= "pour ta spécialité" if current_user.speciality %>.
+        </p>
+      </div>
+
       <div class="container">
-        <div class="row">
-        <% @projects.each do |project| %>
-          <div class="col-md-4">
-            <div class="card w-100 p-3 mb-2">
-              <h6 class="text-center"><%= project.name %></h6>
-              <div class="d-flex justify-content-center mb-3">
-                <small class="text-grey text-center card w-50 bg-<%= project.subject.downcase %>"><i><%= project.subject.capitalize %></i></small>
+        <div class="row g-3">
+          <% @projects.each do |project| %>
+            <div class="col-md-6 col-xl-4">
+              <div class="project-card card-hover">
+                <div class="project-card__bar" style="background: <%= project.color %>;"></div>
+                <div class="project-card__body">
+                  <span class="chip bg-<%= project.subject.downcase %>"><%= project.subject %></span>
+                  <h3 class="project-card__title"><%= project.name %></h3>
+                  <p class="project-card__text">
+                    <%= truncate(project.description, length: 190, separator: " ") %>
+                  </p>
+                  <div class="project-card__foot">
+                    <span class="project-card__ref"><%= project.author %></span>
+                    <%= link_to "Voir le projet →", project_path(project), class: "project-card__more" %>
+                  </div>
+                </div>
               </div>
-              <p class="text-justify"><%= truncate(project.description, length: 220, separator: " ") %></p>
-              <%= link_to "Voir le projet", project_path(project), class: "mt-auto" %>
             </div>
-          </div>
-        <% end %>
+          <% end %>
         </div>
       </div>
     </div>
+
     <div class="col-md-3 bg-primary page-min-height pb-5">
       <% rank = current_user.must_rank_projects? %>
       <h2 class="text-center text-white my-5"><%= rank ? "Ton classement" : "Ton projet" %></h2>
+
+      <% if rank && current_user.pending? %>
+        <p class="text-center text-white px-3 mb-4" style="font-size: .85rem; opacity: .9;">
+          Fais glisser les sujets pour les ordonner, du plus souhaité au moins souhaité.
+        </p>
+      <% end %>
+
       <div class="container">
         <div class="row g-0">
           <% if rank %>
@@ -35,31 +56,34 @@
           <% end %>
           <div class="<%= rank ? "col-10" : "col-12" %>">
             <% if current_user.pending? && rank %>
-              <div data-controller="sortable" data-sortable-animation-value="150" data-sortable-resource-name-value="rating"> <%# data-controller="dragndrop" data-dragndrop-target="ratings" %>
+              <div data-controller="sortable" data-sortable-animation-value="150" data-sortable-resource-name-value="rating">
             <% else %>
               <div>
             <% end %>
               <% current_user.ratings.order(:position).each do |rating| %>
-              <div class="card height-rating w-100 p-3 mb-2" data-sortable-update-url="<%= rating_path(rating) %>">
-                <h6 class="text-center"><%= rating.project.name.size > 40 ? "#{rating.project.name[0..40]}..." : rating.project.name %></h6>
-              </div>
+                <div class="card height-rating w-100 p-3 mb-2 <%= "cursor-pointer" if current_user.pending? && rank %>"
+                     data-sortable-update-url="<%= rating_path(rating) %>">
+                  <h6 class="text-center"><%= rating.project.name.size > 40 ? "#{rating.project.name[0..40]}..." : rating.project.name %></h6>
+                </div>
               <% end %>
             </div>
-            
           </div>
         </div>
       </div>
+
       <div class="container">
-      <% if current_user.pending? %>
-        <%= simple_form_for current_user do |f| %>
-          <%= f.input :team_id, :as => :hidden, :input_html => { :value => current_user.team&.id }  %>
-          <%= f.input :progress, :as => :hidden, :input_html => { :value => :booked } %>
-          <%= f.submit rank ? 'Valider ma liste' : 'Valider mon projet', data: {turbo_confirm: rank ? "Es tu sûr de vouloir valider ton classement? Celui-ci ne sera plus modifiable." : "Es tu sûr de vouloir valider ton projet? Celui-ci ne sera plus modifiable."}, class: "btn btn-danger text-white w-100" %>
-        <% end %>
+        <% if current_user.pending? %>
+          <%= simple_form_for current_user do |f| %>
+            <%= f.input :team_id, as: :hidden, input_html: { value: current_user.team&.id } %>
+            <%= f.input :progress, as: :hidden, input_html: { value: :booked } %>
+            <%= f.submit rank ? 'Valider ma liste' : 'Valider mon projet',
+                         data: { turbo_confirm: rank ? "Es tu sûr de vouloir valider ton classement? Celui-ci ne sera plus modifiable." : "Es tu sûr de vouloir valider ton projet? Celui-ci ne sera plus modifiable." },
+                         class: "btn btn-danger text-white w-100 py-3" %>
+          <% end %>
         <% else %>
-        <div class="card p-3 btn-supp">
-          <p><%= rank ? "Ton classement est validé" : "Ton projet est validé" %> et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
-        </div>
+          <div class="card p-3 btn-supp">
+            <p class="mb-0"><%= rank ? "Ton classement est validé" : "Ton projet est validé" %> et donc plus modifiable. Nous attendons la validation de tous les élèves pour finaliser.</p>
+          </div>
         <% end %>
       </div>
     </div>
