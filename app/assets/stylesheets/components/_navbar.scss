@@ -251,16 +251,56 @@ nav a:first-child {
 }
 
 .navbar-mihivai-brand {
-  gap: .75rem;
+  display: flex;
+  align-items: center;
+  gap: .7rem;
   text-decoration: none;
 
-  h2 {
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: -.01em;
-    margin: 0;
-    line-height: 1;
+  // Au-delà du point de rupture, la marque est centrée dans la barre : les
+  // liens restent à droite sans la décaler, quel que soit leur nombre.
+  @media (min-width: 992px) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
+}
+
+// La marque sortant du flux, `space-between` n'a plus qu'un enfant à placer :
+// sans cela les liens repartiraient à gauche.
+@media (min-width: 992px) {
+  .navbar-mihivai {
+    justify-content: flex-end;
+  }
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: .7rem;
+  border-left: 1px solid rgba(255, 255, 255, .22);
+}
+
+.brand__name {
+  font-family: $headers-font;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: 1;
+  color: #fff;
+
+  span { color: $danger; }
+}
+
+.brand__tag {
+  display: block;
+  margin-top: .3rem;
+  font-family: $body-font;
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .55);
 }
 
 .navbar-mihivai-item {
@@ -286,17 +326,4 @@ nav a:first-child {
 .navbar-mihivai-link:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 2px;
-}
-
-/* Mot-marque : « UPF » en blanc, « -Project » dans le vert de la charte. */
-.brand-word {
-  font-family: $headers-font;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -.015em;
-  color: #fff;
-  margin: 0;
-  line-height: 1;
-
-  span { color: $danger; }
 }
