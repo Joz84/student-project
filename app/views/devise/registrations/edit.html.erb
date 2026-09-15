@@ -1,49 +1,57 @@
+<div class="band page-min-height">
+  <div class="container band__inner">
+    <div class="row">
+      <div class="col-md-8 col-lg-6 offset-md-2 offset-lg-3">
+        <h2 class="text-center my-5">Mon compte</h2>
 
-<div class="container">
-  <div class="row">
-    <h2 class="text-center my-5">Edit <%= resource_name.to_s.humanize %></h2>
-    <div class="col-md-6 offset-md-3">
-      <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }, data: { turbo: false }) do |f| %>
-        <%= f.error_notification %>
+        <div class="auth-card">
+          <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name),
+                              html: { method: :put }, data: { turbo: false }) do |f| %>
+            <%= f.error_notification %>
 
-        <div class="form-inputs">
-          <%= f.input :email, required: true, autofocus: true %>
+            <div class="form-inputs">
+              <%= f.input :email, label: "Adresse e-mail", required: true, autofocus: true %>
+              <%= f.input :first_name, label: "Prénom", required: true %>
+              <%= f.input :last_name, label: "Nom", required: true %>
+              <%= f.input :student_number, label: "Numéro étudiant", required: true %>
+              <%= f.input :batch_id, label: "Promotion",
+                          collection: Batch.all.map { |b| [b.title, b.id] }, required: true %>
 
-          <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-            <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
+              <hr style="border-color: #EEF1F4; margin: 1.5rem 0;">
+
+              <%= f.input :password,
+                          label: "Nouveau mot de passe",
+                          hint: "Laisse vide pour conserver le mot de passe actuel.",
+                          required: false,
+                          input_html: { autocomplete: "new-password" } %>
+              <%= f.input :password_confirmation,
+                          label: "Confirmer le nouveau mot de passe",
+                          required: false,
+                          input_html: { autocomplete: "new-password" } %>
+              <%= f.input :current_password,
+                          label: "Mot de passe actuel",
+                          hint: "Nécessaire pour valider les modifications.",
+                          required: true,
+                          input_html: { autocomplete: "current-password" } %>
+            </div>
+
+            <div class="form-actions">
+              <%= f.button :submit, "Enregistrer", class: "btn btn-danger w-100 py-3 mt-2" %>
+            </div>
           <% end %>
 
-          <%= f.input :password,
-                      hint: "leave it blank if you don't want to change it",
-                      required: false,
-                      input_html: { autocomplete: "new-password" } %>
-          <%= f.input :password_confirmation,
-                      required: false,
-                      input_html: { autocomplete: "new-password" } %>
-          <%= f.input :current_password,
-                      hint: "we need your current password to confirm your changes",
-                      required: true,
-                      input_html: { autocomplete: "current-password" } %>
-          <%= f.input :first_name,
-                      required: true %>
-          <%= f.input :last_name,
-                      required: true %>
-          <%= f.input :student_number,
-                      required: true %>
-          <%= f.input :batch_id, collection: Batch.all.map { |b| [b.title, b.id] },
-                      required: true %>
+          <div class="auth-links text-center">
+            <%= link_to "Retour", :back %>
+          </div>
         </div>
 
-        <div class="form-actions">
-          <%= f.button :submit, "Mettre à jour", class: "btn btn-primary w-100 py-3" %>
+        <div class="text-center my-4">
+          <%= button_to "Supprimer mon compte", registration_path(resource_name),
+                        method: :delete,
+                        class: "btn btn-outline-ink",
+                        data: { turbo_confirm: "Cette action est définitive : ton compte, ton classement et ton appartenance à une équipe seront supprimés. Confirmer ?" } %>
         </div>
-      <% end %>
-
-      <h3>Cancel my account</h3>
-
-      <div>Unhappy? <%= button_to "Supprimer mon compte", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
-      <%= link_to "Retour", :back %>
+      </div>
     </div>
   </div>
 </div>

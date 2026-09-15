@@ -85,8 +85,15 @@ body::after {
 }
 
 // Colonne latérale du classement : dégradé plutôt qu'aplat.
+// Le bleu clair de la charte ne porte pas le blanc — 1,8:1 — ni les titres
+// bleus — 2,9:1. L'encre y est à 9:1, la couleur de fond reste inchangée.
 .bg-primary {
   background: linear-gradient(180deg, $primary 0%, darken($primary, 8%) 100%) !important;
+  color: $ink;
+
+  h1, h2, h3, h4, h5, h6 { color: $ink; }
+
+  .text-white { color: $ink !important; }
 }
 
 // Titre de section avec un filet d'accent, plus tenu qu'un titre nu.

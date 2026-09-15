@@ -2,7 +2,6 @@
 .card {
   border: 1px solid $line;
   border-radius: $radius;
-  box-shadow: none;
 }
 
 // Carte cliquable : la même grammaire que .team-card, réutilisable partout.
@@ -21,7 +20,6 @@
   background: #fff;
   border: 1px solid $line;
   border-radius: $radius-lg;
-  box-shadow: $shadow-sm;
   padding: 2.25rem 2rem;
 
   .form-control,

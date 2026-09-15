@@ -5,7 +5,7 @@
 $ink:        #16202A;   // texte principal, même encre que l'en-tête des exports
 $ink-soft:   #38424D;
 $muted:      #5B6874;
-$muted-soft: #8A96A3;
+$muted-soft: #66727F;   // 4,9:1 sur blanc ; #8A96A3 n'était qu'à 3,0:1
 $line:       #E1E6EB;
 $line-soft:  #EEF1F4;
 $surface:    #F7F8FA;
@@ -22,4 +22,5 @@ $shadow-lg: 0 12px 32px rgba($ink, .12);
 $ease: .18s ease;
 
 // Dégradé de la barre de navigation, déjà en place, nommé pour être réutilisé.
-$brand-gradient: linear-gradient(90deg, #0C57AB 0%, #2C6EB8 55%, #4B85C6 100%);
+// L'arrêt clair était à #4B85C6 : le blanc n'y tenait que 3,8:1.
+$brand-gradient: linear-gradient(90deg, #0C57AB 0%, #2C6EB8 55%, #3B73B6 100%);

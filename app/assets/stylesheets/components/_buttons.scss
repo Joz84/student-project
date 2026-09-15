@@ -23,8 +23,20 @@
 }
 
 // L'action principale du site est verte ($danger dans la palette d'origine).
-.btn-danger {
+// Le blanc n'y tient que 2,2:1, très en dessous du seuil de lisibilité ;
+// l'encre y est à 7,5:1 et conserve la couleur de marque telle quelle.
+// Le !important est nécessaire pour reprendre la main sur `.text-white`,
+// que les vues posent sur ces boutons.
+.btn-danger,
+.btn-danger.text-white {
   border: none;
+  color: $ink !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger.text-white:hover {
+  color: $ink !important;
 }
 
 .btn-danger:hover {
