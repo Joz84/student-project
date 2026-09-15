@@ -3,39 +3,42 @@
     <div class="col-md-9">
       <h2 class="text-center my-5">Mon Tableau de bord</h2>
       <div class="container">
-        <div class="row">
-          <% @team.lists.order(:position).each do |list| %>             
-            <div class="col-md-4">
-              <h4 class="text-center"><%= list.name %></h4>
-              <div class="card w-100 m-2 bg-danger p-2">
+        <div class="kanban">
+          <% @team.lists.order(:position).each_with_index do |list, rang| %>
+            <section class="kanban-col kanban-col--<%= rang + 1 %>">
+              <header class="kanban-col__head">
+                <span class="kanban-col__dot"></span>
+                <h4 class="kanban-col__name"><%= list.name %></h4>
+                <span class="kanban-col__count"><%= list.active_cards.size %></span>
+              </header>
 
-                <div class="card w-100 mb-3">
-                  <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseList<%= list.id %>" aria-expanded="false" aria-controls="collapseList<%= list.id %>">
-                    Créer une tâche
-                  </button>
-                  <div class="collapse" id="collapseList<%= list.id %>">
-                    <div class="card card-body">
-                      <%= simple_form_for [list, @card] do |f| %>
-                        <%= f.input :name %>
-                        <%= f.input :description %>
-                        <%= f.input :drive_link %> 
-                        <div class="d-flex justify-content-between">
-                          <%= f.input :time_estimate %>
-                          <%= f.input :time_unit, collection: ["jour(s)", "semaine(s)", "mois"]  %>               
-                        </div>                  
-                        <%= f.button :submit, "Valider", class: "btn btn-danger text-white" %>
-                      <% end %>
+              <button class="btn kanban-add" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseList<%= list.id %>" aria-expanded="false"
+                      aria-controls="collapseList<%= list.id %>">
+                + Créer une tâche
+              </button>
+
+              <div class="collapse" id="collapseList<%= list.id %>">
+                <div class="kanban-form">
+                  <%= simple_form_for [list, @card] do |f| %>
+                    <%= f.input :name, label: "Intitulé" %>
+                    <%= f.input :description %>
+                    <%= f.input :drive_link, label: "Lien drive" %>
+                    <div class="d-flex justify-content-between" style="gap: .5rem;">
+                      <%= f.input :time_estimate, label: "Durée" %>
+                      <%= f.input :time_unit, label: "Unité", collection: ["jour(s)", "semaine(s)", "mois"] %>
                     </div>
-                  </div>
-                </div>
-
-                <div class="w-100" data-controller="dragndrop" data-dragndrop-target="cards" data-list-id="<%= list.id %>">
-                  <% list.active_cards.order(position: :asc).each do |card| %>
-                    <%= render "teams/card", card: card %>
+                    <%= f.button :submit, "Valider", class: "btn btn-danger w-100 mt-2" %>
                   <% end %>
                 </div>
               </div>
-            </div>
+
+              <div class="w-100 mt-3" data-controller="dragndrop" data-dragndrop-target="cards" data-list-id="<%= list.id %>">
+                <% list.active_cards.order(position: :asc).each do |card| %>
+                  <%= render "teams/card", card: card %>
+                <% end %>
+              </div>
+            </section>
           <% end %>
         </div>
       </div>

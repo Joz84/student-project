@@ -1,0 +1,259 @@
+// Tableau de bord d'équipe.
+// Les colonnes étaient des blocs verts pleins et les cartes des aplats teintés
+// par la note de l'enseignant. On garde l'information — la note reste lisible
+// d'un coup d'œil — mais portée par un liseré et une pastille plutôt que par
+// le fond, pour que le texte reste sur blanc.
+
+.kanban {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.kanban-col {
+  background: $surface;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: .85rem .8rem 1rem;
+}
+
+.kanban-col__head {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 0 .25rem .7rem;
+  border-bottom: 1px solid $line;
+  margin-bottom: .8rem;
+}
+
+.kanban-col__dot {
+  width: .55rem;
+  height: .55rem;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: $muted-soft;
+}
+
+.kanban-col--1 .kanban-col__dot { background: $blue; }
+.kanban-col--2 .kanban-col__dot { background: $notice; }
+.kanban-col--3 .kanban-col__dot { background: $danger; }
+
+.kanban-col__name {
+  font-family: $headers-font;
+  font-size: .9rem;
+  font-weight: 700;
+  color: $ink;
+  margin: 0;
+  flex: 1;
+}
+
+.kanban-col__count {
+  font-size: .78rem;
+  font-weight: 600;
+  color: $muted;
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: 999px;
+  padding: .05rem .5rem;
+}
+
+// Bouton d'ajout : contour pointillé, discret tant qu'on ne le survole pas.
+.kanban-add {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px dashed $line-soft;
+  border-color: darken($line, 4%);
+  border-radius: $radius-sm;
+  padding: .55rem;
+  font-size: .85rem;
+  font-weight: 600;
+  color: $muted;
+  box-shadow: none;
+  transition: background-color $ease, border-color $ease, color $ease;
+
+  &:hover {
+    background: #fff;
+    border-color: $blue;
+    color: $blue;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.kanban-form {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: .9rem;
+  margin-top: .6rem;
+}
+
+// --- carte de tâche ---
+.kanban-card {
+  position: relative;
+  background: #fff !important;
+  border: 1px solid $line;
+  border-left: 3px solid $line;
+  border-radius: $radius-sm;
+  padding: .8rem .85rem .7rem !important;
+  margin-bottom: .6rem;
+  box-shadow: $shadow-sm;
+  transition: box-shadow $ease, transform $ease, border-color $ease;
+}
+
+.kanban-card:hover {
+  box-shadow: $shadow;
+  transform: translateY(-1px);
+}
+
+.kanban-card__title {
+  font-size: .9rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: $ink;
+  margin: 0 0 .4rem;
+}
+
+.kanban-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-bottom: .5rem;
+}
+
+.kanban-chip {
+  font-size: .7rem;
+  font-weight: 600;
+  color: $muted;
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: 3px;
+  padding: .08rem .4rem;
+  white-space: nowrap;
+}
+
+.kanban-card__link {
+  font-size: .78rem;
+  font-weight: 600;
+  color: $blue;
+}
+
+// Note de l'enseignant : liseré à gauche et pastille en haut à droite.
+// Les classes viennent de l'énumération teacher_validation.
+$notes: (refused: #E4606D, one: #F0A04B, two: #EFC84A, three: #BBD94A, accepted: #7DBE4A);
+
+@each $nom, $teinte in $notes {
+  .kanban-card.#{$nom} {
+    border-left-color: $teinte;
+  }
+
+  .kanban-card.#{$nom} .kanban-note {
+    background: $teinte;
+  }
+}
+
+.kanban-note {
+  position: absolute;
+  top: .55rem;
+  right: .6rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .64rem;
+  font-weight: 700;
+  color: $ink;
+  background: $line;
+}
+
+.kanban-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding-top: .55rem;
+  border-top: 1px solid $line-soft;
+}
+
+// La pile d'avatars remplace l'empilement en position absolue d'origine.
+.kanban-card .card-avatars {
+  position: static;
+  width: auto;
+  min-height: 0;
+  display: flex;
+}
+
+.kanban-card .card-avatar-position {
+  position: static;
+}
+
+.kanban-card .card-avatar {
+  width: 1.7rem;
+  height: 1.7rem;
+  font-size: .62rem;
+  font-weight: 700;
+  box-shadow: none;
+  border: 2px solid #fff;
+}
+
+.kanban-card .card-avatar-position + .card-avatar-position .card-avatar {
+  margin-left: -.5rem;
+}
+
+// Dates posées par le contrôleur dragndrop : le conteneur doit rester présent
+// même vide, d'où un style qui ne laisse aucune trace en l'absence de texte.
+.kanban-card__dates {
+  font-size: .72rem;
+  color: $muted-soft;
+
+  i { font-style: normal; }
+}
+
+.kanban-card__muted {
+  font-size: .72rem;
+  color: $muted-soft;
+}
+
+// Le déclencheur « Options » est le premier enfant du partiel card_options :
+// on le ramène à un bouton discret, pleine largeur.
+.kanban-card__options {
+  margin-top: .6rem;
+}
+
+.kanban-card__options > .btn:first-child {
+  display: block;
+  width: 100%;
+  background: $surface !important;
+  border: 1px solid $line;
+  color: $muted !important;
+  font-size: .78rem;
+  padding: .35rem;
+  box-shadow: none;
+
+  &:hover {
+    background: #fff !important;
+    border-color: $muted-soft;
+    color: $ink !important;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// Panneau d'options : accordéon resserré, adapté à la largeur d'une colonne.
+.kanban-card__options .accordion-button {
+  font-size: .8rem;
+  padding: .45rem .6rem;
+}
+
+.kanban-card__options .accordion-body {
+  padding: .6rem;
+  font-size: .82rem;
+}
+
+.kanban-card__options .btn {
+  font-size: .8rem;
+}

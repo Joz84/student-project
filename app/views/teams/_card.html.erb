@@ -1,26 +1,46 @@
-<div class="card w-100 p-3 mb-3 <%= card.teacher_validation %>" data-card-id="<%= card.id %>">
-  <div class="d-flex justify-content-between">
-    <div>
-      <h6><%= "#{card.name}" %></h6>
-      <div>
-        <small class="text-grey"><i id="estimate"><%= card.time_estimate %> <%= card.time_unit %></i></small>
-      </div>
-      <small class="text-grey"><i id="begin-at"><%= card.str_begin_at %></i></small>
-      <small class="text-grey"><i id="separator"><%= " - " if card.str_begin_at && card.str_end_at %></i></small>
-      <small class="text-grey"><i id="end-at"><%= card.str_end_at %></i></small>
-      <div>
-        <small><%= link_to "lien vers le drive", card.drive_link, target: "_blank" %></small>
-      </div>
-    </div>
-    <div class="card-avatars">
-      <% card.users.kept.each_with_index do |user, index| %>
-        <div class="card-avatar-position" style="top: <%= index * 15 %>px">
-          <%= render "teams/card_avatar", user: user %>
-        </div>
-      <% end %>
-    </div>
+<%#
+  Les identifiants begin-at / separator / end-at sont lus par le contrôleur
+  dragndrop après chaque déplacement : ils doivent rester présents.
+%>
+<% notes = { "refused" => "✕", "one" => "1", "two" => "2", "three" => "3", "accepted" => "✓" } %>
+<div class="kanban-card <%= card.teacher_validation %>" data-card-id="<%= card.id %>">
+
+  <% if notes.key?(card.teacher_validation) %>
+    <span class="kanban-note" title="Évaluation de l'enseignant"><%= notes[card.teacher_validation] %></span>
+  <% end %>
+
+  <h6 class="kanban-card__title"><%= card.name %></h6>
+
+  <div class="kanban-card__meta">
+    <% if card.time_estimate.present? %>
+      <span class="kanban-chip" id="estimate"><%= card.time_estimate %> <%= card.time_unit %></span>
+    <% end %>
+    <span class="kanban-card__dates">
+      <i id="begin-at"><%= card.str_begin_at %></i><i id="separator"><%= " - " if card.str_begin_at && card.str_end_at %></i><i id="end-at"><%= card.str_end_at %></i>
+    </span>
   </div>
 
-  <%= render "teams/card_options", card: card %>
+  <% if card.drive_link.present? %>
+    <div class="mb-2">
+      <%= link_to "Ouvrir le drive", card.drive_link, target: "_blank", class: "kanban-card__link" %>
+    </div>
+  <% end %>
 
+  <% assignes = card.users.kept %>
+  <% if assignes.any? %>
+    <div class="kanban-card__foot">
+      <div class="card-avatars">
+        <% assignes.each do |user| %>
+          <div class="card-avatar-position">
+            <%= render "teams/card_avatar", user: user %>
+          </div>
+        <% end %>
+      </div>
+      <span class="kanban-card__muted"><%= pluralize(assignes.size, "collaborateur") %></span>
+    </div>
+  <% end %>
+
+  <div class="kanban-card__options">
+    <%= render "teams/card_options", card: card %>
+  </div>
 </div>
