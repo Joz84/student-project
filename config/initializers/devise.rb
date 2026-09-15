@@ -26,6 +26,10 @@ Devise.setup do |config|
   # with default "from" parameter.
   config.mailer_sender = ENV.fetch("MAILER_SENDER", "no-reply@upf-project.com")
 
+  # Les mails Devise (mot de passe oublié) héritent ainsi du reply_to défini
+  # dans ApplicationMailer ; sans cela ils partent de ActionMailer::Base.
+  config.parent_mailer = "ApplicationMailer"
+
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
 
