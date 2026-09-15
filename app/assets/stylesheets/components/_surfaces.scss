@@ -12,42 +12,31 @@ body {
   color: $ink-soft;
 }
 
-// Ornement de bas de page, fixé au bas de la fenêtre : un lavis bleu qui
-// monte et une trame de points qui se révèle en descendant. Étant fixé, il
-// reste visible en permanence, sans avoir à faire défiler la page.
+// Ornement fixé au bas de la fenêtre. Le pied de page est opaque et occupe
+// la centaine de pixels du bas : la trame doit donc culminer au-dessus de
+// cette ligne puis s'éteindre avant le bord, sinon elle passe dessous.
 body::after {
   content: "";
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 320px;
-  max-height: 42vh;
+  height: 460px;
+  max-height: 56vh;
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(rgba($blue, .28) 1px, transparent 1px),
+    radial-gradient(rgba($blue, .32) 1px, transparent 1px),
     linear-gradient(180deg,
       rgba($blue, 0) 0%,
-      rgba($blue, .05) 55%,
-      rgba($blue, .11) 100%);
+      rgba($blue, .06) 60%,
+      rgba($blue, .10) 82%,
+      rgba($blue, 0) 100%);
   background-size: 18px 18px, 100% 100%;
-  -webkit-mask-image: linear-gradient(180deg, transparent 6%, #000 88%);
-  mask-image: linear-gradient(180deg, transparent 6%, #000 88%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 52%, #000 78%, transparent 97%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 52%, #000 78%, transparent 97%);
 }
 
-// Trait d'horizon, au ras du bas de la fenêtre.
-body::before {
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba($blue, .35), transparent);
-}
 
 // Bandeau : deux halos de marque translucides, posés par-dessus la trame
 // plutôt que de la masquer. Le quadrillage reste lisible à travers.
