@@ -3,38 +3,38 @@
     <div class="col-md-8 offset-md-2">
 
       <div class="my-4">
-        <%= link_to "← Retour aux projets", projects_path, class: "text-decoration-none" %>
+        <%= link_to "← Retour aux projets", projects_path, class: "text-decoration-none", style: "color: #5B6874;" %>
       </div>
 
-      <div class="card card-body p-4 mb-5">
-        <h2 class="text-center mb-3"><%= @project.name %></h2>
-
-        <div class="d-flex justify-content-center mb-4">
-          <small class="text-grey text-center card px-3 py-1 bg-<%= @project.subject.downcase %>">
-            <i><%= @project.subject.capitalize %></i>
-          </small>
+      <article class="card card-body p-4 p-md-5 mb-5">
+        <div class="text-center mb-3">
+          <span class="chip bg-<%= @project.subject.downcase %>"><%= @project.subject %></span>
         </div>
 
-        <p class="text-center text-grey mb-4">
+        <h2 class="text-center mb-3"><%= @project.name %></h2>
+
+        <p class="text-center mb-4" style="font-size: .88rem; color: #8A96A3;">
           <% if @project.author.present? %>
-            <i>Référent <%= @project.author %></i>
+            Référent <strong style="color: #5B6874;"><%= @project.author %></strong>
           <% end %>
           <% if @project.partner.present? && @project.partner != @project.author %>
-            <i>· Partenaire <%= @project.partner %></i>
+            · Partenaire <strong style="color: #5B6874;"><%= @project.partner %></strong>
           <% end %>
         </p>
 
-        <div class="text-justify">
+        <hr style="border-color: #EEF1F4; margin: 0 0 1.8rem;">
+
+        <div class="text-justify" style="line-height: 1.7; color: #38424D;">
           <%= simple_format @project.description %>
         </div>
 
         <% if @project.drive_link.present? %>
           <div class="mt-4">
             <%= link_to "Fiche complète du projet", @project.drive_link, target: "_blank",
-                        class: "btn btn-primary text-white" %>
+                        class: "btn btn-outline-ink px-4 py-2" %>
           </div>
         <% end %>
-      </div>
+      </article>
 
     </div>
   </div>

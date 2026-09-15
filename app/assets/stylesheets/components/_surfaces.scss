@@ -1,0 +1,138 @@
+// Arrière-plans : le site reposait sur du blanc pur partout, ce qui écrasait
+// la hiérarchie. Le fond porte désormais une texture, les contenus restent
+// blancs et opaques, et les bandeaux ajoutent un halo de marque.
+
+// Le fond de page est porté par `html` : `body` reste sans fond, sinon il
+// couvrirait l'ornement posé en dessous.
+html {
+  background-color: $page;
+}
+
+// Bootstrap pose `background-color: var(--bs-body-bg)` (blanc opaque) sur le
+// body. Sans cette remise à transparent, le body repeint par-dessus
+// l'ornement en z-index négatif et le motif disparaît.
+body {
+  background-color: transparent;
+  color: $ink-soft;
+}
+
+// Ornement fixé au bas de la fenêtre. Le pied de page est opaque et occupe
+// la centaine de pixels du bas : la trame doit donc culminer au-dessus de
+// cette ligne puis s'éteindre avant le bord, sinon elle passe dessous.
+body::after {
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 460px;
+  max-height: 56vh;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba($blue, .32) 1px, transparent 1px),
+    linear-gradient(180deg,
+      rgba($blue, 0) 0%,
+      rgba($blue, .06) 60%,
+      rgba($blue, .10) 82%,
+      rgba($blue, 0) 100%);
+  background-size: 18px 18px, 100% 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 52%, #000 78%, transparent 97%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 52%, #000 78%, transparent 97%);
+}
+
+
+// Bandeau : deux halos de marque translucides, posés par-dessus la trame
+// plutôt que de la masquer. Le quadrillage reste lisible à travers.
+.band {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(54rem 28rem at 10% -14%, rgba($blue, .10), transparent 64%),
+    radial-gradient(40rem 22rem at 97% 2%, rgba($danger, .09), transparent 64%);
+}
+
+.band__inner {
+  position: relative;
+  z-index: 1;
+}
+
+// Séparation douce entre un bandeau et la suite de la page.
+.band--edge {
+  border-bottom: 1px solid rgba($ink, .06);
+}
+
+// Bandeau sombre, pour les pages qui ont besoin d'un point d'appui fort.
+.band--ink {
+  background:
+    radial-gradient(40rem 22rem at 85% -20%, rgba($blue, .55), transparent 65%),
+    linear-gradient(180deg, $ink 0%, darken($ink, 3%) 100%);
+  color: rgba(#fff, .82);
+
+  h1, h2, h3 { color: #fff; }
+}
+
+// Les surfaces de contenu sont opaques : elles couvrent la trame, ce qui
+// suffit à les détacher sans avoir à charger l'ombre.
+.card,
+.project-card,
+.team-card,
+.step,
+.auth-card,
+.orphan-list li {
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba($ink, .04), 0 1px 12px rgba($ink, .05);
+}
+
+// Colonne latérale du classement : dégradé plutôt qu'aplat.
+// Le bleu clair de la charte ne porte pas le blanc — 1,8:1 — ni les titres
+// bleus — 2,9:1. L'encre y est à 9:1, la couleur de fond reste inchangée.
+.bg-primary {
+  background: linear-gradient(180deg, $primary 0%, darken($primary, 8%) 100%) !important;
+  color: $ink;
+
+  h1, h2, h3, h4, h5, h6 { color: $ink; }
+
+  .text-white { color: $ink !important; }
+}
+
+// Titre de section avec un filet d'accent, plus tenu qu'un titre nu.
+.section-head h2 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: .7rem;
+}
+
+.section-head h2::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 3rem;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, $blue, $danger);
+}
+
+// Filet coloré en haut de carte, repris de .team-card__bar.
+.step {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow $ease, transform $ease;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, $blue, rgba($blue, .15));
+}
+
+.step:hover {
+  box-shadow: $shadow;
+  transform: translateY(-2px);
+}

@@ -244,3 +244,71 @@ nav a:first-child {
   -webkit-transform: scale(1);
   transform: scale(1);
 }
+/* --- refonte : reprise du dégradé d'origine, appuis visuels plus nets --- */
+.navbar-mihivai {
+  background: $brand-gradient;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 2px 10px rgba($ink, .12);
+}
+
+.navbar-mihivai-brand {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  text-decoration: none;
+
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: .7rem;
+  border-left: 1px solid rgba(255, 255, 255, .22);
+}
+
+.brand__name {
+  font-family: $headers-font;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  line-height: 1;
+  color: #fff;
+
+  span { color: $danger; }
+}
+
+.brand__tag {
+  display: block;
+  margin-top: .3rem;
+  font-family: $body-font;
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .92);
+}
+
+.navbar-mihivai-item {
+  padding: 0;
+}
+
+.navbar-mihivai-link {
+  display: inline-block;
+  padding: .45rem .85rem;
+  margin-left: .2rem;
+  border-radius: 999px;
+  font-size: .85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, .95);
+  transition: background-color $ease, color $ease;
+}
+
+.navbar-mihivai-link:hover {
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+}
+
+.navbar-mihivai-link:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}

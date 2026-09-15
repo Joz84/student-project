@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_01_160000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -213,6 +213,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_01_160000) do
     t.boolean "active"
     t.string "color"
     t.bigint "batch_id"
+    t.string "partner"
     t.index ["batch_id"], name: "index_projects_on_batch_id"
   end
 

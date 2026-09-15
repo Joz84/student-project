@@ -1,0 +1,26 @@
+// Socle commun de la refonte : les valeurs déjà employées par les cartes
+// d'équipe deviennent des variables, pour que tout le site parle la même
+// langue graphique sans toucher à l'identité (bleu UPF, vert d'action).
+
+$ink:        #16202A;   // texte principal, même encre que l'en-tête des exports
+$ink-soft:   #38424D;
+$muted:      #5B6874;
+$muted-soft: #66727F;   // 4,9:1 sur blanc ; #8A96A3 n'était qu'à 3,0:1
+$line:       #E1E6EB;
+$line-soft:  #EEF1F4;
+$surface:    #F7F8FA;
+$page:       #FAFBFD;   // presque blanc, à peine bleuté
+
+$radius-sm: 6px;
+$radius:    10px;
+$radius-lg: 16px;
+
+$shadow-sm: 0 1px 2px rgba($ink, .05);
+$shadow:    0 4px 14px rgba($ink, .08);
+$shadow-lg: 0 12px 32px rgba($ink, .12);
+
+$ease: .18s ease;
+
+// Dégradé de la barre de navigation, déjà en place, nommé pour être réutilisé.
+// L'arrêt clair était à #4B85C6 : le blanc n'y tenait que 3,8:1.
+$brand-gradient: linear-gradient(90deg, #0C57AB 0%, #2C6EB8 55%, #3B73B6 100%);

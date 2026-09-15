@@ -29,3 +29,39 @@
   background: lightyellow;
 }
 
+
+/* --- refonte : bandeau flottant, lisible sur toutes les pages --- */
+#flash {
+  position: fixed;
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 700;
+  width: 34rem;
+  max-width: calc(100vw - 2rem);
+  pointer-events: none;   // le conteneur vide ne doit rien intercepter
+
+  .alert {
+    border: 1px solid $line;
+    border-left: 4px solid $blue;
+    border-radius: $radius-sm;
+    background: #fff;
+    color: $ink-soft;
+    box-shadow: $shadow-lg;
+    font-size: .9rem;
+    padding: .85rem 2.4rem .85rem 1rem;
+    margin: 0 0 .6rem;
+    pointer-events: auto;
+  }
+
+  .alert-info { border-left-color: $danger; }
+  .alert-warning { border-left-color: $notice; }
+
+  .alert .fa-times {
+    position: absolute;
+    top: .6rem;
+    right: .8rem;
+    color: $muted-soft;
+    cursor: pointer;
+  }
+}

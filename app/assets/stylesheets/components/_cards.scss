@@ -1,0 +1,136 @@
+// Cartes : bordure fine plutôt qu'ombre portée, comme les cartes d'équipe.
+.card {
+  border: 1px solid $line;
+  border-radius: $radius;
+}
+
+// Carte cliquable : la même grammaire que .team-card, réutilisable partout.
+.card-hover {
+  transition: box-shadow $ease, transform $ease, border-color $ease;
+
+  &:hover {
+    border-color: darken($line, 6%);
+    box-shadow: $shadow;
+    transform: translateY(-2px);
+  }
+}
+
+// Formulaires d'authentification (connexion, mot de passe oublié…)
+.auth-card {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius-lg;
+  padding: 2.25rem 2rem;
+
+  .form-control,
+  .form-select {
+    border-radius: $radius-sm;
+    border-color: $line;
+    padding: .7rem .9rem;
+
+    &:focus {
+      border-color: $blue;
+      box-shadow: 0 0 0 3px rgba($blue, .12);
+    }
+  }
+
+  label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: $ink-soft;
+    margin-bottom: .35rem;
+  }
+
+  .form-text,
+  .help-block {
+    font-size: .78rem;
+    color: $muted-soft;
+  }
+}
+
+.auth-links {
+  margin-top: 1.25rem;
+  font-size: .85rem;
+
+  a {
+    color: $muted;
+
+    &:hover { color: $blue; }
+  }
+
+  br { display: none; }
+
+  a + a { margin-left: .9rem; }
+}
+
+// Fiche projet
+.project-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.project-card__bar { height: 4px; }
+
+.project-card__body {
+  padding: 1.1rem 1.15rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.project-card__title {
+  font-family: $headers-font;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: $ink;
+  margin: .55rem 0 .5rem;
+}
+
+.project-card__text {
+  font-size: .86rem;
+  line-height: 1.55;
+  color: $muted;
+  margin-bottom: 1rem;
+}
+
+.project-card__foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  padding-top: .8rem;
+  border-top: 1px solid $line-soft;
+  font-size: .82rem;
+}
+
+.project-card__ref {
+  color: $muted-soft;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.project-card__more {
+  font-weight: 600;
+  color: $blue;
+  white-space: nowrap;
+}
+
+// Étiquette de matière, version un peu plus lisible que .chip-sujet
+.chip {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  color: $ink;
+}

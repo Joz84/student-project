@@ -1,0 +1,121 @@
+// Page d'accueil
+.hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 3.5rem 0 2.5rem;
+
+  @media (min-width: 992px) {
+    grid-template-columns: 1.05fr .95fr;
+    gap: 3.5rem;
+    padding: 5rem 0 3.5rem;
+  }
+}
+
+.hero__eyebrow {
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: $blue;
+  background: rgba($blue, .08);
+  border-radius: 999px;
+  padding: .3rem .8rem;
+  margin-bottom: 1.1rem;
+}
+
+.hero__title {
+  font-family: $headers-font;
+  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.1rem);
+  line-height: 1.1;
+  color: $ink;
+  text-wrap: balance;
+  margin-bottom: 1rem;
+
+  em {
+    font-style: normal;
+    color: $blue;
+  }
+}
+
+.hero__lede {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: $muted;
+  max-width: 34rem;
+  margin-bottom: 1.8rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+}
+
+.hero__art {
+  svg, img { width: 100%; height: auto; display: block; }
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+  padding-bottom: 4rem;
+}
+
+.step {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: 1.3rem 1.3rem 1.4rem;
+}
+
+.step__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  background: rgba($blue, .1);
+  color: $blue;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: .85rem;
+  margin-bottom: .8rem;
+}
+
+.step__title {
+  font-family: $headers-font;
+  font-size: .98rem;
+  font-weight: 700;
+  color: $ink;
+  margin-bottom: .35rem;
+}
+
+.step__text {
+  font-size: .87rem;
+  line-height: 1.55;
+  color: $muted;
+  margin: 0;
+}
+
+// Titre de section, remplace les `h2.text-center.my-5` un peu nus
+.section-head {
+  text-align: center;
+  margin: 3rem 0 2rem;
+
+  h2 {
+    margin-bottom: .4rem;
+  }
+
+  p {
+    color: $muted;
+    font-size: .95rem;
+    margin: 0;
+  }
+}

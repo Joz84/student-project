@@ -1,2 +1,47 @@
-<h1>Teacher::Teams#show</h1>
-<p>Find me in app/views/teacher/teams/show.html.erb</p>
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+
+      <div class="my-4">
+        <%= link_to "← Retour aux équipes", teacher_teams_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <article class="card card-body p-4 p-md-5 mb-5">
+        <% if @team.project %>
+          <div class="text-center mb-3">
+            <span class="chip bg-<%= @team.project.subject.downcase %>"><%= @team.project.subject %></span>
+          </div>
+        <% end %>
+
+        <h2 class="text-center mb-2"><%= @team.name %></h2>
+
+        <p class="text-center mb-4" style="font-size: .88rem; color: #66727F;">
+          <% if @team.project %>
+            <%= @team.project.name %> · référent <%= @team.project.author %>
+          <% else %>
+            <em>Aucun projet attribué</em>
+          <% end %>
+        </p>
+
+        <hr style="border-color: #EEF1F4; margin: 0 0 1.5rem;">
+
+        <h3 style="font-size: 1rem;" class="mb-3">
+          Membres <span class="team-card__muted">(<%= @team.users.kept.size %>)</span>
+        </h3>
+        <ul class="team-card__list mb-4">
+          <% @team.users.kept.sort_by { |u| u.last_name.to_s }.each do |user| %>
+            <li>
+              <%= user.first_name %> <%= user.last_name %>
+              <span class="team-card__muted"><%= user.email %></span>
+              <% if user.td.present? %><span class="team-tag"><%= user.td %></span><% end %>
+              <% if user.tp.present? %><span class="team-tag"><%= user.tp %></span><% end %>
+            </li>
+          <% end %>
+        </ul>
+
+        <%= link_to "Ouvrir le tableau de bord de l'équipe", team_path(@team), class: "btn btn-danger" %>
+      </article>
+
+    </div>
+  </div>
+</div>
