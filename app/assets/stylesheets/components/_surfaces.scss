@@ -1,31 +1,30 @@
 // Arrière-plans : le site reposait sur du blanc pur partout, ce qui écrasait
-// la hiérarchie. Le fond général devient un bleu très pâle, les contenus
-// remontent en blanc, et les bandeaux portent un dégradé de marque.
+// la hiérarchie. Le fond porte désormais une texture, les contenus restent
+// blancs et opaques, et les bandeaux ajoutent un halo de marque.
 
+// Papier millimétré : deux quadrillages superposés, l'un fin, l'autre tous les
+// six carreaux, dans un bleu si dilué qu'il se lit comme une texture et non
+// comme un motif. Le fond du body se propage au canevas, donc pas de couture.
 body {
-  background: $page;
+  background-color: $page;
+  background-image:
+    linear-gradient($grid-line 1px, transparent 1px),
+    linear-gradient(90deg, $grid-line 1px, transparent 1px),
+    linear-gradient($grid-hair 1px, transparent 1px),
+    linear-gradient(90deg, $grid-hair 1px, transparent 1px);
+  background-size: 96px 96px, 96px 96px, 16px 16px, 16px 16px;
+  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
   color: $ink-soft;
 }
 
-// Bandeau pleine largeur : dégradé de marque + trame de points très discrète.
+// Bandeau : deux halos de marque translucides, posés par-dessus la trame
+// plutôt que de la masquer. Le quadrillage reste lisible à travers.
 .band {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(52rem 26rem at 12% -12%, rgba($blue, .16), transparent 62%),
-    radial-gradient(38rem 22rem at 96% 4%, rgba($danger, .13), transparent 62%),
-    linear-gradient(180deg, #FFFFFF 0%, $page 100%);
-}
-
-.band::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba($ink, .06) 1px, transparent 1px);
-  background-size: 22px 22px;
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
-  mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
-  pointer-events: none;
+    radial-gradient(54rem 28rem at 10% -14%, rgba($blue, .10), transparent 64%),
+    radial-gradient(40rem 22rem at 97% 2%, rgba($danger, .09), transparent 64%);
 }
 
 .band__inner {
@@ -48,14 +47,16 @@ body {
   h1, h2, h3 { color: #fff; }
 }
 
-// Les surfaces de contenu se détachent du fond teinté.
+// Les surfaces de contenu sont opaques : elles couvrent la trame, ce qui
+// suffit à les détacher sans avoir à charger l'ombre.
 .card,
 .project-card,
 .team-card,
 .step,
 .auth-card,
 .orphan-list li {
-  box-shadow: $shadow-sm;
+  background-color: #fff;
+  box-shadow: 0 1px 2px rgba($ink, .04), 0 1px 12px rgba($ink, .05);
 }
 
 // Colonne latérale du classement : dégradé plutôt qu'aplat.

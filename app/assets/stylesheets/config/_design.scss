@@ -9,8 +9,9 @@ $muted-soft: #8A96A3;
 $line:       #E1E6EB;
 $line-soft:  #EEF1F4;
 $surface:    #F7F8FA;
-$page:       #EEF3F8;   // fond général, légèrement bleuté : les cartes blanches ressortent
-$page-deep:  #E4ECF4;
+$page:       #FAFBFD;   // presque blanc, à peine bleuté : support de la trame
+$grid-line:  rgba(44, 110, 184, .055);   // trait fort du quadrillage
+$grid-hair:  rgba(44, 110, 184, .028);   // trait fin
 
 $radius-sm: 6px;
 $radius:    10px;
