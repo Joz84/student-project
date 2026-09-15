@@ -8,7 +8,11 @@ html {
   background-color: $page;
 }
 
+// Bootstrap pose `background-color: var(--bs-body-bg)` (blanc opaque) sur le
+// body. Sans cette remise à transparent, le body repeint par-dessus
+// l'ornement en z-index négatif et le motif disparaît.
 body {
+  background-color: transparent;
   color: $ink-soft;
 }
 
