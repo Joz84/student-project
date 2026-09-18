@@ -31,7 +31,10 @@ module StudentProject
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # L'application ne sert que la Polynésie française. Elle tournait en UTC,
+    # donc affichait toutes les dates avec dix heures d'avance ; les horaires
+    # ADE, exportés en UTC, seraient sinon inexploitables.
+    config.time_zone = "Pacific/Tahiti"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

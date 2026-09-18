@@ -20,6 +20,10 @@ class User < ApplicationRecord
   has_many :messages, dependent: :destroy 
   has_many :presences, dependent: :destroy
   has_many :user_skill_statuses, dependent: :destroy
+  has_many :group_memberships, dependent: :destroy
+  has_many :groups, through: :group_memberships
+  has_many :attendances, dependent: :destroy
+  has_many :lessons_enseignees, class_name: "Lesson", foreign_key: :teacher_id, dependent: :nullify
   validates :first_name, presence: true
   validates :last_name, presence: true
   validates :student_number, presence: true,
