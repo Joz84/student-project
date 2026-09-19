@@ -20,17 +20,25 @@ class Lesson < ApplicationRecord
     starts_at <= instant && instant <= ends_at
   end
 
-  # Un CM concerne toute la promotion ; sinon seuls les groupes visés.
+  # L'assiduité se lit dans les groupes, jamais dans la promotion : un
+  # redoublant peut suivre les enseignements d'une année tout en gardant son
+  # projet dans une autre, et `users.batch_id` reste porté par le projet.
+  #
+  # Une séance de TD ou de TP vise ses groupes. Un CM n'en vise aucun : sont
+  # alors attendus ceux qui suivent l'UE, c'est-à-dire les membres de l'un de
+  # ses groupes. À défaut d'UE identifiée, on retombe sur la promotion.
   def concerne?(user)
-    return false unless user.batch_id == batch_id
-    return true if groups.empty?
-    (user.group_ids & group_ids).any?
+    return false if user.nil? || user[:drop] || user.teacher?
+    return (user.group_ids & group_ids).any? if groups.any?
+    return user.group_ids.intersect?(ue.group_ids) if ue&.groups&.any?
+    user.batch_id == batch_id
   end
 
   def eleves_attendus
-    return batch.users.kept.where(teacher: nil) if groups.empty?
+    ids = groups.any? ? group_ids : ue&.group_ids
+    return batch.users.kept.where(teacher: nil) if ids.blank?
     User.kept.where(teacher: nil).joins(:group_memberships)
-        .where(group_memberships: { group_id: group_ids }).distinct
+        .where(group_memberships: { group_id: ids }).distinct
   end
 
   def verrouille? = locked_at.present?
