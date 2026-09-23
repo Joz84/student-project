@@ -16,6 +16,11 @@
     <meta property="og:site_name" content="<%= meta_title %>" />
 
     <%= yield(:robots) %>
+    <%# Turbo 8 : quand une page est rechargée sur elle-même — ce que fait
+        chaque formulaire qui revient d'où il vient — le DOM est fusionné au
+        lieu d'être remplacé, et la position de défilement est conservée. %>
+    <meta name="turbo-refresh-method" content="morph">
+    <meta name="turbo-refresh-scroll" content="preserve">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>

@@ -14,13 +14,13 @@ class AttendancesController < ApplicationController
     else
       @attendance.update!(status: :present, declared_by: :student,
                           declared_at: Time.current)
-      redirect_to root_path, notice: "Ta présence est enregistrée pour « #{@lesson.title} »."
+      redirect_to root_path, notice: "Ta présence est enregistrée pour « #{@lesson.title} ».", status: :see_other
     end
   end
 
   private
 
   def refus(message)
-    redirect_to root_path, alert: message
+    redirect_to root_path, alert: message, status: :see_other
   end
 end

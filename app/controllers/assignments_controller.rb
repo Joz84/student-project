@@ -5,7 +5,7 @@ class AssignmentsController < ApplicationController
     @team = @assignment.team
     card_id = @assignment.card_id
     @assignment.destroy
-    redirect_to volet(@team, card_id, "collaborateurs")
+    redirect_to volet(@team, card_id, "collaborateurs"), status: :see_other
   end
 
   # Plusieurs collaborateurs d'un coup : ajouter les membres d'une équipe un
@@ -22,7 +22,7 @@ class AssignmentsController < ApplicationController
     end
     authorize Assignment.new(card: @card) if ids.empty?
     redirect_to volet(@card.team, @card.id, "collaborateurs"),
-                notice: message(ajoutes, "collaborateur")
+                notice: message(ajoutes, "collaborateur"), status: :see_other
   end
 
   private

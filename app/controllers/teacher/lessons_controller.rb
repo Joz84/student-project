@@ -14,27 +14,27 @@ class Teacher::LessonsController < ApplicationController
   def ouvrir
     @lesson.ouvrir_pointage!
     redirect_to teacher_lesson_path(@lesson),
-                notice: "Appel ouvert. Code à afficher : #{@lesson.attendance_code}"
+                notice: "Appel ouvert. Code à afficher : #{@lesson.attendance_code}", status: :see_other
   end
 
   def verrouiller
     @lesson.verrouiller!
-    redirect_to teacher_lesson_path(@lesson), notice: "Pointages figés."
+    redirect_to teacher_lesson_path(@lesson), notice: "Pointages figés.", status: :see_other
   end
 
   def deverrouiller
     @lesson.deverrouiller!
-    redirect_to teacher_lesson_path(@lesson), notice: "Les étudiants peuvent à nouveau se signaler."
+    redirect_to teacher_lesson_path(@lesson), notice: "Les étudiants peuvent à nouveau se signaler.", status: :see_other
   end
 
   def rouvrir
     if @lesson.rouvrable?
       @lesson.rouvrir!
       redirect_to teacher_lesson_path(@lesson),
-                  notice: "Appel rouvert : les étudiants peuvent à nouveau se signaler."
+                  notice: "Appel rouvert : les étudiants peuvent à nouveau se signaler.", status: :see_other
     else
       redirect_to teacher_lesson_path(@lesson),
-                  alert: "Le créneau est terminé. Corrigez depuis le bilan de présences."
+                  alert: "Le créneau est terminé. Corrigez depuis le bilan de présences.", status: :see_other
     end
   end
 
@@ -51,7 +51,7 @@ class Teacher::LessonsController < ApplicationController
       @lesson.valider!
     end
     redirect_to teacher_lesson_path(@lesson),
-                notice: "Appel validé : #{@lesson.presents_count} présents."
+                notice: "Appel validé : #{@lesson.presents_count} présents.", status: :see_other
   end
 
   private

@@ -11,7 +11,7 @@ class CardSkillsController < ApplicationController
     end
     authorize CardSkill.new(card: @card) if ids.empty?
     redirect_to volet(@card.team, @card.id, "competences"),
-                notice: ajoutees.zero? ? nil : "#{ajoutees} compétence#{'s' if ajoutees > 1} ajoutée#{'s' if ajoutees > 1}."
+                notice: ajoutees.zero? ? nil : "#{ajoutees} compétence#{'s' if ajoutees > 1} ajoutée#{'s' if ajoutees > 1}.", status: :see_other
   end
 
   def destroy
@@ -19,7 +19,7 @@ class CardSkillsController < ApplicationController
     authorize @card_skill
     carte = @card_skill.card
     @card_skill.destroy
-    redirect_to volet(carte.team, carte.id, "competences")
+    redirect_to volet(carte.team, carte.id, "competences"), status: :see_other
   end
 
   private

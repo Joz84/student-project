@@ -10,7 +10,7 @@ class CardsController < ApplicationController
     if card_params[:teacher_validation].present? && !current_user.teacher?
       flash[:alert] = "Vous n'êtes pas autorisé à créer cette tâche."
     elsif @card.save
-      redirect_to @team
+      redirect_to @team, status: :see_other
     else
       @assignment = Assignment.new
       @meeting = Meeting.new
@@ -30,7 +30,7 @@ class CardsController < ApplicationController
     end
     # Une carte se modifie depuis le tableau comme depuis la feuille de route :
     # on revient là où l'on était.
-    redirect_back fallback_location: @team
+    redirect_back fallback_location: @team, status: :see_other
   end
 
   def destroy
@@ -38,7 +38,7 @@ class CardsController < ApplicationController
     authorize @card
     @team = @card.team
     @card.destroy
-    redirect_to @team
+    redirect_to @team, status: :see_other
   end
 
   def position

@@ -6,17 +6,17 @@ class MilestonesController < ApplicationController
     @milestone = @team.milestones.new(milestone_params)
     authorize @milestone
     if @milestone.save
-      redirect_to team_roadmap_path(@team), notice: "Jalon « #{@milestone.name} » créé."
+      redirect_to team_roadmap_path(@team), notice: "Jalon « #{@milestone.name} » créé.", status: :see_other
     else
-      redirect_to team_roadmap_path(@team), alert: erreurs(@milestone)
+      redirect_to team_roadmap_path(@team), alert: erreurs(@milestone), status: :see_other
     end
   end
 
   def update
     if @milestone.update(milestone_params)
-      redirect_to team_roadmap_path(@team), notice: "Jalon mis à jour."
+      redirect_to team_roadmap_path(@team), notice: "Jalon mis à jour.", status: :see_other
     else
-      redirect_to team_roadmap_path(@team), alert: erreurs(@milestone)
+      redirect_to team_roadmap_path(@team), alert: erreurs(@milestone), status: :see_other
     end
   end
 
@@ -26,17 +26,17 @@ class MilestonesController < ApplicationController
     # simplement sans rattachement.
     @milestone.destroy!
     redirect_to team_roadmap_path(@team),
-                notice: "Jalon « #{nom} » supprimé. Ses tâches restent au tableau."
+                notice: "Jalon « #{nom} » supprimé. Ses tâches restent au tableau.", status: :see_other
   end
 
   def monter
     @milestone.move_higher
-    redirect_to team_roadmap_path(@team)
+    redirect_to team_roadmap_path(@team), status: :see_other
   end
 
   def descendre
     @milestone.move_lower
-    redirect_to team_roadmap_path(@team)
+    redirect_to team_roadmap_path(@team), status: :see_other
   end
 
   private

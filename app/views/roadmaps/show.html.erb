@@ -54,7 +54,7 @@
                       <span class="jalon__tache-nom"><%= tache.name %></span>
                       <span class="jalon__tache-etat"><%= tache.archived? ? "archivée" : tache.list.name %></span>
                       <%= button_to "Détacher", card_path(tache, card: { milestone_id: nil }),
-                                    method: :patch, form: { data: { turbo: false } },
+                                    method: :patch, form: {  },
                                     class: "no-btn jalon__detacher" %>
                     </li>
                   <% end %>
@@ -64,10 +64,10 @@
               <div class="jalon__outils">
                 <a data-bs-toggle="collapse" href="#jalon<%= jalon.id %>" role="button" class="jalon__lien">Modifier</a>
                 <%= button_to "↑", monter_team_milestone_path(@team, jalon), method: :patch,
-                              form: { data: { turbo: false } }, class: "no-btn jalon__fleche",
+                              form: {  }, class: "no-btn jalon__fleche",
                               disabled: rang.zero? %>
                 <%= button_to "↓", descendre_team_milestone_path(@team, jalon), method: :patch,
-                              form: { data: { turbo: false } }, class: "no-btn jalon__fleche",
+                              form: {  }, class: "no-btn jalon__fleche",
                               disabled: rang == @milestones.size - 1 %>
               </div>
 
@@ -97,7 +97,7 @@
             <% @orphelines.each do |tache| %>
               <li class="orphelines__ligne">
                 <span><%= tache.name %> <span class="team-card__muted"><%= tache.list.name %></span></span>
-                <%= form_with url: card_path(tache), method: :patch, data: { turbo: false }, class: "orphelines__forme" do %>
+                <%= form_with url: card_path(tache), method: :patch, class: "orphelines__forme" do %>
                   <%= select_tag "card[milestone_id]",
                         options_from_collection_for_select(@milestones, :id, :name),
                         include_blank: "Rattacher à…", class: "form-select form-select-sm",

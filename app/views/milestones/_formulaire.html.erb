@@ -1,4 +1,4 @@
-<%= simple_form_for [team, milestone], html: { class: "jalon-forme", data: { turbo: false } } do |f| %>
+<%= simple_form_for [team, milestone], html: { class: "jalon-forme" } do |f| %>
   <div class="jalon-forme__ligne">
     <%= f.input :name, label: "Intitulé de l'étape", input_html: { placeholder: "Prototype fonctionnel" }, wrapper_html: { class: "jalon-forme__large" } %>
     <%= f.input :starts_on, as: :date, html5: true, label: "Début" %>
@@ -10,7 +10,7 @@
     <%= f.submit bouton, class: "btn btn-danger" %>
     <% if milestone.persisted? %>
       <%= button_to "Supprimer ce jalon", team_milestone_path(team, milestone), method: :delete,
-                    form: { data: { turbo: false, turbo_confirm: "Supprimer ce jalon ? Ses tâches resteront au tableau, sans rattachement." } },
+                    form: { data: { turbo_confirm: "Supprimer ce jalon ? Ses tâches resteront au tableau, sans rattachement." } },
                     class: "btn btn-supp" %>
     <% end %>
   </div>

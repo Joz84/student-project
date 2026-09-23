@@ -13,6 +13,6 @@ class UeAssessmentsController < ApplicationController
     else
       evaluation.save!
     end
-    redirect_back fallback_location: matieres_path
+    redirect_back fallback_location: matieres_path, status: :see_other
   end
 end

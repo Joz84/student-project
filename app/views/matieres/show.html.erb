@@ -70,7 +70,7 @@
                     <% UeAssessment::NIVEAUX.each_key do |cle| %>
                       <td class="autoeval__case">
                         <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                      data: { turbo: false }, class: "autoeval__forme" do %>
+                                       class: "autoeval__forme" do %>
                           <%= hidden_field_tag :level, cle %>
                           <button type="submit" class="autoeval__bouton <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
                                   style="<%= "--teinte: #{matiere.teinte};" %>"
@@ -81,7 +81,7 @@
                     <% end %>
                     <td class="autoeval__case autoeval__maison">
                       <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                    data: { turbo: false }, class: "maison__forme" do %>
+                                     class: "maison__forme" do %>
                         <%= number_field_tag :home_hours, evaluation&.home_hours.to_f.round(1),
                               min: 0, step: 0.5, class: "maison__champ",
                               onchange: "this.form.requestSubmit()", "aria-label": "Heures de travail personnel" %>
@@ -99,7 +99,7 @@
                 <% if evaluation&.level %>
                   <span class="matiere__niveau">Niveau déclaré : <strong><%= evaluation.libelle %></strong></span>
                   <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                data: { turbo: false }, class: "autoeval__forme" do %>
+                                 class: "autoeval__forme" do %>
                     <%= hidden_field_tag :level, "" %>
                     <%= submit_tag "Effacer", class: "no-btn matiere__effacer" %>
                   <% end %>

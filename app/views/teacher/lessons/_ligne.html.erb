@@ -13,7 +13,7 @@
     <% if eleve %>
       <%# Mêmes états que le bilan : présent, absence justifiée ou non, retard. %>
       <%= form_with url: teacher_lesson_attendance_path(lesson, eleve), method: :patch,
-                    data: { turbo: false }, class: "appel__forme" do %>
+                     class: "appel__forme" do %>
         <%= select_tag :status,
               options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, pointage&.status),
               include_blank: "Non renseigné", class: "appel__select",
@@ -22,7 +22,7 @@
     <% else %>
       <span class="appel__etiquette">saisie manuelle · <%= pointage.libelle %></span>
       <%= button_to "Retirer", teacher_lesson_attendance_path(lesson, pointage),
-                    method: :delete, form: { data: { turbo: false, turbo_confirm: "Retirer cette ligne ?" } },
+                    method: :delete, form: { data: { turbo_confirm: "Retirer cette ligne ?" } },
                     class: "btn btn-sm btn-supp", disabled: lesson.valide? %>
     <% end %>
   </span>

@@ -13,7 +13,7 @@ class Teacher::AttendancesController < ApplicationController
       @attendance.update!(status: params[:status], declared_by: :teacher,
                           declared_at: Time.current)
     end
-    redirect_to teacher_lesson_path(@lesson)
+    redirect_to teacher_lesson_path(@lesson), status: :see_other
   end
 
   # Étudiant absent de toutes les listes : saisie libre, sans validation de
@@ -29,11 +29,11 @@ class Teacher::AttendancesController < ApplicationController
 
     if [@attendance.guest_first_name, @attendance.guest_last_name,
         @attendance.guest_student_number].all?(&:blank?)
-      redirect_to teacher_lesson_path(@lesson), alert: "Renseignez au moins un nom ou un numéro."
+      redirect_to teacher_lesson_path(@lesson), alert: "Renseignez au moins un nom ou un numéro.", status: :see_other
     else
       @attendance.save!
       redirect_to teacher_lesson_path(@lesson),
-                  notice: "#{@attendance.nom_complet} ajouté à la feuille d'appel."
+                  notice: "#{@attendance.nom_complet} ajouté à la feuille d'appel.", status: :see_other
     end
   end
 
@@ -41,7 +41,7 @@ class Teacher::AttendancesController < ApplicationController
     @attendance = @lesson.attendances.find(params[:id])
     authorize [:teacher, @attendance]
     @attendance.destroy!
-    redirect_to teacher_lesson_path(@lesson)
+    redirect_to teacher_lesson_path(@lesson), status: :see_other
   end
 
   private

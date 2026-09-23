@@ -39,7 +39,7 @@ Options
                 <% if card.card_skills.empty? %><span class="text-grey"><small>Aucune compétence visée.</small></span><% end %>
               </div>
               <hr>
-              <%= form_with url: card_card_skills_path(card), method: :post, data: { turbo: false } do %>
+              <%= form_with url: card_card_skills_path(card), method: :post do %>
                 <p class="choix__titre">Ajouter des compétences</p>
                 <div class="choix choix--long">
                   <% deja = card.card_skills.map(&:skill_id) %>
@@ -76,7 +76,7 @@ Options
               <hr>
               <% restants = card.list.team.users.kept.where.not(id: card.users.kept.map(&:id)) %>
               <% if restants.any? %>
-                <%= form_with url: card_assignments_path(card), method: :post, data: { turbo: false } do %>
+                <%= form_with url: card_assignments_path(card), method: :post do %>
                   <p class="choix__titre">Ajouter des collaborateurs</p>
                   <div class="choix">
                     <% restants.each do |membre| %>
@@ -144,7 +144,7 @@ Options
               </button>
             </h2>
             <div id="collapseJalon<%= card.id %>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
-              <%= form_with url: card_path(card), method: :patch, data: { turbo: false } do %>
+              <%= form_with url: card_path(card), method: :patch do %>
                 <%= select_tag "card[milestone_id]",
                       options_from_collection_for_select(card.team.milestones.ordonnes, :id, :name, card.milestone_id),
                       include_blank: "Aucune étape", class: "form-select form-select-sm mb-2",
