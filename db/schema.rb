@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_22_100000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -199,7 +199,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_100000) do
     t.bigint "batch_id", null: false
     t.bigint "ue_id"
     t.bigint "teacher_id"
-    t.string "ade_uid", null: false
+    t.string "ade_uid"
     t.string "title", null: false
     t.string "room"
     t.string "teacher_label"
@@ -211,7 +211,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_100000) do
     t.datetime "validated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["ade_uid"], name: "index_lessons_on_ade_uid", unique: true
+    t.index ["ade_uid"], name: "index_lessons_on_ade_uid"
+    t.index ["batch_id", "starts_at"], name: "index_lessons_on_batch_id_and_starts_at"
     t.index ["batch_id"], name: "index_lessons_on_batch_id"
     t.index ["starts_at"], name: "index_lessons_on_starts_at"
     t.index ["teacher_id"], name: "index_lessons_on_teacher_id"

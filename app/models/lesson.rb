@@ -10,8 +10,11 @@ class Lesson < ApplicationRecord
   # cm : toute la promotion ; autre : examens, rattrapages, événements divers.
   enum category: { cm: 0, td: 1, tp: 2, tp_info: 3, exam: 4, autre: 5 }
 
-  validates :ade_uid, presence: true, uniqueness: true
+  # L'UID d'ADE n'est qu'une trace : son schéma a changé en cours d'année et
+  # il ne peut donc pas identifier une séance. Voir TimetableImporter.
   validates :title, :starts_at, :ends_at, presence: true
+  validates :starts_at, uniqueness: { scope: [:batch_id, :ends_at, :title, :room],
+                                      message: "cette séance est déjà enregistrée" }
 
   scope :a_venir, -> { where("ends_at >= ?", Time.current).order(:starts_at) }
   scope :du_jour, -> { where(starts_at: Time.current.all_day).order(:starts_at) }

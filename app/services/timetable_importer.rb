@@ -1,13 +1,20 @@
 # Rapatrie les emplois du temps ADE d'une promotion et les met en base.
-# L'UID de chaque séance étant stable, l'import est réidempotent : on le
-# rejoue tous les soirs sans créer de doublon, et une séance déplacée par la
-# scolarité voit simplement son horaire mis à jour.
+#
+# Une séance est reconnue à son créneau, son intitulé et sa salle, jamais à
+# son UID : ADE en a changé le schéma en cours d'année et aucun identifiant
+# d'un export ne se retrouvait dans le suivant, ce qui dupliquait tout le
+# calendrier à chaque passage.
+#
+# Le flux fait autorité : une séance qu'il ne contient plus est supprimée,
+# sauf si un appel y a déjà été fait — on ne détruit pas un registre.
 class TimetableImporter
-  Resultat = Struct.new(:creees, :majs, :inchangees, :ues, :groupes,
-                        :sans_enseignant, :erreurs, keyword_init: true) do
+  Resultat = Struct.new(:creees, :majs, :inchangees, :supprimees, :conservees,
+                        :ues, :groupes, :sans_enseignant, :erreurs, keyword_init: true) do
     def to_s
-      "#{creees} créées, #{majs} mises à jour, #{inchangees} inchangées · " \
-      "#{ues} UE, #{groupes} groupes · #{sans_enseignant} séances sans enseignant reconnu"
+      texte = "#{creees} créées, #{majs} mises à jour, #{inchangees} inchangées"
+      texte += ", #{supprimees} supprimées" if supprimees.to_i.positive?
+      texte += ", #{conservees} retirées d'ADE mais conservées (appel fait)" if conservees.to_i.positive?
+      texte + " · #{ues} UE, #{groupes} groupes · #{sans_enseignant} séances sans enseignant reconnu"
     end
   end
 
@@ -18,9 +25,11 @@ class TimetableImporter
 
   def run(dry_run: false)
     creees = majs = inchangees = sans_prof = 0
+    supprimees = conservees = 0
     erreurs = []
     ues = Set.new
     groupes = Set.new
+    vues = Set.new
 
     ActiveRecord::Base.transaction do
       @codes.each do |code|
@@ -31,20 +40,26 @@ class TimetableImporter
           enseignant = trouver_enseignant(s.enseignant)
           sans_prof += 1 if s.enseignant.present? && enseignant.nil?
 
-          lesson = Lesson.find_or_initialize_by(ade_uid: s.uid)
+          lesson = Lesson.find_or_initialize_by(
+            batch: @batch, starts_at: s.debut, ends_at: s.fin,
+            title: s.titre, room: s.salle
+          )
           nouvelle = lesson.new_record?
           lesson.assign_attributes(
-            batch: @batch, ue: ue, teacher: enseignant,
-            title: s.titre, room: s.salle, teacher_label: s.enseignant,
-            category: s.categorie, starts_at: s.debut, ends_at: s.fin
+            ue: ue, teacher: enseignant, ade_uid: s.uid,
+            teacher_label: s.enseignant, category: s.categorie
           )
-          modifiee = lesson.changed?
+          # 22 séances figurent dans les deux flux du portail, qui leur
+          # donnent des UID différents : le seul changement d'UID ne dit rien
+          # d'un changement d'emploi du temps.
+          modifiee = (lesson.changed - ["ade_uid"]).any?
           lesson.save!
 
           ids = s.groupes.filter_map { |g| ue && trouver_groupe(ue, g).tap { |x| groupes << x.id } }.map(&:id)
           modifiee ||= lesson.group_ids.sort != ids.sort
           lesson.group_ids = ids
 
+          vues << lesson.id
           if nouvelle then creees += 1
           elsif modifiee then majs += 1
           else inchangees += 1
@@ -53,10 +68,22 @@ class TimetableImporter
           erreurs << "#{s.uid} : #{e.message}"
         end
       end
+
+      # Réconciliation : ce que le flux ne contient plus n'a plus lieu.
+      disparues = Lesson.where(batch: @batch).where.not(id: vues.to_a)
+      avec_appel = disparues.joins(:attendances).distinct.pluck(:id)
+      conservees = avec_appel.size
+      # destroy_all et non delete_all : les rattachements aux groupes ont une
+      # contrainte de clé étrangère, que seul le callback dependent nettoie.
+      a_supprimer = Lesson.where(id: disparues.where.not(id: avec_appel).pluck(:id))
+      supprimees = a_supprimer.count
+      a_supprimer.destroy_all
+
       raise ActiveRecord::Rollback if dry_run
     end
 
     Resultat.new(creees: creees, majs: majs, inchangees: inchangees,
+                 supprimees: supprimees, conservees: conservees,
                  ues: ues.compact.size, groupes: groupes.size,
                  sans_enseignant: sans_prof, erreurs: erreurs)
   end
