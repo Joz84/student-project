@@ -68,6 +68,16 @@ class SemestreTest < ActiveSupport::TestCase
     assert_equal 5.0, s.heures_max_semaine
   end
 
+  test "un étudiant sans cours ne fait pas tomber le relevé" do
+    s = Semestre.new(@eleve)
+    assert s.vide?
+    assert_equal [], s.semaines
+    assert_equal 0.0, s.heures_max_semaine
+    assert_equal 0, s.avancement
+    assert_nil s.statut({})
+    assert_nil s.taux_maison({})
+  end
+
   test "chaque UE d'une promotion a sa propre teinte" do
     teintes = @batch.ues.map(&:teinte)
     assert_equal teintes.size, teintes.uniq.size

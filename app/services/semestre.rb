@@ -63,6 +63,7 @@ class Semestre
   def semaines
     @semaines ||= begin
       groupes = seances.group_by { |l| l.starts_at.to_date.beginning_of_week }
+      return [] if groupes.empty?   # un étudiant sans cours n'a pas de semaines
       groupes.keys.min.upto(groupes.keys.max).select { |d| d == d.beginning_of_week }.map do |lundi|
         ls = groupes[lundi] || []
         Semaine.new(
@@ -79,6 +80,7 @@ class Semestre
   end
 
   def heures_max_semaine = semaines.map(&:total).max.to_f
+
 
   def semaine_courante = semaines.find(&:courante?)
 
