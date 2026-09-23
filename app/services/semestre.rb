@@ -80,6 +80,50 @@ class Semestre
 
   def heures_max_semaine = semaines.map(&:total).max.to_f
 
+  def semaine_courante = semaines.find(&:courante?)
+
+  # --- travail personnel ---
+  # L'attendu est simple : autant d'heures à la maison que d'heures reçues.
+  def heures_maison(evaluations)
+    matieres.sum { |m| evaluations[m.ue.id]&.home_hours.to_f }.round(1)
+  end
+
+  def taux_maison(evaluations)
+    return nil if heures_faites.zero?
+    (100.0 * heures_maison(evaluations) / heures_faites).round
+  end
+
+  # --- statut global ---
+  # Moyenne des niveaux déclarés, pondérée par le volume horaire : se dire
+  # « maîtrise » sur une matière de 3 h ne pèse pas comme sur une de 46 h.
+  def niveau_moyen(evaluations)
+    pesees = matieres.filter_map { |m|
+      note = evaluations[m.ue.id]&.note
+      [note, m.heures] if note
+    }
+    return nil if pesees.empty?
+    total = pesees.sum { |_, h| h }
+    return nil if total.zero?
+    (pesees.sum { |n, h| n * h } / total).round(2)
+  end
+
+  def matieres_evaluees(evaluations) = matieres.count { |m| evaluations[m.ue.id]&.level }
+
+  STATUTS = [
+    [1.5, "Découverte",      "Les notions sont abordées, le travail commence."],
+    [2.5, "En apprentissage", "Vous savez faire accompagné, l'autonomie vient."],
+    [3.5, "En consolidation", "Vous savez faire seul sur l'essentiel."],
+    [Float::INFINITY, "Maîtrise", "Vous savez faire et l'expliquer."]
+  ].freeze
+
+  def statut(evaluations)
+    moyenne = niveau_moyen(evaluations)
+    return nil if moyenne.nil?
+    seuil, libelle, aide = STATUTS.find { |s, _, _| moyenne < s }
+    { moyenne: moyenne, libelle: libelle, aide: aide, seuil: seuil,
+      sur_quatre: (100.0 * moyenne / 4).round }
+  end
+
   private
 
   def bornes(reference) = self.class.bornes_du_semestre(reference)
@@ -101,6 +145,13 @@ class Semestre
 
     def nombre_seances = seances.size
     def teinte = ue.teinte
+
+    # Pourcentage du travail personnel attendu qui a été fait : l'attendu est
+    # égal aux heures déjà reçues en cours.
+    def taux_maison(evaluation)
+      return nil if heures_faites.zero?
+      (100.0 * evaluation&.home_hours.to_f / heures_faites).round
+    end
   end
 
   Semaine = Struct.new(:lundi, :numero, :parts, :total, keyword_init: true) do

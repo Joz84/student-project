@@ -1,0 +1,60 @@
+<% taux = semestre.taux_maison(evaluations) %>
+<section class="statut">
+  <div class="statut__bloc">
+    <span class="statut__etiquette">Semestre</span>
+    <span class="statut__valeur"><%= semestre.libelle %></span>
+    <span class="statut__detail">
+      <%= semestre.heures_faites %> h suivies sur <%= semestre.heures_totales %> h
+      · <%= semestre.avancement %> %
+    </span>
+    <div class="statut__jauge">
+      <div class="statut__jauge-barre" style="width: <%= semestre.avancement %>%; background: <%= @semestre.matieres.first&.teinte || "#2C6EB8" %>;"></div>
+    </div>
+  </div>
+
+  <div class="statut__bloc">
+    <span class="statut__etiquette">Où j'en suis</span>
+    <% if statut %>
+      <span class="statut__valeur statut__valeur--fort"><%= statut[:libelle] %></span>
+      <span class="statut__detail">
+        Niveau moyen <%= statut[:moyenne] %>/4, pondéré par le volume horaire ·
+        <%= semestre.matieres_evaluees(evaluations) %> matière<%= "s" if semestre.matieres_evaluees(evaluations) > 1 %>
+        évaluée<%= "s" if semestre.matieres_evaluees(evaluations) > 1 %> sur <%= semestre.matieres.size %>
+      </span>
+      <div class="statut__echelle">
+        <% Semestre::STATUTS.each_with_index do |(_, libelle, _), i| %>
+          <span class="statut__cran <%= "statut__cran--atteint" if statut[:moyenne] >= i + 1 %>"
+                title="<%= libelle %>"></span>
+        <% end %>
+      </div>
+      <span class="statut__aide"><%= statut[:aide] %></span>
+    <% else %>
+      <span class="statut__valeur statut__valeur--terne">Non évalué</span>
+      <span class="statut__detail">
+        Situez-vous sur chaque matière ci-dessous pour obtenir un statut global.
+      </span>
+    <% end %>
+  </div>
+
+  <div class="statut__bloc">
+    <span class="statut__etiquette">Travail personnel</span>
+    <% if taux %>
+      <span class="statut__valeur <%= taux < 60 ? "statut__valeur--alerte" : "statut__valeur--fort" %>">
+        <%= taux %> %
+      </span>
+      <span class="statut__detail">
+        <%= semestre.heures_maison(evaluations) %> h déclarées pour
+        <%= semestre.heures_faites %> h attendues
+      </span>
+      <div class="statut__jauge">
+        <div class="statut__jauge-barre" style="width: <%= [taux, 100].min %>%; background: <%= taux < 60 ? "#D96C6C" : "#89BF48" %>;"></div>
+      </div>
+      <span class="statut__aide">
+        <%= taux < 60 ? "En deçà de l'attendu : une heure de cours appelle une heure de travail." : "Vous tenez le rythme attendu." %>
+      </span>
+    <% else %>
+      <span class="statut__valeur statut__valeur--terne">—</span>
+      <span class="statut__detail">Aucune heure de cours encore passée.</span>
+    <% end %>
+  </div>
+</section>

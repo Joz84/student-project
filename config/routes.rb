@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   end
   resource :speciality, only: [:edit, :update]
   resources :projects, only: [:index, :show]
+  resource :matieres, only: [:show], controller: "matieres"
   resources :ratings, only: [:update]
   resources :ues, only: [] do
     resource :assessment, only: [:update], controller: "ue_assessments"
@@ -31,7 +32,6 @@ Rails.application.routes.draw do
     resources :progressions, only: [:index]
     resources :meetings, only: [:create, :update, :destroy]
     resource :roadmap, only: [:show]
-    resource :matieres, only: [:show], controller: "matieres"
     resources :milestones, only: [:create, :update, :destroy] do
       member do
         patch :monter

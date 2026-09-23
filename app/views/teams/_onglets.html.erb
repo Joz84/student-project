@@ -3,8 +3,6 @@
               class: "onglet #{'onglet--actif' if actif == :kanban}" %>
   <%= link_to "Feuille de route", team_roadmap_path(team),
               class: "onglet #{'onglet--actif' if actif == :roadmap}" %>
-  <%= link_to "Mes matières", team_matieres_path(team),
-              class: "onglet #{'onglet--actif' if actif == :matieres}" %>
   <%= link_to "Progression", team_progressions_path(team),
               class: "onglet #{'onglet--actif' if actif == :progression}" %>
 </nav>

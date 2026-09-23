@@ -1,9 +1,12 @@
-<div class="container-fluid page-min-height">
+<div class="container page-min-height">
   <div class="row">
-    <div class="col-md-9">
+    <div class="col-lg-10 offset-lg-1">
 
-      <h2 class="text-center my-4">Mes matières</h2>
-      <%= render "teams/onglets", team: @team, actif: :matieres %>
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <h2 class="text-center mb-4">Mes matières</h2>
 
       <% if @semestre.vide? %>
         <div class="agenda__vide">
@@ -13,27 +16,18 @@
         </div>
       <% else %>
 
-        <div class="semestre__entete">
-          <div>
-            <span class="semestre__periode"><%= @semestre.libelle %></span>
-            <span class="semestre__volume">
-              <%= @semestre.heures_faites %> h suivies sur <%= @semestre.heures_totales %> h
-            </span>
-          </div>
-          <div class="semestre__global">
-            <div class="semestre__jauge">
-              <div class="semestre__jauge-barre" style="width: <%= @semestre.avancement %>%;"></div>
-            </div>
-            <span class="semestre__pct"><%= @semestre.avancement %> %</span>
-          </div>
-        </div>
-
+        <%= render "matieres/statut", semestre: @semestre, statut: @statut, evaluations: @evaluations %>
         <%= render "matieres/histogramme", semestre: @semestre %>
 
         <h3 class="roadmap__sous-titre mt-5">Les matières du semestre</h3>
+        <p class="matieres__regle">
+          Le travail personnel attendu est d'autant d'heures que d'heures reçues en cours.
+          Déclarez les vôtres dans la dernière colonne.
+        </p>
 
         <% @semestre.matieres.each do |matiere| %>
           <% evaluation = @evaluations[matiere.ue.id] %>
+          <% taux = matiere.taux_maison(evaluation) %>
           <section class="matiere">
             <span class="matiere__filet" style="background: <%= matiere.teinte %>;"></span>
 
@@ -64,6 +58,10 @@
                         <span class="autoeval__aide"><%= UeAssessment::AIDES[cle] %></span>
                       </th>
                     <% end %>
+                    <th class="autoeval__niveau autoeval__maison">
+                      Travail perso
+                      <span class="autoeval__aide">attendu : <%= matiere.heures_faites %> h</span>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -76,16 +74,29 @@
                           <%= hidden_field_tag :level, cle %>
                           <button type="submit" class="autoeval__bouton <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
                                   style="<%= "--teinte: #{matiere.teinte};" %>"
+                                  title="<%= UeAssessment::NIVEAUX[cle] %>"
                                   aria-label="<%= UeAssessment::NIVEAUX[cle] %>"></button>
                         <% end %>
                       </td>
                     <% end %>
+                    <td class="autoeval__case autoeval__maison">
+                      <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                    data: { turbo: false }, class: "maison__forme" do %>
+                        <%= number_field_tag :home_hours, evaluation&.home_hours.to_f.round(1),
+                              min: 0, step: 0.5, class: "maison__champ",
+                              onchange: "this.form.requestSubmit()", "aria-label": "Heures de travail personnel" %>
+                        <span class="maison__unite">h</span>
+                      <% end %>
+                      <% if taux %>
+                        <span class="maison__taux <%= "maison__taux--faible" if taux < 60 %>"><%= taux %> %</span>
+                      <% end %>
+                    </td>
                   </tr>
                 </tbody>
               </table>
 
               <div class="matiere__pied">
-                <% if evaluation %>
+                <% if evaluation&.level %>
                   <span class="matiere__niveau">Niveau déclaré : <strong><%= evaluation.libelle %></strong></span>
                   <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
                                 data: { turbo: false }, class: "autoeval__forme" do %>
@@ -107,6 +118,5 @@
 
       <% end %>
     </div>
-    <%= render "teams/barre_laterale", team: @team, meeting: @meeting %>
   </div>
 </div>

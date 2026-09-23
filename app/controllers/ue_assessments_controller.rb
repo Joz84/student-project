@@ -4,12 +4,15 @@ class UeAssessmentsController < ApplicationController
     evaluation = UeAssessment.find_or_initialize_by(user: current_user, ue: @ue)
     authorize evaluation
 
-    if params[:level].blank?
-      # Revenir à « non évalué » est un choix légitime.
+    evaluation.level = params[:level].presence if params.key?(:level)
+    evaluation.home_hours = params[:home_hours].to_f if params.key?(:home_hours)
+
+    # Une ligne sans niveau ni heures n'a plus de raison d'exister.
+    if evaluation.vide?
       evaluation.destroy if evaluation.persisted?
     else
-      evaluation.update!(level: params[:level])
+      evaluation.save!
     end
-    redirect_back fallback_location: root_path
+    redirect_back fallback_location: matieres_path
   end
 end

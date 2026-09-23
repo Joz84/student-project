@@ -19,9 +19,17 @@ class UeAssessment < ApplicationRecord
     "maitrise"    => "Je sais faire et l'expliquer"
   }.freeze
 
+  # Un niveau non renseigné reste possible : on ne force personne à se situer.
   enum level: { notion: 0, initiation: 1, application: 2, maitrise: 3 }, _prefix: :niveau
 
   validates :user_id, uniqueness: { scope: :ue_id }
+  validates :home_hours, numericality: { greater_than_or_equal_to: 0 }
+
+  NOTES = { "notion" => 1, "initiation" => 2, "application" => 3, "maitrise" => 4 }.freeze
 
   def libelle = NIVEAUX[level]
+  def note    = NOTES[level]
+
+  # Sans niveau ni heures déclarées, la ligne n'a plus de raison d'être.
+  def vide? = level.nil? && home_hours.to_f.zero?
 end

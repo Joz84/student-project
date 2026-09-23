@@ -1,47 +1,69 @@
 // Relevé des matières du semestre : volume horaire, avancement, auto-évaluation.
 
-.semestre__entete {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.2rem;
-  flex-wrap: wrap;
+// Triptyque de tête : où en est le semestre, où en est l'étudiant, et
+// combien de travail personnel il a fourni face à ce qui est attendu.
+.statut {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: .9rem;
+  margin-bottom: 1.5rem;
+}
+
+.statut__bloc {
   background: #fff;
   border: 1px solid $line;
   border-radius: $radius;
   box-shadow: $shadow-sm;
-  padding: 1rem 1.2rem;
-  margin-bottom: 1.5rem;
+  padding: .9rem 1.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
 }
 
-.semestre__periode {
-  display: block;
-  font-family: $headers-font;
+.statut__etiquette {
+  font-size: .68rem;
   font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: $muted-soft;
+}
+
+.statut__valeur {
+  font-family: $headers-font;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.15;
   color: $ink;
 }
 
-.semestre__volume { font-size: .85rem; color: $muted; }
+.statut__valeur--fort { color: $ink; }
+.statut__valeur--terne { color: $muted-soft; }
+.statut__valeur--alerte { color: darken($red, 6%); }
 
-.semestre__global { display: flex; align-items: center; gap: .7rem; flex: 1 1 14rem; }
+.statut__detail { font-size: .78rem; color: $muted; line-height: 1.4; }
+.statut__aide { font-size: .74rem; color: $muted-soft; font-style: italic; margin-top: .2rem; }
 
-.semestre__jauge {
-  flex: 1;
-  height: 8px;
+.statut__jauge {
+  height: 6px;
   border-radius: 999px;
   background: $line-soft;
   overflow: hidden;
+  margin-top: .35rem;
 }
 
-.semestre__jauge-barre { height: 100%; background: $blue; border-radius: 999px; }
+.statut__jauge-barre { height: 100%; border-radius: 999px; }
 
-.semestre__pct {
-  font-family: $headers-font;
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: $ink;
-  font-variant-numeric: tabular-nums;
+// Quatre crans, un par palier de l'échelle d'acquisition.
+.statut__echelle { display: flex; gap: .25rem; margin-top: .35rem; }
+
+.statut__cran {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: $line-soft;
 }
+
+.statut__cran--atteint { background: $blue; }
 
 // --- histogramme empilé : une colonne par semaine ---
 .histo {
@@ -271,3 +293,79 @@
   .histo__barres { height: 10rem; }
   .histo__axe { height: 10rem; }
 }
+
+// --- semaine en cours : elle doit sauter aux yeux ---
+.histo__colonne--passee .histo__pile { opacity: .55; }
+
+.histo__colonne--courante {
+  position: relative;
+  background: rgba($blue, .07);
+  border-radius: 4px 4px 0 0;
+}
+
+.histo__colonne--courante .histo__pile {
+  opacity: 1;
+  outline: 2px solid $blue;
+  outline-offset: 1px;
+}
+
+.histo__colonne--courante .histo__semaine {
+  color: #fff;
+  font-weight: 700;
+  background: $blue;
+  border-radius: 0 0 3px 3px;
+}
+
+.histo__marqueur {
+  position: absolute;
+  top: -1.15rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .6rem;
+  font-weight: 700;
+  color: #fff;
+  background: $blue;
+  border-radius: 999px;
+  padding: .05rem .45rem;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+// La colonne du marqueur a besoin d'air au-dessus des barres.
+.histo__barres { padding-top: 1.4rem; }
+
+// --- travail personnel ---
+.matieres__regle {
+  font-size: .82rem;
+  color: $muted;
+  margin: -.4rem 0 1rem;
+}
+
+.autoeval__maison { background: rgba($blue, .05); }
+
+.maison__forme { display: inline-flex; align-items: center; gap: .2rem; margin: 0; }
+
+.maison__champ {
+  width: 3.6rem;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: .15rem .3rem;
+  font-size: .8rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+
+  &:focus { border-color: $blue; outline: none; box-shadow: 0 0 0 3px rgba($blue, .12); }
+}
+
+.maison__unite { font-size: .74rem; color: $muted-soft; }
+
+.maison__taux {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  color: $muted;
+  margin-top: .15rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.maison__taux--faible { color: darken($red, 6%); }

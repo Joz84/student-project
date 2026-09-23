@@ -14,7 +14,10 @@
 
     <div class="histo__barres">
       <% semestre.semaines.each do |semaine| %>
-        <div class="histo__colonne <%= "histo__colonne--courante" if semaine.courante? %>">
+        <div class="histo__colonne <%= "histo__colonne--courante" if semaine.courante? %> <%= "histo__colonne--passee" if semaine.passee? %>">
+          <% if semaine.courante? %>
+            <span class="histo__marqueur">cette semaine</span>
+          <% end %>
           <div class="histo__pile" title="Semaine <%= semaine.numero %> — <%= semaine.total.round(1) %> h">
             <% semaine.parts.each do |part| %>
               <span class="histo__part"
