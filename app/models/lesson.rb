@@ -68,6 +68,15 @@ class Lesson < ApplicationRecord
   def deverrouiller! = update!(locked_at: nil)
   def valider!      = update!(validated_at: Time.current, locked_at: locked_at || Time.current)
 
+  # Tant que le créneau n'est pas écoulé, une validation reste réversible :
+  # on valide souvent avant les derniers arrivants. Passée l'heure, la
+  # correction se fait depuis le bilan, qui reste modifiable sans limite.
+  def rouvrable?(instant = Time.current) = valide? && ends_at > instant
+
+  def rouvrir!
+    update!(validated_at: nil, locked_at: nil)
+  end
+
   # Tous les étudiants de la promotion qui ne sont pas déjà attendus : un
   # rattrapage se fait dans le créneau d'un autre groupe.
   def eleves_hors_liste

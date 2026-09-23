@@ -4,6 +4,7 @@ class Teacher::LessonPolicy < ApplicationPolicy
   def ouvrir?        = show?
   def verrouiller?   = show?
   def deverrouiller? = show?
+  def rouvrir?       = show?
   def valider?       = show?
   def update?        = show?
 

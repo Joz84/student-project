@@ -445,3 +445,10 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   font-size: .64rem;
   font-weight: 700;
 }
+
+.appel__note {
+  font-size: .8rem;
+  color: $muted;
+
+  a { color: $blue; font-weight: 600; }
+}

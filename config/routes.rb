@@ -49,6 +49,7 @@ Rails.application.routes.draw do
         post :ouvrir
         post :verrouiller
         post :deverrouiller
+        post :rouvrir
         post :valider
       end
       resources :attendances, only: [:create, :update, :destroy]

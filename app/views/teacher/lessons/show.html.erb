@@ -20,6 +20,15 @@
             <span class="appel__badge appel__badge--valide">
               Appel validé le <%= I18n.l(@lesson.validated_at, format: "%d/%m à %H:%M") %>
             </span>
+            <% if @lesson.rouvrable? %>
+              <%= button_to "Rouvrir l'appel", rouvrir_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+            <% else %>
+              <span class="appel__note">
+                Créneau terminé — les corrections se font depuis
+                <%= link_to "le bilan de présences", teacher_bilan_path(ue_id: @lesson.ue_id) %>.
+              </span>
+            <% end %>
           <% else %>
             <% unless @lesson.attendance_code.present? %>
               <%= button_to "Ouvrir l'appel", ouvrir_teacher_lesson_path(@lesson),

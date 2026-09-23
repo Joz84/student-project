@@ -165,6 +165,55 @@ class EmargementTest < ActionDispatch::IntegrationTest
     assert_includes sheet.lessons, @td
   end
 
+  test "un appel validé se rouvre tant que le créneau court" do
+    @td.ouvrir_pointage!
+    code = @td.attendance_code
+    sign_in @prof
+    post valider_teacher_lesson_path(@td)
+    assert @td.reload.valide?
+
+    get teacher_lesson_path(@td)
+    assert_match rouvrir_teacher_lesson_path(@td), response.body
+
+    post rouvrir_teacher_lesson_path(@td)
+    @td.reload
+    refute @td.valide?
+    refute @td.verrouille?
+    assert_equal code, @td.attendance_code, "le code reste le même, il est déjà affiché en salle"
+
+    # L'étudiant peut de nouveau se signaler.
+    sign_in @absent
+    post lesson_attendance_path(@td), params: { code: code }
+    assert @td.reload.attendances.find_by(user: @absent).statut_present?
+  end
+
+  test "passé le créneau, la validation n'est plus réversible ici" do
+    @td.update!(starts_at: 3.hours.ago, ends_at: 2.hours.ago)
+    @td.ouvrir_pointage!
+    sign_in @prof
+    post valider_teacher_lesson_path(@td)
+    refute @td.reload.rouvrable?
+
+    get teacher_lesson_path(@td)
+    refute_match rouvrir_teacher_lesson_path(@td), response.body
+    assert_match "bilan de présences", response.body, "on oriente vers le bilan, qui reste modifiable"
+
+    post rouvrir_teacher_lesson_path(@td)
+    assert @td.reload.valide?, "la séance reste validée"
+    assert_match(/créneau est terminé/i, flash[:alert])
+  end
+
+  test "le bilan reste modifiable après validation" do
+    @td.update!(starts_at: 3.hours.ago, ends_at: 2.hours.ago)
+    @td.ouvrir_pointage!
+    sign_in @prof
+    post valider_teacher_lesson_path(@td)
+    patch teacher_bilan_path, params: {
+      ue_id: @ue.id, statuts: { @td.id.to_s => { @absent.id.to_s => "excused" } }
+    }
+    assert_equal "excused", @td.attendances.find_by(user: @absent).status
+  end
+
   test "un étudiant ne peut pas ouvrir la feuille d'appel" do
     sign_in @eleve
     get teacher_lesson_path(@td)

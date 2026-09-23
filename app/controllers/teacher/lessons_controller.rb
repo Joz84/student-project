@@ -27,6 +27,17 @@ class Teacher::LessonsController < ApplicationController
     redirect_to teacher_lesson_path(@lesson), notice: "Les étudiants peuvent à nouveau se signaler."
   end
 
+  def rouvrir
+    if @lesson.rouvrable?
+      @lesson.rouvrir!
+      redirect_to teacher_lesson_path(@lesson),
+                  notice: "Appel rouvert : les étudiants peuvent à nouveau se signaler."
+    else
+      redirect_to teacher_lesson_path(@lesson),
+                  alert: "Le créneau est terminé. Corrigez depuis le bilan de présences."
+    end
+  end
+
   def valider
     # Les attendus qui ne se sont pas signalés sont portés absents : sans cela
     # la séance resterait à moitié renseignée.
