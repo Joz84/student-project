@@ -3,7 +3,7 @@
   dragndrop après chaque déplacement : ils doivent rester présents.
 %>
 <% notes = { "refused" => "✕", "one" => "1", "two" => "2", "three" => "3", "accepted" => "✓" } %>
-<div class="kanban-card <%= card.teacher_validation %>" data-card-id="<%= card.id %>">
+<div class="kanban-card <%= card.teacher_validation %>" id="carte<%= card.id %>" data-card-id="<%= card.id %>">
 
   <% if notes.key?(card.teacher_validation) %>
     <span class="kanban-note" title="Évaluation de l'enseignant"><%= notes[card.teacher_validation] %></span>
