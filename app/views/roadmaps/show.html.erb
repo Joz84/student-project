@@ -1,6 +1,6 @@
-<div class="container page-min-height">
+<div class="container-fluid page-min-height">
   <div class="row">
-    <div class="col-lg-10 offset-lg-1">
+    <div class="col-md-9">
 
       <h2 class="text-center my-4">Feuille de route</h2>
       <%= render "teams/onglets", team: @team, actif: :roadmap %>
@@ -110,5 +110,6 @@
       </div>
 
     </div>
+    <%= render "teams/barre_laterale", team: @team, meeting: @meeting %>
   </div>
 </div>

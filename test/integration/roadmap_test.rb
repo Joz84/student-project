@@ -30,6 +30,19 @@ class RoadmapTest < ActionDispatch::IntegrationTest
     assert_match "Feuille de route", response.body
   end
 
+  test "les trois onglets portent la barre latérale et se signalent l'un l'autre" do
+    sign_in @eleve
+    { team_path(@team) => "Tableau de bord",
+      team_roadmap_path(@team) => "Feuille de route",
+      team_progressions_path(@team) => "Progression" }.each do |chemin, _|
+      get chemin
+      assert_response :success, "#{chemin} doit répondre"
+      assert_match "onglets-equipe", response.body, "#{chemin} sans onglets"
+      assert_match "col-md-3 bg-primary", response.body, "#{chemin} sans barre latérale"
+      assert_equal 1, response.body.scan("onglet--actif").size, "#{chemin} : un seul onglet actif"
+    end
+  end
+
   test "créer, modifier, réordonner et supprimer un jalon" do
     sign_in @eleve
     post team_milestones_path(@team), params: { milestone: { name: "Prototype", due_on: "2026-12-01" } }
