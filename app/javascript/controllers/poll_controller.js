@@ -26,6 +26,9 @@ export default class extends Controller {
   }
 
   async rafraichir() {
+    // Ne rien remplacer pendant que l'enseignant manipule un menu : il
+    // perdrait sa sélection au moment de la faire.
+    if (this.element.contains(document.activeElement)) return
     try {
       const reponse = await fetch(this.urlValue, { headers: { "Accept": "text/html" } })
       if (!reponse.ok) return

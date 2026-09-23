@@ -144,6 +144,27 @@ class EmargementTest < ActionDispatch::IntegrationTest
     assert_equal 2, @td.attendances.where(status: :absent).count, "les attendus non pointés sont absents"
   end
 
+  test "la feuille d'appel propose les mêmes états que le bilan" do
+    @td.ouvrir_pointage!
+    sign_in @prof
+    get teacher_lesson_path(@td)
+    Attendance::LIBELLES.each_value { |libelle| assert_match libelle, response.body }
+
+    patch teacher_lesson_attendance_path(@td, @eleve), params: { status: "excused" }
+    assert_equal "excused", @td.attendances.find_by(user: @eleve).status
+    patch teacher_lesson_attendance_path(@td, @eleve), params: { status: "retard" }
+    assert_equal "retard", @td.attendances.find_by(user: @eleve).status
+    patch teacher_lesson_attendance_path(@td, @eleve), params: { status: "" }
+    assert_nil @td.attendances.find_by(user: @eleve), "« non renseigné » efface la ligne"
+  end
+
+  test "une séance commencée figure déjà au bilan" do
+    # L'appel se fait pendant le cours : inutile d'attendre la fin pour le voir.
+    refute @td.ends_at <= Time.current, "la séance du test est bien en cours"
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert_includes sheet.lessons, @td
+  end
+
   test "un étudiant ne peut pas ouvrir la feuille d'appel" do
     sign_in @eleve
     get teacher_lesson_path(@td)

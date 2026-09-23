@@ -8,7 +8,14 @@ class AttendanceSheet
     @teacher = teacher
     @ue = ue
     scope = Lesson.where(teacher: teacher, ue: ue).includes(:groups)
-    scope = scope.where("ends_at <= ?", Time.current) if passees_seulement
+    # Une séance compte dès qu'elle a commencé : l'appel se fait pendant le
+    # cours, et l'enseignant doit le retrouver dans son bilan sans attendre la
+    # fin. Une séance future déjà renseignée compte aussi.
+    if passees_seulement
+      scope = scope.where("starts_at <= :t OR lessons.id IN (:avec)",
+                          t: Time.current,
+                          avec: Attendance.select(:lesson_id))
+    end
     @lessons = scope.order(:starts_at).to_a
   end
 

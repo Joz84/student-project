@@ -5,9 +5,14 @@ class Teacher::AttendancesController < ApplicationController
   def update
     @attendance = @lesson.pointage_de(User.find(params[:id]))
     authorize [:teacher, @attendance]
-    @attendance.assign_attributes(status: params[:status], declared_by: :teacher,
-                                  declared_at: Time.current)
-    @attendance.save!
+
+    if params[:status].blank?
+      # « Non renseigné » n'est pas un état : c'est l'absence de ligne.
+      @attendance.destroy! if @attendance.persisted?
+    else
+      @attendance.update!(status: params[:status], declared_by: :teacher,
+                          declared_at: Time.current)
+    end
     redirect_to teacher_lesson_path(@lesson)
   end
 

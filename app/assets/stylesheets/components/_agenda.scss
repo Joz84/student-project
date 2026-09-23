@@ -189,7 +189,24 @@
   font-size: .9rem;
 }
 
-.appel__ligne--present { background: mix($danger, #fff, 7%); }
+// Mêmes teintes que la grille du bilan, pour que les deux se lisent pareil.
+.appel__ligne--present { background: mix($danger, #fff, 8%); }
+.appel__ligne--absent  { background: mix($red, #fff, 7%); }
+.appel__ligne--excused { background: mix($notice, #fff, 16%); }
+.appel__ligne--retard  { background: mix($blue, #fff, 9%); }
+
+.appel__forme { margin: 0; }
+
+.appel__select {
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  background: #fff;
+  font-size: .8rem;
+  padding: .28rem .45rem;
+  color: $ink;
+
+  &:focus { border-color: $blue; outline: none; box-shadow: 0 0 0 3px rgba($blue, .12); }
+}
 
 .appel__nom { color: $ink; }
 
