@@ -1,0 +1,112 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-md-9">
+
+      <h2 class="text-center my-4">Mes matières</h2>
+      <%= render "teams/onglets", team: @team, actif: :matieres %>
+
+      <% if @semestre.vide? %>
+        <div class="agenda__vide">
+          Aucun cours n'est rattaché à votre emploi du temps pour ce semestre.
+          Si vous êtes enseignant, cette page présente le relevé personnel d'un
+          étudiant : elle reste vide pour vous.
+        </div>
+      <% else %>
+
+        <div class="semestre__entete">
+          <div>
+            <span class="semestre__periode"><%= @semestre.libelle %></span>
+            <span class="semestre__volume">
+              <%= @semestre.heures_faites %> h suivies sur <%= @semestre.heures_totales %> h
+            </span>
+          </div>
+          <div class="semestre__global">
+            <div class="semestre__jauge">
+              <div class="semestre__jauge-barre" style="width: <%= @semestre.avancement %>%;"></div>
+            </div>
+            <span class="semestre__pct"><%= @semestre.avancement %> %</span>
+          </div>
+        </div>
+
+        <%= render "matieres/histogramme", semestre: @semestre %>
+
+        <h3 class="roadmap__sous-titre mt-5">Les matières du semestre</h3>
+
+        <% @semestre.matieres.each do |matiere| %>
+          <% evaluation = @evaluations[matiere.ue.id] %>
+          <section class="matiere">
+            <span class="matiere__filet" style="background: <%= matiere.teinte %>;"></span>
+
+            <div class="matiere__corps">
+              <div class="matiere__entete">
+                <h4 class="matiere__nom"><%= matiere.ue.name %></h4>
+                <span class="matiere__heures">
+                  <%= matiere.heures_faites %> h / <%= matiere.heures %> h
+                  <span class="team-card__muted">· <%= matiere.nombre_seances %> séances</span>
+                </span>
+              </div>
+
+              <div class="matiere__avancement">
+                <div class="matiere__jauge">
+                  <div class="matiere__jauge-barre"
+                       style="width: <%= matiere.pourcentage %>%; background: <%= matiere.teinte %>;"></div>
+                </div>
+                <span class="matiere__pct"><%= matiere.pourcentage %> %</span>
+              </div>
+
+              <table class="autoeval">
+                <thead>
+                  <tr>
+                    <th class="autoeval__quoi">Auto-évaluation</th>
+                    <% UeAssessment::NIVEAUX.each do |cle, libelle| %>
+                      <th class="autoeval__niveau" title="<%= UeAssessment::AIDES[cle] %>">
+                        <%= libelle %>
+                        <span class="autoeval__aide"><%= UeAssessment::AIDES[cle] %></span>
+                      </th>
+                    <% end %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th class="autoeval__quoi">Niveau global sur la matière</th>
+                    <% UeAssessment::NIVEAUX.each_key do |cle| %>
+                      <td class="autoeval__case">
+                        <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                      data: { turbo: false }, class: "autoeval__forme" do %>
+                          <%= hidden_field_tag :level, cle %>
+                          <button type="submit" class="autoeval__bouton <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
+                                  style="<%= "--teinte: #{matiere.teinte};" %>"
+                                  aria-label="<%= UeAssessment::NIVEAUX[cle] %>"></button>
+                        <% end %>
+                      </td>
+                    <% end %>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="matiere__pied">
+                <% if evaluation %>
+                  <span class="matiere__niveau">Niveau déclaré : <strong><%= evaluation.libelle %></strong></span>
+                  <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                data: { turbo: false }, class: "autoeval__forme" do %>
+                    <%= hidden_field_tag :level, "" %>
+                    <%= submit_tag "Effacer", class: "no-btn matiere__effacer" %>
+                  <% end %>
+                <% else %>
+                  <span class="matiere__niveau text-grey">Pas encore évaluée.</span>
+                <% end %>
+              </div>
+
+              <p class="matiere__a-venir">
+                Les connaissances travaillées dans cette matière seront listées ici,
+                avec la même échelle, dès que le référentiel sera disponible.
+              </p>
+            </div>
+          </section>
+        <% end %>
+
+      <% end %>
+    </div>
+    <%= render "teams/barre_laterale", team: @team, meeting: @meeting %>
+  </div>
+</div>

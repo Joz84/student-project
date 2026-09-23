@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_23_090000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_23_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -391,11 +391,23 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_23_090000) do
     t.index ["user_id"], name: "index_tickets_on_user_id"
   end
 
+  create_table "ue_assessments", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "ue_id", null: false
+    t.integer "level", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ue_id"], name: "index_ue_assessments_on_ue_id"
+    t.index ["user_id", "ue_id"], name: "index_ue_assessments_on_user_id_and_ue_id", unique: true
+    t.index ["user_id"], name: "index_ue_assessments_on_user_id"
+  end
+
   create_table "ues", force: :cascade do |t|
     t.bigint "batch_id", null: false
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "color"
     t.index ["batch_id", "name"], name: "index_ues_on_batch_id_and_name", unique: true
     t.index ["batch_id"], name: "index_ues_on_batch_id"
   end
@@ -491,6 +503,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_23_090000) do
   add_foreign_key "teams", "users"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
+  add_foreign_key "ue_assessments", "ues"
+  add_foreign_key "ue_assessments", "users"
   add_foreign_key "ues", "batches"
   add_foreign_key "user_skill_statuses", "skills"
   add_foreign_key "user_skill_statuses", "users"
