@@ -32,6 +32,12 @@
     </div>
   </section>
 
+  <% if user_signed_in? %>
+    <div class="container">
+      <%= render "pages/agenda" %>
+    </div>
+  <% end %>
+
   <div class="container">
     <div class="section-head">
       <h2>Comment ça marche</h2>

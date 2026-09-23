@@ -1,0 +1,208 @@
+// Emploi du temps sur l'accueil, et feuille d'appel côté enseignant.
+
+.agenda { margin: 2.5rem 0 1rem; }
+
+.agenda__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: .7rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid $line;
+
+  h2 { margin: 0; font-size: 1.3rem; }
+}
+
+.agenda__hint { font-size: .82rem; color: $muted; }
+
+.agenda__vide {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: 1.4rem;
+  color: $muted;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.agenda__liste { list-style: none; margin: 0; padding: 0; }
+
+.seance {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid $line;
+  border-left: 3px solid $line;
+  border-radius: $radius-sm;
+  padding: .8rem 1rem;
+  margin-bottom: .55rem;
+  box-shadow: $shadow-sm;
+}
+
+// La séance du moment : c'est la seule sur laquelle on peut agir.
+.seance--active {
+  border-left-color: $danger;
+  background: mix($danger, #fff, 6%);
+  box-shadow: 0 2px 14px rgba($danger, .22);
+}
+
+.seance__quand {
+  flex: 0 0 4.6rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.seance__heure {
+  display: block;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+
+.seance__jour {
+  display: block;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted;
+}
+
+.seance__corps { flex: 1; min-width: 0; }
+
+.seance__titre {
+  font-size: .95rem;
+  font-weight: 600;
+  color: $ink;
+  margin: 0 0 .15rem;
+}
+
+.seance__meta { font-size: .8rem; color: $muted; margin: 0; }
+
+.seance__action { flex: 0 0 auto; }
+
+.seance__etat {
+  font-size: .78rem;
+  color: $muted;
+}
+
+.seance__etat--ok {
+  font-weight: 600;
+  color: darken($danger, 18%);
+}
+
+// Saisie du code : quatre chiffres, gros et espacés.
+.code-input {
+  font-family: $headers-font;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: .5em;
+  text-align: center;
+  text-indent: .5em;
+}
+
+// --- feuille d'appel ---
+.appel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+
+  form { margin: 0; }
+}
+
+.appel__code {
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: $ink;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.appel__code-libelle {
+  color: rgba(255, 255, 255, .7);
+  font-size: .82rem;
+}
+
+.appel__code-valeur {
+  font-family: $headers-font;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__compteur {
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  flex-wrap: wrap;
+  padding-bottom: .8rem;
+  margin-bottom: .8rem;
+  border-bottom: 1px solid $line;
+}
+
+.appel__nombre {
+  font-family: $headers-font;
+  font-size: 2rem;
+  font-weight: 800;
+  color: $ink;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__sur { font-size: .9rem; color: $muted; }
+
+.appel__badge {
+  margin-left: auto;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .2rem .6rem;
+  border-radius: 999px;
+  background: $surface;
+  border: 1px solid $line;
+  color: $muted;
+}
+
+.appel__badge--ouvert { background: mix($danger, #fff, 16%); border-color: $danger; color: $ink; }
+.appel__badge--fige   { background: mix($notice, #fff, 24%); border-color: $notice; color: $ink; }
+.appel__badge--valide { background: mix($blue, #fff, 12%); border-color: $blue; color: $ink; margin-left: 0; }
+
+.appel__liste { list-style: none; margin: 0; padding: 0; }
+
+.appel__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .5rem .2rem;
+  border-bottom: 1px solid $line-soft;
+  font-size: .9rem;
+}
+
+.appel__ligne--present { background: mix($danger, #fff, 7%); }
+
+.appel__nom { color: $ink; }
+
+.appel__source {
+  display: block;
+  font-size: .72rem;
+  color: $muted;
+}
+
+.appel__boutons {
+  display: flex;
+  gap: .35rem;
+  flex: 0 0 auto;
+
+  form { margin: 0; }
+}

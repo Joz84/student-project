@@ -1,0 +1,84 @@
+<% seances = current_user.teacher? ? seances_enseignant(current_user) : prochaines_seances(current_user) %>
+<section class="agenda">
+  <div class="agenda__head">
+    <h2>Mes cours</h2>
+    <span class="agenda__hint">
+      <% if current_user.teacher? %>
+        Ouvre l'appel depuis une séance pour afficher le code aux étudiants.
+      <% else %>
+        Le cours en cours devient cliquable : entre le code affiché par ton enseignant.
+      <% end %>
+    </span>
+  </div>
+
+  <% if seances.empty? %>
+    <p class="agenda__vide">
+      <% if current_user.teacher? %>
+        Aucune séance à venir ne vous est rattachée dans l'emploi du temps.
+      <% else %>
+        Aucun cours à venir. Si c'est inattendu, c'est que tu n'es rattaché à aucun
+        groupe de TD ou de TP : signale-le à la scolarité.
+      <% end %>
+    </p>
+  <% else %>
+    <ul class="agenda__liste">
+      <% seances.each do |seance| %>
+        <% en_cours = seance.en_cours? %>
+        <li class="seance <%= "seance--active" if en_cours %>">
+          <div class="seance__quand">
+            <span class="seance__heure"><%= seance.starts_at.strftime("%H:%M") %></span>
+            <span class="seance__jour"><%= I18n.l(seance.starts_at.to_date, format: "%a %d/%m") %></span>
+          </div>
+
+          <div class="seance__corps">
+            <h3 class="seance__titre"><%= seance.title %></h3>
+            <p class="seance__meta">
+              <%= creneau(seance) %>
+              <% if seance.room.present? %> · <%= seance.room %><% end %>
+              <% if seance.teacher_label.present? && !current_user.teacher? %> · <%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %><% end %>
+            </p>
+          </div>
+
+          <div class="seance__action">
+            <% if current_user.teacher? %>
+              <%= link_to "Feuille d'appel", teacher_lesson_path(seance), class: "btn btn-danger btn-sm" %>
+            <% elsif seance.attendances.find_by(user: current_user)&.statut_present? %>
+              <span class="seance__etat seance__etat--ok">Présence enregistrée</span>
+            <% elsif en_cours && seance.pointage_ouvert? %>
+              <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                      data-bs-target="#pointage<%= seance.id %>">Je suis présent</button>
+            <% elsif en_cours %>
+              <span class="seance__etat">Appel non ouvert</span>
+            <% end %>
+          </div>
+        </li>
+
+        <% if !current_user.teacher? && en_cours && seance.pointage_ouvert? %>
+          <div class="modal fade" id="pointage<%= seance.id %>" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <%= form_with url: lesson_attendance_path(seance), method: :post,
+                            data: { turbo: false }, class: "modal-content" do %>
+                <div class="modal-header">
+                  <h5 class="modal-title">Signaler ma présence</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                  <p class="mb-3"><strong><%= seance.title %></strong><br>
+                    <span class="text-grey"><%= creneau(seance) %><%= " · #{seance.room}" if seance.room.present? %></span></p>
+                  <label class="form-label" for="code<%= seance.id %>">Code affiché en salle</label>
+                  <input class="form-control code-input" id="code<%= seance.id %>" name="code"
+                         inputmode="numeric" pattern="[0-9]*" maxlength="4"
+                         autocomplete="off" autofocus required>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-outline-ink" data-bs-dismiss="modal">Annuler</button>
+                  <button type="submit" class="btn btn-danger">Valider ma présence</button>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

@@ -18,6 +18,11 @@ Rails.application.routes.draw do
   #resources :cw_nicknames, only: [:edit, :update]
   #resources :tickets, only: [:index, :create, :update, :destroy]
 
+  # Émargement : l'étudiant se signale présent, l'enseignant tient la liste.
+  resources :lessons, only: [] do
+    resource :attendance, only: [:create]
+  end
+
   resources :teams, only: [:new, :create, :show, :update] do
     #resources :messages, only: [:create, :index]
     resources :progressions, only: [:index]
@@ -34,6 +39,16 @@ Rails.application.routes.draw do
   end
   
   namespace :teacher do
+    resources :lessons, only: [:show] do
+      member do
+        get  :liste
+        post :ouvrir
+        post :verrouiller
+        post :deverrouiller
+        post :valider
+      end
+      resources :attendances, only: [:update]
+    end
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do
       resources :teams, only: [:index] do
