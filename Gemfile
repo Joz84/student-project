@@ -22,6 +22,9 @@ gem "postmark-rails", "~> 0.22.1"
 gem "dotenv-rails"
 gem "cloudinary"
 gem "font-awesome-sass", "~> 6.1"
+
+# Lecture des classeurs de présences déposés par les enseignants (.xlsx et .csv)
+gem "roo", "~> 2.10"
 gem 'acts_as_list'
 gem 'rails-i18n'
 gem 'redcarpet'

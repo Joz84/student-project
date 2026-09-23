@@ -1,0 +1,114 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <div class="card card-body p-4 mb-4">
+        <h2 class="mb-1"><%= @lesson.title %></h2>
+        <p class="text-grey mb-3">
+          <%= creneau(@lesson) %>
+          <% if @lesson.room.present? %> · <%= @lesson.room %><% end %>
+          <% if @lesson.groups.any? %> · <%= @lesson.groups.order(:label).map(&:label).join(", ") %><% end %>
+          <% if @lesson.ue %> · <%= @lesson.ue.name %><% end %>
+        </p>
+
+        <div class="appel__actions">
+          <% if @lesson.valide? %>
+            <span class="appel__badge appel__badge--valide">
+              Appel validé le <%= I18n.l(@lesson.validated_at, format: "%d/%m à %H:%M") %>
+            </span>
+            <% if @lesson.rouvrable? %>
+              <%= button_to "Rouvrir l'appel", rouvrir_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+            <% else %>
+              <span class="appel__note">
+                Créneau terminé — les corrections se font depuis
+                <%= link_to "le bilan de présences", teacher_bilan_path(ue_id: @lesson.ue_id) %>.
+              </span>
+            <% end %>
+          <% else %>
+            <% unless @lesson.attendance_code.present? %>
+              <%= button_to "Ouvrir l'appel", ouvrir_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false } }, class: "btn btn-danger" %>
+            <% end %>
+            <% if @lesson.verrouille? %>
+              <%= button_to "Rouvrir aux étudiants", deverrouiller_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+            <% elsif @lesson.attendance_code.present? %>
+              <%= button_to "Figer les pointages", verrouiller_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+            <% end %>
+            <% if @lesson.attendance_code.present? %>
+              <%= button_to "Valider l'appel", valider_teacher_lesson_path(@lesson),
+                            form: { data: { turbo: false,
+                                            turbo_confirm: "Valider l'appel ? Les étudiants non pointés seront portés absents." } },
+                            class: "btn btn-danger" %>
+            <% end %>
+          <% end %>
+        </div>
+
+        <% if @lesson.pointage_ouvert? %>
+          <div class="appel__code">
+            <span class="appel__code-libelle">Code à afficher aux étudiants</span>
+            <span class="appel__code-valeur"><%= @lesson.attendance_code %></span>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="card card-body p-4"
+           data-controller="poll"
+           data-poll-url-value="<%= liste_teacher_lesson_path(@lesson) %>"
+           data-poll-interval-value="5000"
+           data-poll-actif-value="<%= @lesson.pointage_ouvert? %>">
+        <div data-poll-target="zone">
+          <%= render "teacher/lessons/liste", lesson: @lesson %>
+        </div>
+      </div>
+
+      <div class="card card-body p-4 mt-4">
+        <a class="appel__replier" data-bs-toggle="collapse" href="#horsListe" role="button"
+           aria-expanded="false" aria-controls="horsListe">
+          Ajouter un étudiant hors liste
+        </a>
+        <p class="text-grey mt-2 mb-0"><small>
+          Pour un rattrapage dans un autre créneau, ou un étudiant qui ne figure
+          dans aucune liste.
+        </small></p>
+
+        <div class="collapse mt-3" id="horsListe">
+          <h4 class="appel__sous-titre">Reste de la promotion</h4>
+          <ul class="appel__liste appel__liste--compacte">
+            <% @lesson.eleves_hors_liste.each do |eleve| %>
+              <li class="appel__ligne">
+                <span class="appel__nom">
+                  <%= eleve.first_name %> <%= eleve.last_name %>
+                  <span class="appel__num"><%= eleve.student_number %></span>
+                </span>
+                <%= button_to "Marquer présent",
+                              teacher_lesson_attendance_path(@lesson, eleve, status: :present),
+                              method: :patch, form: { data: { turbo: false } },
+                              class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
+              </li>
+            <% end %>
+          </ul>
+
+          <h4 class="appel__sous-titre mt-4">Étudiant absent de la promotion</h4>
+          <%= form_with url: teacher_lesson_attendances_path(@lesson), method: :post,
+                        data: { turbo: false }, class: "appel__saisie" do %>
+            <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
+            <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
+            <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+            <%= submit_tag "Ajouter", class: "btn btn-danger", disabled: @lesson.valide? %>
+          <% end %>
+          <p class="text-grey mt-2 mb-0"><small>
+            Aucun champ n'est obligatoire ni vérifié : saisissez ce dont vous disposez.
+          </small></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

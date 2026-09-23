@@ -1,0 +1,29 @@
+<li class="appel__ligne <%= "appel__ligne--#{pointage.status}" if pointage&.status %>">
+  <span class="appel__nom">
+    <%= nom %>
+    <% if numero.present? %><span class="appel__num"><%= numero %></span><% end %>
+    <% if pointage&.statut_present? && pointage.by_student? %>
+      <span class="appel__source">signalé par l'étudiant à <%= pointage.declared_at&.strftime("%H:%M") %></span>
+    <% elsif pointage&.status %>
+      <span class="appel__source">saisi par l'enseignant</span>
+    <% end %>
+  </span>
+
+  <span class="appel__boutons">
+    <% if eleve %>
+      <%# Mêmes états que le bilan : présent, absence justifiée ou non, retard. %>
+      <%= form_with url: teacher_lesson_attendance_path(lesson, eleve), method: :patch,
+                    data: { turbo: false }, class: "appel__forme" do %>
+        <%= select_tag :status,
+              options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, pointage&.status),
+              include_blank: "Non renseigné", class: "appel__select",
+              onchange: "this.form.requestSubmit()", disabled: lesson.valide? %>
+      <% end %>
+    <% else %>
+      <span class="appel__etiquette">saisie manuelle · <%= pointage.libelle %></span>
+      <%= button_to "Retirer", teacher_lesson_attendance_path(lesson, pointage),
+                    method: :delete, form: { data: { turbo: false, turbo_confirm: "Retirer cette ligne ?" } },
+                    class: "btn btn-sm btn-supp", disabled: lesson.valide? %>
+    <% end %>
+  </span>
+</li>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_22_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -88,6 +88,22 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
     t.index ["user_id"], name: "index_attempts_on_user_id"
   end
 
+  create_table "attendances", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "lesson_id", null: false
+    t.integer "status", default: 0, null: false
+    t.integer "declared_by", default: 0, null: false
+    t.datetime "declared_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "guest_first_name"
+    t.string "guest_last_name"
+    t.string "guest_student_number"
+    t.index ["lesson_id", "user_id"], name: "index_attendances_on_lesson_id_and_user_id", unique: true
+    t.index ["lesson_id"], name: "index_attendances_on_lesson_id"
+    t.index ["user_id"], name: "index_attendances_on_user_id"
+  end
+
   create_table "batches", force: :cascade do |t|
     t.string "title"
     t.string "discord_link"
@@ -147,6 +163,59 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
     t.boolean "optional"
     t.string "colab_link"
     t.index ["course_id"], name: "index_exercices_on_course_id"
+  end
+
+  create_table "group_memberships", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "group_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_group_memberships_on_group_id"
+    t.index ["user_id", "group_id"], name: "index_group_memberships_on_user_id_and_group_id", unique: true
+    t.index ["user_id"], name: "index_group_memberships_on_user_id"
+  end
+
+  create_table "groups", force: :cascade do |t|
+    t.bigint "ue_id", null: false
+    t.string "label", null: false
+    t.integer "kind", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ue_id", "label"], name: "index_groups_on_ue_id_and_label", unique: true
+    t.index ["ue_id"], name: "index_groups_on_ue_id"
+  end
+
+  create_table "lesson_groups", force: :cascade do |t|
+    t.bigint "lesson_id", null: false
+    t.bigint "group_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_lesson_groups_on_group_id"
+    t.index ["lesson_id", "group_id"], name: "index_lesson_groups_on_lesson_id_and_group_id", unique: true
+    t.index ["lesson_id"], name: "index_lesson_groups_on_lesson_id"
+  end
+
+  create_table "lessons", force: :cascade do |t|
+    t.bigint "batch_id", null: false
+    t.bigint "ue_id"
+    t.bigint "teacher_id"
+    t.string "ade_uid", null: false
+    t.string "title", null: false
+    t.string "room"
+    t.string "teacher_label"
+    t.integer "category", default: 0, null: false
+    t.datetime "starts_at", null: false
+    t.datetime "ends_at", null: false
+    t.string "attendance_code"
+    t.datetime "locked_at"
+    t.datetime "validated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ade_uid"], name: "index_lessons_on_ade_uid", unique: true
+    t.index ["batch_id"], name: "index_lessons_on_batch_id"
+    t.index ["starts_at"], name: "index_lessons_on_starts_at"
+    t.index ["teacher_id"], name: "index_lessons_on_teacher_id"
+    t.index ["ue_id"], name: "index_lessons_on_ue_id"
   end
 
   create_table "lists", force: :cascade do |t|
@@ -305,6 +374,15 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
     t.index ["user_id"], name: "index_tickets_on_user_id"
   end
 
+  create_table "ues", force: :cascade do |t|
+    t.bigint "batch_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["batch_id", "name"], name: "index_ues_on_batch_id_and_name", unique: true
+    t.index ["batch_id"], name: "index_ues_on_batch_id"
+  end
+
   create_table "user_skill_statuses", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "skill_id", null: false
@@ -357,10 +435,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
   add_foreign_key "assignments", "users"
   add_foreign_key "attempts", "exercices"
   add_foreign_key "attempts", "users"
+  add_foreign_key "attendances", "lessons"
+  add_foreign_key "attendances", "users"
   add_foreign_key "card_skills", "cards"
   add_foreign_key "card_skills", "skills"
   add_foreign_key "cards", "lists"
   add_foreign_key "exercices", "courses"
+  add_foreign_key "group_memberships", "groups"
+  add_foreign_key "group_memberships", "users"
+  add_foreign_key "groups", "ues"
+  add_foreign_key "lesson_groups", "groups"
+  add_foreign_key "lesson_groups", "lessons"
+  add_foreign_key "lessons", "batches"
+  add_foreign_key "lessons", "ues"
+  add_foreign_key "lessons", "users", column: "teacher_id"
   add_foreign_key "lists", "teams"
   add_foreign_key "meetings", "referentials"
   add_foreign_key "meetings", "teams"
@@ -384,6 +472,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_11_200000) do
   add_foreign_key "teams", "users"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
+  add_foreign_key "ues", "batches"
   add_foreign_key "user_skill_statuses", "skills"
   add_foreign_key "user_skill_statuses", "users"
   add_foreign_key "users", "batches"

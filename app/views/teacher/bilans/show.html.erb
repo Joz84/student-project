@@ -1,0 +1,113 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-12 col-xxl-11 offset-xxl-1">
+
+      <div class="section-head" style="margin-bottom: 1.2rem;">
+        <h2>Bilan de présences</h2>
+        <p>Un onglet par matière. Les appels déjà faits sont repris ; tout reste modifiable.</p>
+      </div>
+
+      <% if @ues.empty? %>
+        <div class="agenda__vide">
+          Aucune séance ne vous est rattachée dans l'emploi du temps. Les bilans
+          apparaîtront dès qu'un cours vous sera associé.
+        </div>
+      <% else %>
+        <ul class="bilan__onglets">
+          <% @ues.each do |ue| %>
+            <li>
+              <%= link_to ue.name, teacher_bilan_path(ue_id: ue.id),
+                          class: "bilan__onglet #{'bilan__onglet--actif' if ue == @ue}" %>
+            </li>
+          <% end %>
+        </ul>
+
+        <% if @sheet.nil? || @sheet.vide? %>
+          <div class="agenda__vide">Aucune séance passée pour cette matière.</div>
+        <% else %>
+          <div class="bilan__barre">
+            <span class="bilan__compte">
+              <%= @sheet.lessons.size %> séance<%= "s" if @sheet.lessons.size > 1 %> ·
+              <%= @sheet.eleves.size %> étudiants
+            </span>
+            <%= link_to "Exporter la grille", export_teacher_bilan_path(ue_id: @ue.id),
+                        class: "btn btn-outline-ink btn-sm" %>
+            <%= form_with url: import_teacher_bilan_path, method: :post, multipart: true,
+                          data: { turbo: false }, class: "bilan__import" do %>
+              <%= hidden_field_tag :ue_id, @ue.id %>
+              <%= file_field_tag :fichier, accept: ".xlsx,.xls,.csv", class: "form-control form-control-sm" %>
+              <%= submit_tag "Importer", class: "btn btn-outline-ink btn-sm" %>
+            <% end %>
+          </div>
+          <p class="bilan__aide">
+            Exportez la grille, remplissez-la dans Excel, réimportez-la : les colonnes
+            sont reconnues par leur en-tête. « P », « Absent justifié », « AJ », « R »
+            sont compris indifféremment.
+          </p>
+
+          <%= form_with url: teacher_bilan_path, method: :patch, data: { turbo: false } do %>
+            <%= hidden_field_tag :ue_id, @ue.id %>
+            <div class="bilan__cadre">
+              <table class="bilan">
+                <thead>
+                  <tr>
+                    <th class="bilan__eleve">Étudiant</th>
+                    <% @sheet.lessons.each do |l| %>
+                      <th class="bilan__seance">
+                        <span class="bilan__date"><%= @sheet.entete(l) %></span>
+                        <span class="bilan__sous">
+                          <%= @sheet.sous_entete(l) %>
+                          <span class="bilan__attendus"><%= @sheet.nombre_attendus(l) %></span>
+                        </span>
+                      </th>
+                    <% end %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @sheet.eleves.each do |eleve| %>
+                    <tr>
+                      <th class="bilan__eleve">
+                        <%= eleve.last_name %> <span class="team-card__muted"><%= eleve.first_name %></span>
+                      </th>
+                      <% @sheet.lessons.each do |l| %>
+                        <% statut = @sheet.statut(l, eleve) %>
+                        <% attendu = @sheet.attendu?(l, eleve) %>
+                        <td class="bilan__case bilan__case--<%= statut || 'vide' %> <%= "bilan__case--hors" unless attendu %>"
+                            <%= "title=Étudiant\ d'un\ autre\ groupe".html_safe unless attendu %>>
+                          <%= select_tag "statuts[#{l.id}][#{eleve.id}]",
+                                options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, statut),
+                                include_blank: "—", class: "bilan__select" %>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+
+                  <% @sheet.invites.each do |(nom, prenom, numero), pointages| %>
+                    <tr class="bilan__ligne-invite">
+                      <th class="bilan__eleve">
+                        <%= [prenom, nom].map(&:presence).compact.join(" ").titleize.presence || numero %>
+                        <span class="team-card__muted">saisie manuelle</span>
+                      </th>
+                      <% par_seance = pointages.index_by(&:lesson_id) %>
+                      <% @sheet.lessons.each do |l| %>
+                        <% a = par_seance[l.id] %>
+                        <td class="bilan__case bilan__case--<%= a&.status || 'vide' %>">
+                          <span class="bilan__fixe"><%= a ? Attendance::LIBELLES[a.status] : "—" %></span>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="bilan__pied">
+              <%= submit_tag "Enregistrer la grille", class: "btn btn-danger" %>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
+
+    </div>
+  </div>
+</div>

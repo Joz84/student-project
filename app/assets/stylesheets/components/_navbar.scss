@@ -312,3 +312,13 @@ nav a:first-child {
   outline: 2px solid #fff;
   outline-offset: 2px;
 }
+
+// Sur un téléphone, la marque doit laisser la place au menu.
+@media (max-width: 575.98px) {
+  .navbar-mihivai { padding: 0 14px; }
+  .navbar-mihivai-brand img { height: 42px; }
+  .navbar-mihivai-brand { gap: .5rem; }
+  .brand__text { padding-left: .5rem; }
+  .brand__name { font-size: 1rem; }
+  .brand__tag { font-size: .5rem; letter-spacing: .14em; margin-top: .2rem; }
+}

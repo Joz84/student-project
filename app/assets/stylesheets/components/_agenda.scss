@@ -1,0 +1,530 @@
+// Emploi du temps sur l'accueil, et feuille d'appel côté enseignant.
+
+.agenda { margin: 2.5rem 0 1rem; }
+
+.agenda__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: .7rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid $line;
+
+  h2 { margin: 0; font-size: 1.3rem; }
+}
+
+.agenda__hint { font-size: .82rem; color: $muted; }
+
+.agenda__vide {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: 1.4rem;
+  color: $muted;
+  font-size: .9rem;
+  margin: 0;
+}
+
+.agenda__liste { list-style: none; margin: 0; padding: 0; }
+
+.seance {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #fff;
+  border: 1px solid $line;
+  border-left: 3px solid $line;
+  border-radius: $radius-sm;
+  padding: .8rem 1rem;
+  margin-bottom: .55rem;
+  box-shadow: $shadow-sm;
+}
+
+// La séance du moment : c'est la seule sur laquelle on peut agir.
+.seance--active {
+  border-left-color: $danger;
+  background: mix($danger, #fff, 6%);
+  box-shadow: 0 2px 14px rgba($danger, .22);
+}
+
+.seance__quand {
+  flex: 0 0 4.6rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.seance__heure {
+  display: block;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+
+.seance__jour {
+  display: block;
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted;
+}
+
+.seance__corps { flex: 1; min-width: 0; }
+
+.seance__titre {
+  font-size: .95rem;
+  font-weight: 600;
+  color: $ink;
+  margin: 0 0 .15rem;
+}
+
+.seance__meta { font-size: .8rem; color: $muted; margin: 0; }
+
+.seance__action { flex: 0 0 auto; }
+
+.seance__etat {
+  font-size: .78rem;
+  color: $muted;
+}
+
+.seance__etat--ok {
+  font-weight: 600;
+  color: darken($danger, 18%);
+}
+
+// Saisie du code : quatre chiffres, gros et espacés.
+.code-input {
+  font-family: $headers-font;
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: .5em;
+  text-align: center;
+  text-indent: .5em;
+}
+
+// --- feuille d'appel ---
+.appel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+
+  form { margin: 0; }
+}
+
+.appel__code {
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: $ink;
+  border-radius: $radius;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.appel__code-libelle {
+  color: rgba(255, 255, 255, .7);
+  font-size: .82rem;
+}
+
+.appel__code-valeur {
+  font-family: $headers-font;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__compteur {
+  display: flex;
+  align-items: baseline;
+  gap: .55rem;
+  flex-wrap: wrap;
+  padding-bottom: .8rem;
+  margin-bottom: .8rem;
+  border-bottom: 1px solid $line;
+}
+
+.appel__nombre {
+  font-family: $headers-font;
+  font-size: 2rem;
+  font-weight: 800;
+  color: $ink;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__sur { font-size: .9rem; color: $muted; }
+
+.appel__badge {
+  margin-left: auto;
+  font-size: .75rem;
+  font-weight: 600;
+  padding: .2rem .6rem;
+  border-radius: 999px;
+  background: $surface;
+  border: 1px solid $line;
+  color: $muted;
+}
+
+.appel__badge--ouvert { background: mix($danger, #fff, 16%); border-color: $danger; color: $ink; }
+.appel__badge--fige   { background: mix($notice, #fff, 24%); border-color: $notice; color: $ink; }
+.appel__badge--valide { background: mix($blue, #fff, 12%); border-color: $blue; color: $ink; margin-left: 0; }
+
+.appel__liste { list-style: none; margin: 0; padding: 0; }
+
+.appel__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .5rem .2rem;
+  border-bottom: 1px solid $line-soft;
+  font-size: .9rem;
+}
+
+// Mêmes teintes que la grille du bilan, pour que les deux se lisent pareil.
+.appel__ligne--present { background: mix($danger, #fff, 8%); }
+.appel__ligne--absent  { background: mix($red, #fff, 7%); }
+.appel__ligne--excused { background: mix($notice, #fff, 16%); }
+.appel__ligne--retard  { background: mix($blue, #fff, 9%); }
+
+.appel__forme { margin: 0; }
+
+.appel__select {
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  background: #fff;
+  font-size: .8rem;
+  padding: .28rem .45rem;
+  color: $ink;
+
+  &:focus { border-color: $blue; outline: none; box-shadow: 0 0 0 3px rgba($blue, .12); }
+}
+
+.appel__nom { color: $ink; }
+
+.appel__source {
+  display: block;
+  font-size: .72rem;
+  color: $muted;
+}
+
+.appel__boutons {
+  display: flex;
+  gap: .35rem;
+  flex: 0 0 auto;
+
+  form { margin: 0; }
+}
+
+.appel__sous-titre {
+  font-size: .85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted;
+  margin: 1.4rem 0 .6rem;
+}
+
+.appel__num {
+  font-size: .72rem;
+  color: $muted-soft;
+  margin-left: .4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__etiquette {
+  font-size: .72rem;
+  color: $muted;
+  background: $surface;
+  border: 1px solid $line;
+  border-radius: 3px;
+  padding: .1rem .4rem;
+  align-self: center;
+}
+
+.appel__liste--compacte {
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: 0 .6rem;
+}
+
+.appel__replier {
+  font-weight: 600;
+  color: $blue;
+}
+
+// Saisie libre : trois champs et un bouton, sur une ligne quand la place le permet.
+.appel__saisie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+
+  .form-control {
+    flex: 1 1 10rem;
+    min-width: 8rem;
+    border-radius: $radius-sm;
+    border-color: $line;
+  }
+}
+
+// --- bilan de présences ---
+.bilan__onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+}
+
+.bilan__onglet {
+  display: inline-block;
+  padding: .45rem .85rem;
+  border: 1px solid $line;
+  border-radius: 999px;
+  background: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  color: $muted;
+
+  &:hover { border-color: $blue; color: $blue; }
+}
+
+.bilan__onglet--actif {
+  background: $ink;
+  border-color: $ink;
+  color: #fff;
+
+  &:hover { background: $ink; color: #fff; }
+}
+
+.bilan__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .5rem;
+
+  form { display: flex; gap: .4rem; align-items: center; margin: 0; }
+  .form-control { width: auto; }
+}
+
+.bilan__compte { font-size: .85rem; color: $muted; margin-right: auto; }
+
+.bilan__aide {
+  font-size: .78rem;
+  color: $muted-soft;
+  margin-bottom: 1rem;
+  max-width: 62rem;
+}
+
+// La grille peut être large : elle défile seule, l'en-tête et la colonne des
+// noms restant visibles.
+.bilan__cadre {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid $line;
+  border-radius: $radius;
+  background: #fff;
+}
+
+.bilan {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: .82rem;
+
+  th, td { border-bottom: 1px solid $line-soft; border-right: 1px solid $line-soft; }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: $surface;
+    padding: .45rem .5rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+.bilan__eleve {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #fff;
+  padding: .35rem .7rem;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 13rem;
+}
+
+thead .bilan__eleve { z-index: 4; background: $surface; }
+
+.bilan__date {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  color: $ink;
+}
+
+.bilan__sous {
+  display: block;
+  font-size: .68rem;
+  font-weight: 500;
+  color: $muted-soft;
+}
+
+.bilan__case { padding: .15rem; text-align: center; }
+
+.bilan__case--present { background: mix($danger, #fff, 14%); }
+.bilan__case--absent  { background: mix($red, #fff, 10%); }
+.bilan__case--excused { background: mix($notice, #fff, 22%); }
+.bilan__case--retard  { background: mix($blue, #fff, 12%); }
+
+.bilan__select {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 3px;
+  font-size: .76rem;
+  padding: .12rem .2rem;
+  max-width: 9.5rem;
+  color: $ink;
+
+  &:hover, &:focus { border-color: $line; background: #fff; }
+}
+
+.bilan__fixe { font-size: .76rem; color: $muted; }
+
+.bilan__ligne-invite .bilan__eleve { font-style: italic; }
+
+.bilan__pied {
+  position: sticky;
+  bottom: 0;
+  padding: .9rem 0;
+  background: linear-gradient(180deg, rgba($page, 0), $page 45%);
+}
+
+// Une colonne de TP ne concerne qu'une fraction des lignes. Les autres sont
+// estompées plutôt que masquées : un rattrapage se pointe quand même.
+.bilan__case--hors {
+  background-image: repeating-linear-gradient(
+    135deg, transparent, transparent 5px,
+    rgba($ink, .045) 5px, rgba($ink, .045) 10px
+  );
+}
+
+.bilan__case--hors .bilan__select {
+  opacity: .32;
+  color: $muted-soft;
+}
+
+.bilan__case--hors:hover .bilan__select,
+.bilan__case--hors .bilan__select:focus {
+  opacity: 1;
+  color: $ink;
+}
+
+.bilan__attendus {
+  display: inline-block;
+  margin-left: .3rem;
+  padding: 0 .3rem;
+  border-radius: 999px;
+  background: $line;
+  color: $ink;
+  font-size: .64rem;
+  font-weight: 700;
+}
+
+.appel__note {
+  font-size: .8rem;
+  color: $muted;
+
+  a { color: $blue; font-weight: 600; }
+}
+
+// --- mobile ---
+// Les étudiants consultent leur emploi du temps et pointent depuis leur
+// téléphone, en cours. C'est le seul écran de l'application dont l'usage
+// principal est tactile.
+@media (max-width: 575.98px) {
+  .agenda { margin-top: 1.5rem; }
+
+  .agenda__head h2 { font-size: 1.1rem; }
+  .agenda__hint { font-size: .78rem; }
+
+  .seance {
+    flex-wrap: wrap;
+    padding: .75rem .8rem;
+    gap: .75rem;
+  }
+
+  // L'heure reste à gauche du titre ; l'action passe à la ligne, en pleine
+  // largeur, pour offrir une cible confortable au pouce.
+  .seance__quand {
+    flex: 0 0 3.6rem;
+    text-align: left;
+  }
+
+  .seance__heure { font-size: 1rem; }
+
+  .seance__action {
+    flex: 1 0 100%;
+    margin-top: .1rem;
+  }
+
+  .seance__action .btn {
+    width: 100%;
+    padding: .7rem 1rem;   // ~44 px de haut, taille de cible recommandée
+    font-size: .92rem;
+  }
+
+  .seance__etat {
+    display: block;
+    text-align: center;
+    padding: .45rem;
+    background: $surface;
+    border-radius: $radius-sm;
+  }
+
+  .seance__titre { font-size: .92rem; }
+  .seance__meta { font-size: .76rem; }
+
+  // Saisie du code : plus compacte, sinon les quatre chiffres débordent.
+  .code-input {
+    font-size: 1.5rem;
+    letter-spacing: .35em;
+    text-indent: .35em;
+  }
+
+  .modal-footer .btn { flex: 1; }
+}
+
+// La feuille d'appel reste consultable en mobilité, même si elle est pensée
+// pour un ordinateur.
+@media (max-width: 767.98px) {
+  .appel__ligne {
+    flex-wrap: wrap;
+    gap: .4rem;
+  }
+
+  .appel__boutons { flex: 1 0 100%; }
+  .appel__forme { width: 100%; }
+  .appel__select { width: 100%; }
+
+  .appel__code { flex-direction: column; align-items: flex-start; gap: .3rem; }
+  .appel__code-valeur { font-size: 2.1rem; }
+
+  .appel__actions .btn { flex: 1 1 auto; }
+  .appel__saisie .form-control { flex: 1 1 100%; }
+}

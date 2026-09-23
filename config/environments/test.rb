@@ -60,5 +60,9 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # Raise error when a before_action's only/except options reference missing actions
-  config.action_controller.raise_on_missing_callback_actions = true
+  # ApplicationController déclare `verify_policy_scoped, only: :index` pour
+  # l'ensemble des contrôleurs, dont beaucoup n'ont pas d'action index. Le
+  # développement et la production l'admettent déjà ; sans cet alignement,
+  # seuls les tests lèveraient une erreur sur des pages qui fonctionnent.
+  config.action_controller.raise_on_missing_callback_actions = false
 end
