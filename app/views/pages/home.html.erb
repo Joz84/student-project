@@ -16,6 +16,8 @@
             <% if user_signed_in? %>
               <%= link_to "Accéder à mon espace Projet", project_router_path,
                           class: "btn btn-danger text-white px-4 py-3" %>
+              <%= link_to "Mon emploi du temps", calendrier_path,
+                          class: "btn btn-outline-ink px-4 py-3" %>
               <%= link_to "Mes matières", matieres_path,
                           class: "btn btn-outline-ink px-4 py-3" %>
             <% else %>

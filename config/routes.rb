@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   resource :speciality, only: [:edit, :update]
   resources :projects, only: [:index, :show]
   resource :matieres, only: [:show], controller: "matieres"
+  resource :calendrier, only: [:show], controller: "calendrier"
   resources :ratings, only: [:update]
   resources :ues, only: [] do
     resource :assessment, only: [:update], controller: "ue_assessments"

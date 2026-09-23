@@ -1,0 +1,167 @@
+// Emploi du temps hebdomadaire : une colonne par jour, les séances posées
+// en pourcentage de la plage horaire affichée.
+
+.cal__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.cal__navigation { display: flex; align-items: center; gap: .5rem; }
+
+.cal__fleche {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid $line;
+  border-radius: 50%;
+  background: #fff;
+  color: $ink;
+  font-size: 1.2rem;
+  line-height: 1;
+
+  &:hover { border-color: $blue; color: $blue; }
+}
+
+.cal__semaine {
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: .95rem;
+  color: $ink;
+  min-width: 11rem;
+  text-align: center;
+}
+
+.cal {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.cal__defilement { overflow-x: auto; }
+
+// Une colonne d'heures, puis autant de colonnes que de jours.
+.cal__grille {
+  display: grid;
+  grid-template-columns: 3.4rem repeat(var(--jours), minmax(8rem, 1fr));
+  min-width: 44rem;
+}
+
+.cal__coin { border-bottom: 1px solid $line; border-right: 1px solid $line; }
+
+.cal__jour {
+  text-align: center;
+  padding: .45rem .3rem;
+  border-bottom: 1px solid $line;
+  border-right: 1px solid $line-soft;
+  background: $surface;
+
+  &:last-child { border-right: none; }
+}
+
+.cal__jour--aujourdhui { background: rgba($blue, .1); }
+
+.cal__jour-nom {
+  display: block;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: .8rem;
+  color: $ink;
+  text-transform: capitalize;
+}
+
+.cal__jour-date { display: block; font-size: .7rem; color: $muted; font-variant-numeric: tabular-nums; }
+
+.cal__jour--aujourdhui .cal__jour-nom,
+.cal__jour--aujourdhui .cal__jour-date { color: $blue; }
+
+// Les heures et les colonnes partagent la même hauteur : les filets tombent
+// donc exactement en face des libellés.
+.cal__heures {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid $line;
+}
+
+.cal__heure {
+  flex: 1;
+  min-height: 3.2rem;
+  font-size: .68rem;
+  color: $muted-soft;
+  text-align: right;
+  padding: 0 .35rem;
+  transform: translateY(-.4rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.cal__colonne {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid $line-soft;
+
+  &:last-child { border-right: none; }
+}
+
+.cal__colonne--aujourdhui { background: rgba($blue, .04); }
+
+.cal__filet {
+  flex: 1;
+  min-height: 3.2rem;
+  border-bottom: 1px solid $line-soft;
+}
+
+.cal__seance {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-left: 3px solid;
+  border-radius: 3px;
+  padding: .2rem .35rem;
+  overflow: hidden;
+  font-size: .72rem;
+  line-height: 1.25;
+  color: $ink;
+}
+
+.cal__seance--en-cours {
+  box-shadow: 0 0 0 2px rgba($red, .5);
+  z-index: 1;
+}
+
+.cal__seance-heure {
+  display: block;
+  font-weight: 700;
+  font-size: .66rem;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.cal__seance-titre {
+  display: block;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cal__seance-detail {
+  display: block;
+  font-size: .64rem;
+  color: $muted;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 767.98px) {
+  .cal__grille { grid-template-columns: 2.8rem repeat(var(--jours), minmax(6.5rem, 1fr)); min-width: 38rem; }
+  .cal__semaine { min-width: 0; font-size: .85rem; }
+}

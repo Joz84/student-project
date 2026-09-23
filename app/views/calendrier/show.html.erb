@@ -1,0 +1,85 @@
+<div class="container-fluid page-min-height">
+  <div class="row">
+    <div class="col-12 col-xxl-10 offset-xxl-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <div class="cal__entete">
+        <h2 class="mb-0">Mon emploi du temps</h2>
+        <div class="cal__navigation">
+          <%= link_to "‹", calendrier_path(semaine: @calendrier.semaine_precedente),
+                      class: "cal__fleche", "aria-label": "Semaine précédente" %>
+          <span class="cal__semaine"><%= @calendrier.libelle %></span>
+          <%= link_to "›", calendrier_path(semaine: @calendrier.semaine_suivante),
+                      class: "cal__fleche", "aria-label": "Semaine suivante" %>
+          <% unless @calendrier.contient_aujourdhui? %>
+            <%= link_to "Aujourd'hui", calendrier_path, class: "btn btn-outline-ink btn-sm ms-2" %>
+          <% end %>
+        </div>
+      </div>
+
+      <% if @calendrier.vide? %>
+        <div class="agenda__vide">
+          Aucun cours cette semaine.
+          <% if current_user.groups.none? %>
+            Aucun groupe de TD ou de TP ne vous est rattaché : signalez-le à la scolarité.
+          <% end %>
+        </div>
+      <% else %>
+        <div class="cal">
+          <div class="cal__defilement">
+            <div class="cal__grille" style="--jours: <%= @calendrier.jours.size %>;">
+
+              <div class="cal__coin"></div>
+              <% @calendrier.jours.each do |jour| %>
+                <div class="cal__jour <%= "cal__jour--aujourdhui" if jour == Date.current %>">
+                  <span class="cal__jour-nom"><%= I18n.l(jour, format: "%a") %></span>
+                  <span class="cal__jour-date"><%= I18n.l(jour, format: "%-d/%m") %></span>
+                </div>
+              <% end %>
+
+              <div class="cal__heures">
+                <% @calendrier.heures.each do |h| %>
+                  <span class="cal__heure"><%= format("%02d:00", h) %></span>
+                <% end %>
+              </div>
+
+              <% @calendrier.jours.each do |jour| %>
+                <div class="cal__colonne <%= "cal__colonne--aujourdhui" if jour == Date.current %>">
+                  <% @calendrier.heures.each do |_| %>
+                    <span class="cal__filet"></span>
+                  <% end %>
+
+                  <% @calendrier.seances_du(jour).each do |seance| %>
+                    <% pos = @calendrier.position(seance) %>
+                    <% teinte = @calendrier.teinte(seance) %>
+                    <div class="cal__seance <%= "cal__seance--en-cours" if seance.en_cours? %>"
+                         style="top: <%= pos[:haut] %>%; height: <%= pos[:hauteur] %>%;
+                                background: <%= teinte %>1A; border-left-color: <%= teinte %>;"
+                         title="<%= seance.title %><%= " · #{seance.room}" if seance.room.present? %>">
+                      <span class="cal__seance-heure"><%= seance.starts_at.strftime("%H:%M") %></span>
+                      <span class="cal__seance-titre"><%= seance.ue&.name || seance.title %></span>
+                      <span class="cal__seance-detail">
+                        <%= seance.groups.order(:label).map(&:label).join(", ").presence || "CM" %>
+                        <% if seance.room.present? %> · <%= seance.room %><% end %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <ul class="histo__legende mt-3">
+          <% @calendrier.seances.map(&:ue).compact.uniq.sort_by(&:name).each do |ue| %>
+            <li><span class="histo__pastille" style="background: <%= ue.teinte %>;"></span><%= ue.name %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+    </div>
+  </div>
+</div>
