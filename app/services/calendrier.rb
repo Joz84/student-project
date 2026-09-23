@@ -5,6 +5,11 @@ class Calendrier
   DEBUT_PAR_DEFAUT = 7   # heures
   FIN_PAR_DEFAUT   = 18
 
+  # La page est écrite et testée mais volontairement masquée : ni bouton sur
+  # l'accueil, ni accès par l'adresse. Passer CALENDRIER_ACTIF à "true" la
+  # rouvre, sans autre modification.
+  def self.actif? = ENV.fetch("CALENDRIER_ACTIF", "false") == "true"
+
   attr_reader :user, :lundi
 
   def initialize(user, date: Date.current)

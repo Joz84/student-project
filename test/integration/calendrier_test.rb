@@ -5,6 +5,7 @@ class CalendrierTest < ActionDispatch::IntegrationTest
 
   setup do
     Rails.application.env_config["action_dispatch.show_exceptions"] = :none
+    ENV["CALENDRIER_ACTIF"] = "true"   # la page est masquée par défaut
     @batch = Batch.create!(title: "Promo cal #{SecureRandom.hex(4)}")
     @ue = Ue.create!(batch: @batch, name: "Maths")
     @autre_ue = Ue.create!(batch: @batch, name: "Option non suivie")
@@ -27,6 +28,8 @@ class CalendrierTest < ActionDispatch::IntegrationTest
     assert_match "cal__seance", response.body
     assert_match "TD-01", response.body
   end
+
+  teardown { ENV.delete("CALENDRIER_ACTIF") }
 
   test "l'accueil mène au calendrier, à côté des matières" do
     sign_in @eleve
@@ -67,6 +70,17 @@ class CalendrierTest < ActionDispatch::IntegrationTest
     attendu = 100.0 * (8 - c.plage.first) / heures
     assert_in_delta attendu, pos[:haut], 0.01
     assert_in_delta 100.0 * 2 / heures, pos[:hauteur], 0.01
+  end
+
+  test "masquée, la page renvoie à l'accueil et le bouton disparaît" do
+    ENV["CALENDRIER_ACTIF"] = "false"
+    sign_in @eleve
+    get calendrier_path
+    assert_redirected_to root_path
+
+    get root_path
+    refute_match calendrier_path, response.body
+    assert_match matieres_path, response.body, "les autres boutons restent"
   end
 
   private

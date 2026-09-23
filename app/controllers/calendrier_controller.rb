@@ -1,8 +1,12 @@
 # Emploi du temps hebdomadaire de l'étudiant connecté.
 class CalendrierController < ApplicationController
   def show
-    @calendrier = Calendrier.new(current_user, date: semaine_demandee)
+    # L'autorisation passe avant le masquage : une sortie anticipée qui ne
+    # l'appelle pas est justement ce que Pundit refuse.
     authorize current_user, :show?
+    return redirect_to root_path unless Calendrier.actif?
+
+    @calendrier = Calendrier.new(current_user, date: semaine_demandee)
   end
 
   private
