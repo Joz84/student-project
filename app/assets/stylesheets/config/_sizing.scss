@@ -36,6 +36,15 @@ $sizes: 16px 20px 24px 40px 80px 100px 125px 75vh auto;
   min-height: calc(100vh - 170px);
 }
 
+// Empilée sous le contenu sur mobile, une colonne latérale n'a pas à occuper
+// une hauteur d'écran : elle ne ferait qu'un grand aplat vide à faire défiler.
+@media (max-width: 767.98px) {
+  .col-md-3.page-min-height,
+  .col-md-4.page-min-height {
+    min-height: 0;
+  }
+}
+
 .mw-58 {
   max-width: 58%;
 }

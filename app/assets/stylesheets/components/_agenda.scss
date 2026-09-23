@@ -452,3 +452,79 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
 
   a { color: $blue; font-weight: 600; }
 }
+
+// --- mobile ---
+// Les étudiants consultent leur emploi du temps et pointent depuis leur
+// téléphone, en cours. C'est le seul écran de l'application dont l'usage
+// principal est tactile.
+@media (max-width: 575.98px) {
+  .agenda { margin-top: 1.5rem; }
+
+  .agenda__head h2 { font-size: 1.1rem; }
+  .agenda__hint { font-size: .78rem; }
+
+  .seance {
+    flex-wrap: wrap;
+    padding: .75rem .8rem;
+    gap: .75rem;
+  }
+
+  // L'heure reste à gauche du titre ; l'action passe à la ligne, en pleine
+  // largeur, pour offrir une cible confortable au pouce.
+  .seance__quand {
+    flex: 0 0 3.6rem;
+    text-align: left;
+  }
+
+  .seance__heure { font-size: 1rem; }
+
+  .seance__action {
+    flex: 1 0 100%;
+    margin-top: .1rem;
+  }
+
+  .seance__action .btn {
+    width: 100%;
+    padding: .7rem 1rem;   // ~44 px de haut, taille de cible recommandée
+    font-size: .92rem;
+  }
+
+  .seance__etat {
+    display: block;
+    text-align: center;
+    padding: .45rem;
+    background: $surface;
+    border-radius: $radius-sm;
+  }
+
+  .seance__titre { font-size: .92rem; }
+  .seance__meta { font-size: .76rem; }
+
+  // Saisie du code : plus compacte, sinon les quatre chiffres débordent.
+  .code-input {
+    font-size: 1.5rem;
+    letter-spacing: .35em;
+    text-indent: .35em;
+  }
+
+  .modal-footer .btn { flex: 1; }
+}
+
+// La feuille d'appel reste consultable en mobilité, même si elle est pensée
+// pour un ordinateur.
+@media (max-width: 767.98px) {
+  .appel__ligne {
+    flex-wrap: wrap;
+    gap: .4rem;
+  }
+
+  .appel__boutons { flex: 1 0 100%; }
+  .appel__forme { width: 100%; }
+  .appel__select { width: 100%; }
+
+  .appel__code { flex-direction: column; align-items: flex-start; gap: .3rem; }
+  .appel__code-valeur { font-size: 2.1rem; }
+
+  .appel__actions .btn { flex: 1 1 auto; }
+  .appel__saisie .form-control { flex: 1 1 100%; }
+}
