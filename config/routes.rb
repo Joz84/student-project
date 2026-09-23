@@ -47,7 +47,7 @@ Rails.application.routes.draw do
         post :deverrouiller
         post :valider
       end
-      resources :attendances, only: [:update]
+      resources :attendances, only: [:create, :update, :destroy]
     end
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do

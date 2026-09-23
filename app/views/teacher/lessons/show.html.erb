@@ -59,6 +59,47 @@
         </div>
       </div>
 
+      <div class="card card-body p-4 mt-4">
+        <a class="appel__replier" data-bs-toggle="collapse" href="#horsListe" role="button"
+           aria-expanded="false" aria-controls="horsListe">
+          Ajouter un étudiant hors liste
+        </a>
+        <p class="text-grey mt-2 mb-0"><small>
+          Pour un rattrapage dans un autre créneau, ou un étudiant qui ne figure
+          dans aucune liste.
+        </small></p>
+
+        <div class="collapse mt-3" id="horsListe">
+          <h4 class="appel__sous-titre">Reste de la promotion</h4>
+          <ul class="appel__liste appel__liste--compacte">
+            <% @lesson.eleves_hors_liste.each do |eleve| %>
+              <li class="appel__ligne">
+                <span class="appel__nom">
+                  <%= eleve.first_name %> <%= eleve.last_name %>
+                  <span class="appel__num"><%= eleve.student_number %></span>
+                </span>
+                <%= button_to "Marquer présent",
+                              teacher_lesson_attendance_path(@lesson, eleve, status: :present),
+                              method: :patch, form: { data: { turbo: false } },
+                              class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
+              </li>
+            <% end %>
+          </ul>
+
+          <h4 class="appel__sous-titre mt-4">Étudiant absent de la promotion</h4>
+          <%= form_with url: teacher_lesson_attendances_path(@lesson), method: :post,
+                        data: { turbo: false }, class: "appel__saisie" do %>
+            <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
+            <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
+            <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+            <%= submit_tag "Ajouter", class: "btn btn-danger", disabled: @lesson.valide? %>
+          <% end %>
+          <p class="text-grey mt-2 mb-0"><small>
+            Aucun champ n'est obligatoire ni vérifié : saisissez ce dont vous disposez.
+          </small></p>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

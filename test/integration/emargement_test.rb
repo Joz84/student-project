@@ -99,6 +99,51 @@ class EmargementTest < ActionDispatch::IntegrationTest
     assert @td.attendances.find_by(user: @absent).statut_absent?, "les non pointés sont portés absents"
   end
 
+  test "l'enseignant peut pointer un étudiant de la promo hors de sa liste" do
+    rattrapage = creer_eleve("44444444")   # aucun groupe : pas attendu au TD
+    refute @td.concerne?(rattrapage)
+    assert_includes @td.eleves_hors_liste, rattrapage
+
+    sign_in @prof
+    patch teacher_lesson_attendance_path(@td, rattrapage), params: { status: :present }
+    assert @td.attendances.find_by(user: rattrapage).statut_present?
+
+    get teacher_lesson_path(@td)
+    assert_match "Hors liste", response.body
+    assert_match rattrapage.last_name, response.body
+  end
+
+  test "l'enseignant saisit un étudiant absent de toutes les listes, sans validation" do
+    sign_in @prof
+    assert_difference -> { @td.attendances.count }, 1 do
+      post teacher_lesson_attendances_path(@td),
+           params: { guest_first_name: "Moana", guest_last_name: "Tera", guest_student_number: "pas-un-numero" }
+    end
+    invite = @td.attendances.invites.last
+    assert invite.statut_present?
+    assert_equal "Moana Tera", invite.nom_complet
+    assert_equal "pas-un-numero", invite.numero, "aucun format n'est imposé"
+
+    # Une ligne entièrement vide n'a pas de sens et n'est pas créée.
+    assert_no_difference -> { @td.attendances.count } do
+      post teacher_lesson_attendances_path(@td), params: { guest_first_name: " " }
+    end
+
+    assert_difference -> { @td.attendances.count }, -1 do
+      delete teacher_lesson_attendance_path(@td, invite)
+    end
+  end
+
+  test "un invité compte dans les présents et survit à la validation" do
+    sign_in @prof
+    post teacher_lesson_attendances_path(@td), params: { guest_last_name: "Visiteur" }
+    post valider_teacher_lesson_path(@td)
+    @td.reload
+    assert @td.valide?
+    assert_equal 1, @td.presents_count, "l'invité est compté présent"
+    assert_equal 2, @td.attendances.where(status: :absent).count, "les attendus non pointés sont absents"
+  end
+
   test "un étudiant ne peut pas ouvrir la feuille d'appel" do
     sign_in @eleve
     get teacher_lesson_path(@td)

@@ -1,11 +1,17 @@
 <% attendus = lesson.eleves_attendus.order(:last_name, :first_name).to_a %>
-<% pointages = lesson.attendances.index_by(&:user_id) %>
-<% presents = attendus.count { |e| pointages[e.id]&.statut_present? } %>
+<% pointages = lesson.attendances.includes(:user).index_by(&:user_id) %>
+<% ids_attendus = attendus.map(&:id) %>
+<% rattrapages = lesson.attendances.includes(:user).reject { |a| a.user_id && ids_attendus.include?(a.user_id) } %>
+<% presents = lesson.attendances.count(&:statut_present?) %>
 
 <div class="appel__compteur">
   <span class="appel__nombre"><%= presents %></span>
-  <span class="appel__sur">sur <%= attendus.size %> attendus</span>
-  <% if lesson.verrouille? %>
+  <span class="appel__sur">
+    sur <%= attendus.size %> attendus<%= " · #{rattrapages.size} hors liste" if rattrapages.any? %>
+  </span>
+  <% if lesson.valide? %>
+    <span class="appel__badge appel__badge--valide">Appel validé</span>
+  <% elsif lesson.verrouille? %>
     <span class="appel__badge appel__badge--fige">Pointages figés</span>
   <% elsif lesson.pointage_ouvert? %>
     <span class="appel__badge appel__badge--ouvert">Appel ouvert · code <%= lesson.attendance_code %></span>
@@ -16,26 +22,18 @@
 
 <ul class="appel__liste">
   <% attendus.each do |eleve| %>
-    <% p = pointages[eleve.id] %>
-    <li class="appel__ligne <%= "appel__ligne--present" if p&.statut_present? %>">
-      <span class="appel__nom">
-        <%= eleve.first_name %> <%= eleve.last_name %>
-        <% if p&.statut_present? && p.by_student? %>
-          <span class="appel__source">signalé par l'étudiant à <%= p.declared_at&.strftime("%H:%M") %></span>
-        <% elsif p&.statut_present? %>
-          <span class="appel__source">pointé par l'enseignant</span>
-        <% end %>
-      </span>
-      <span class="appel__boutons">
-        <%= button_to "Présent", teacher_lesson_attendance_path(lesson, eleve, status: :present),
-                      method: :patch, form: { data: { turbo: false } },
-                      class: "btn btn-sm #{p&.statut_present? ? 'btn-danger' : 'btn-outline-ink'}",
-                      disabled: lesson.valide? %>
-        <%= button_to "Absent", teacher_lesson_attendance_path(lesson, eleve, status: :absent),
-                      method: :patch, form: { data: { turbo: false } },
-                      class: "btn btn-sm #{p && p.statut_absent? ? 'btn-supp' : 'btn-outline-ink'}",
-                      disabled: lesson.valide? %>
-      </span>
-    </li>
+    <%= render "teacher/lessons/ligne", lesson: lesson, eleve: eleve,
+               pointage: pointages[eleve.id], nom: "#{eleve.first_name} #{eleve.last_name}",
+               numero: eleve.student_number %>
   <% end %>
 </ul>
+
+<% if rattrapages.any? %>
+  <h4 class="appel__sous-titre">Hors liste <span class="team-card__muted">(<%= rattrapages.size %>)</span></h4>
+  <ul class="appel__liste">
+    <% rattrapages.sort_by { |a| a.nom_complet }.each do |a| %>
+      <%= render "teacher/lessons/ligne", lesson: lesson, eleve: a.user,
+                 pointage: a, nom: a.nom_complet, numero: a.numero %>
+    <% end %>
+  </ul>
+<% end %>

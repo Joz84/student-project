@@ -206,3 +206,57 @@
 
   form { margin: 0; }
 }
+
+.appel__sous-titre {
+  font-size: .85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted;
+  margin: 1.4rem 0 .6rem;
+}
+
+.appel__num {
+  font-size: .72rem;
+  color: $muted-soft;
+  margin-left: .4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.appel__etiquette {
+  font-size: .72rem;
+  color: $muted;
+  background: $surface;
+  border: 1px solid $line;
+  border-radius: 3px;
+  padding: .1rem .4rem;
+  align-self: center;
+}
+
+.appel__liste--compacte {
+  max-height: 22rem;
+  overflow-y: auto;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: 0 .6rem;
+}
+
+.appel__replier {
+  font-weight: 600;
+  color: $blue;
+}
+
+// Saisie libre : trois champs et un bouton, sur une ligne quand la place le permet.
+.appel__saisie {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+
+  .form-control {
+    flex: 1 1 10rem;
+    min-width: 8rem;
+    border-radius: $radius-sm;
+    border-color: $line;
+  }
+}

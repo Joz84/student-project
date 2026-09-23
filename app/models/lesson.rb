@@ -68,6 +68,13 @@ class Lesson < ApplicationRecord
   def deverrouiller! = update!(locked_at: nil)
   def valider!      = update!(validated_at: Time.current, locked_at: locked_at || Time.current)
 
+  # Tous les étudiants de la promotion qui ne sont pas déjà attendus : un
+  # rattrapage se fait dans le créneau d'un autre groupe.
+  def eleves_hors_liste
+    batch.users.kept.where(teacher: nil).where.not(id: eleves_attendus.select(:id))
+         .order(:last_name, :first_name)
+  end
+
   # Le pointage d'un étudiant, créé à la volée pour que la page de l'enseignant
   # affiche toujours la liste complète des attendus.
   def pointage_de(user)

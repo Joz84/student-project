@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_18_090000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_22_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -89,13 +89,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_18_090000) do
   end
 
   create_table "attendances", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.bigint "lesson_id", null: false
     t.integer "status", default: 0, null: false
     t.integer "declared_by", default: 0, null: false
     t.datetime "declared_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "guest_first_name"
+    t.string "guest_last_name"
+    t.string "guest_student_number"
     t.index ["lesson_id", "user_id"], name: "index_attendances_on_lesson_id_and_user_id", unique: true
     t.index ["lesson_id"], name: "index_attendances_on_lesson_id"
     t.index ["user_id"], name: "index_attendances_on_user_id"
