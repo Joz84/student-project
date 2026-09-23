@@ -255,3 +255,179 @@
   .orphelines__ligne { flex-wrap: wrap; }
   .orphelines__forme { flex: 1 0 100%; }
 }
+
+// --- diagramme de Gantt ---
+// Tout est en pourcentage de la piste : la mise en page reste au navigateur,
+// aucune bibliothèque n'est nécessaire.
+.gantt {
+  --gantt-libelle: 15rem;
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.gantt__defilement { overflow-x: auto; }
+
+.gantt__grille {
+  position: relative;
+  min-width: 42rem;
+}
+
+.gantt__ligne {
+  display: flex;
+  align-items: center;
+  min-height: 2.2rem;
+  border-bottom: 1px solid $line-soft;
+}
+
+.gantt__ligne:last-child { border-bottom: none; }
+
+.gantt__ligne--entete {
+  background: $surface;
+  min-height: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.gantt__ligne--tache { min-height: 1.6rem; background: rgba($surface, .45); }
+
+.gantt__libelle {
+  flex: 0 0 var(--gantt-libelle);
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .25rem .7rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: $ink;
+  border-right: 1px solid $line;
+  background: #fff;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.gantt__ligne--entete .gantt__libelle { background: $surface; z-index: 3; }
+.gantt__ligne--tache .gantt__libelle {
+  font-weight: 400;
+  font-size: .76rem;
+  color: $muted;
+  padding-left: 2.1rem;
+}
+
+.gantt__nom {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gantt__pct {
+  margin-left: auto;
+  font-size: .72rem;
+  font-weight: 700;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.gantt__puce {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gantt__piste {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  min-height: inherit;
+  align-self: stretch;
+}
+
+.gantt__graduation {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .68rem;
+  font-weight: 600;
+  color: $muted;
+  border-left: 1px solid $line;
+  text-transform: capitalize;
+}
+
+.gantt__barre {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 1.15rem;
+  border: 1px solid;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gantt__barre--retard { box-shadow: 0 0 0 2px rgba($red, .3); }
+
+.gantt__remplissage { height: 100%; border-radius: 999px; }
+
+.gantt__barre-tache {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: .4rem;
+  border-radius: 999px;
+  opacity: .75;
+}
+
+.gantt__barre-tache--finie { opacity: .35; }
+
+.gantt__sans-date {
+  position: absolute;
+  left: .6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .72rem;
+  color: $muted-soft;
+  font-style: italic;
+}
+
+// Repère du jour, tracé par-dessus toute la grille.
+.gantt__aujourdhui {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed rgba($red, .55);
+  pointer-events: none;
+  z-index: 2;
+
+  span {
+    position: absolute;
+    top: .15rem;
+    left: .25rem;
+    font-size: .62rem;
+    font-weight: 700;
+    color: darken($red, 6%);
+    background: rgba(255, 255, 255, .85);
+    padding: 0 .25rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .gantt { --gantt-libelle: 9rem; }
+  .gantt__grille { min-width: 34rem; }
+}

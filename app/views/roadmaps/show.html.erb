@@ -14,6 +14,10 @@
         <div class="agenda__vide mb-4">
           Aucun jalon pour le moment. Créez le premier ci-dessous.
         </div>
+      <% else %>
+        <%= render "roadmaps/gantt", gantt: @gantt, milestones: @milestones %>
+
+        <h3 class="roadmap__sous-titre mt-5">Détail des étapes</h3>
       <% end %>
 
       <ol class="roadmap">
