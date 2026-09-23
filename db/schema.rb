@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_23_180000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_24_080000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -185,6 +185,21 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_23_180000) do
     t.datetime "updated_at", null: false
     t.index ["ue_id", "label"], name: "index_groups_on_ue_id_and_label", unique: true
     t.index ["ue_id"], name: "index_groups_on_ue_id"
+  end
+
+  create_table "import_runs", force: :cascade do |t|
+    t.string "source", null: false
+    t.datetime "started_at", null: false
+    t.datetime "finished_at"
+    t.integer "created_count", default: 0
+    t.integer "updated_count", default: 0
+    t.integer "unchanged_count", default: 0
+    t.integer "deleted_count", default: 0
+    t.integer "kept_count", default: 0
+    t.text "error"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["started_at"], name: "index_import_runs_on_started_at"
   end
 
   create_table "lesson_groups", force: :cascade do |t|
