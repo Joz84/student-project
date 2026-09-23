@@ -1,7 +1,8 @@
 <div class="container-fluid page-min-height">
   <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <h2 class="text-center my-5">Progression de la team <%= @team.name %></h2>
+    <div class="col-md-9">
+      <h2 class="text-center my-4">Progression de la team <%= @team.name %></h2>
+      <%= render "teams/onglets", team: @team, actif: :progression %>
       <div class="card card-body">
         <a class="" data-bs-toggle="collapse" href="#collapseReferential" role="button" aria-expanded="false" aria-controls="collapseReferential">
           Le référentiel
@@ -195,5 +196,6 @@
       <% end %>
 
     </div>
+    <%= render "teams/barre_laterale", team: @team, meeting: @meeting %>
   </div>
-</div>  
+</div>

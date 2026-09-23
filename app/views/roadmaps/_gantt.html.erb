@@ -1,0 +1,68 @@
+<% if gantt.vide? %>
+  <div class="agenda__vide mb-4">
+    Aucun jalon daté. Donnez une échéance à vos étapes pour voir apparaître le diagramme.
+  </div>
+<% else %>
+  <div class="gantt">
+    <div class="gantt__defilement">
+      <div class="gantt__grille">
+
+        <div class="gantt__ligne gantt__ligne--entete">
+          <div class="gantt__libelle">Étapes</div>
+          <div class="gantt__piste">
+            <% gantt.colonnes.each do |c| %>
+              <span class="gantt__graduation" style="left: <%= c[:gauche] %>%; width: <%= c[:largeur] %>%;">
+                <%= c[:libelle] %>
+              </span>
+            <% end %>
+          </div>
+        </div>
+
+        <% milestones.each_with_index do |jalon, rang| %>
+          <% barre = gantt.barre_jalon(jalon) %>
+          <div class="gantt__ligne">
+            <div class="gantt__libelle">
+              <span class="gantt__puce" style="background: <%= jalon.color %>;"><%= rang + 1 %></span>
+              <span class="gantt__nom" title="<%= jalon.name %>"><%= jalon.name %></span>
+              <% if jalon.avancement %><span class="gantt__pct"><%= jalon.avancement %> %</span><% end %>
+            </div>
+            <div class="gantt__piste">
+              <% if barre %>
+                <div class="gantt__barre <%= "gantt__barre--retard" if jalon.en_retard? %>"
+                     style="left: <%= barre.gauche %>%; width: <%= barre.largeur %>%; background: <%= jalon.color %>29; border-color: <%= jalon.color %>;"
+                     title="<%= jalon.periode %>">
+                  <% if jalon.avancement %>
+                    <div class="gantt__remplissage" style="width: <%= jalon.avancement %>%; background: <%= jalon.color %>;"></div>
+                  <% end %>
+                </div>
+              <% else %>
+                <span class="gantt__sans-date">sans date</span>
+              <% end %>
+            </div>
+          </div>
+
+          <% jalon.taches.sort_by { |t| t.begin_at || Time.current }.each do |tache| %>
+            <% bt = gantt.barre_tache(tache) %>
+            <% next if bt.nil? %>
+            <div class="gantt__ligne gantt__ligne--tache">
+              <div class="gantt__libelle">
+                <span class="gantt__nom" title="<%= tache.name %>"><%= tache.name %></span>
+              </div>
+              <div class="gantt__piste">
+                <div class="gantt__barre-tache <%= "gantt__barre-tache--finie" if tache.terminee? %>"
+                     style="left: <%= bt.gauche %>%; width: <%= bt.largeur %>%; background: <%= jalon.color %>;"
+                     title="<%= tache.str_begin_at %><%= " → #{tache.str_end_at}" if tache.str_end_at %>"></div>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+
+        <% if gantt.aujourdhui_visible? %>
+          <div class="gantt__aujourdhui" style="left: calc(var(--gantt-libelle) + <%= gantt.aujourdhui %>% * (100% - var(--gantt-libelle)) / 100)">
+            <span>aujourd'hui</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

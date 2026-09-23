@@ -11,6 +11,11 @@ class UserPolicy < ApplicationPolicy
     record == user
   end
 
+  # Le relevé de matières est personnel : on ne consulte que le sien.
+  def show?
+    record == user
+  end
+
   class Scope < ApplicationPolicy::Scope
     # NOTE: Be explicit about which records you allow access to!
     def resolve

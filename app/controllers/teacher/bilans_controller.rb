@@ -18,7 +18,7 @@ class Teacher::BilansController < ApplicationController
       end
     end
     redirect_to teacher_bilan_path(ue_id: @ue&.id),
-                notice: "#{modifiees} case#{'s' if modifiees > 1} enregistrée#{'s' if modifiees > 1}."
+                notice: "#{modifiees} case#{'s' if modifiees > 1} enregistrée#{'s' if modifiees > 1}.", status: :see_other
   end
 
   def export
@@ -31,16 +31,16 @@ class Teacher::BilansController < ApplicationController
     @ue = Ue.find(params[:ue_id])
     sheet = AttendanceSheet.new(teacher: current_user, ue: @ue)
     if params[:fichier].blank?
-      return redirect_to teacher_bilan_path(ue_id: @ue.id), alert: "Aucun fichier sélectionné."
+      return redirect_to teacher_bilan_path(ue_id: @ue.id), alert: "Aucun fichier sélectionné.", status: :see_other
     end
 
     resultat = AttendanceSheetImport.new(sheet, params[:fichier]).run
     if resultat.erreurs.any?
       redirect_to teacher_bilan_path(ue_id: @ue.id),
-                  alert: "Import interrompu — #{resultat.erreurs.first(3).join(' ; ')}"
+                  alert: "Import interrompu — #{resultat.erreurs.first(3).join(' ; ')}", status: :see_other
     else
       redirect_to teacher_bilan_path(ue_id: @ue.id),
-                  notice: "Import : #{resultat}"
+                  notice: "Import : #{resultat}", status: :see_other
     end
   end
 

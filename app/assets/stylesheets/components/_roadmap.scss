@@ -1,0 +1,433 @@
+// Onglets de l'espace équipe, partagés par le tableau et la feuille de route.
+.onglets-equipe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  justify-content: center;
+  margin-bottom: 1.6rem;
+}
+
+.onglet {
+  padding: .45rem 1rem;
+  border: 1px solid $line;
+  border-radius: 999px;
+  background: #fff;
+  font-size: .85rem;
+  font-weight: 600;
+  color: $muted;
+
+  &:hover { border-color: $blue; color: $blue; }
+}
+
+.onglet--actif {
+  background: $ink;
+  border-color: $ink;
+  color: #fff;
+
+  &:hover { background: $ink; color: #fff; }
+}
+
+.roadmap__intro {
+  color: $muted;
+  font-size: .9rem;
+  max-width: 44rem;
+  margin: 0 auto 1.8rem;
+  text-align: center;
+}
+
+.roadmap__sous-titre {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $ink;
+  margin-bottom: 1rem;
+}
+
+// La feuille de route : une colonne de jalons reliés par un filet vertical.
+.roadmap {
+  list-style: none;
+  margin: 0 0 2rem;
+  padding: 0 0 0 2.6rem;
+  position: relative;
+}
+
+.roadmap::before {
+  content: "";
+  position: absolute;
+  left: .95rem;
+  top: .6rem;
+  bottom: .6rem;
+  width: 2px;
+  background: $line;
+}
+
+.jalon {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.jalon__puce {
+  position: absolute;
+  left: -2.6rem;
+  top: .9rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-family: $headers-font;
+  font-weight: 700;
+  font-size: .82rem;
+  border: 3px solid $page;
+}
+
+.jalon__corps {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  padding: 1rem 1.1rem;
+}
+
+.jalon--retard .jalon__corps { border-color: rgba($red, .45); }
+
+.jalon__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .8rem;
+  flex-wrap: wrap;
+}
+
+.jalon__titre {
+  font-size: 1rem;
+  font-weight: 700;
+  color: $ink;
+  margin: 0;
+}
+
+.jalon__periode { font-size: .78rem; color: $muted; }
+
+.jalon__alerte {
+  margin-left: .4rem;
+  padding: .05rem .4rem;
+  border-radius: 999px;
+  background: rgba($red, .12);
+  color: darken($red, 8%);
+  font-weight: 700;
+}
+
+.jalon__objectif {
+  font-size: .86rem;
+  color: $muted;
+  margin: .5rem 0 .7rem;
+}
+
+.jalon__jauge {
+  height: 6px;
+  border-radius: 999px;
+  background: $line-soft;
+  overflow: hidden;
+  margin: .6rem 0 .35rem;
+}
+
+.jalon__jauge-barre { height: 100%; border-radius: 999px; transition: width $ease; }
+
+.jalon__compte { font-size: .76rem; color: $muted-soft; }
+
+.jalon__taches {
+  list-style: none;
+  margin: .8rem 0 0;
+  padding: 0;
+  border-top: 1px solid $line-soft;
+}
+
+.jalon__tache {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .35rem 0;
+  border-bottom: 1px solid $line-soft;
+  font-size: .85rem;
+}
+
+.jalon__tache-nom { flex: 1; color: $ink-soft; }
+
+.jalon__tache--finie .jalon__tache-nom {
+  text-decoration: line-through;
+  color: $muted-soft;
+}
+
+.jalon__tache-etat {
+  font-size: .72rem;
+  color: $muted;
+  background: $surface;
+  border: 1px solid $line-soft;
+  border-radius: 3px;
+  padding: .05rem .4rem;
+  white-space: nowrap;
+}
+
+.jalon__detacher {
+  font-size: .72rem;
+  color: $muted-soft;
+  text-decoration: underline;
+
+  &:hover { color: $red; }
+}
+
+.jalon__outils {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-top: .8rem;
+  padding-top: .6rem;
+  border-top: 1px solid $line-soft;
+}
+
+.jalon__lien { font-size: .8rem; font-weight: 600; color: $blue; }
+
+.jalon__fleche {
+  font-size: .9rem;
+  color: $muted;
+  line-height: 1;
+
+  &:hover { color: $ink; }
+  &:disabled { opacity: .25; cursor: default; }
+}
+
+// Formulaire de jalon
+.jalon-forme__ligne {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem;
+
+  .form-group { flex: 1 1 10rem; margin-bottom: .6rem; }
+}
+
+.jalon-forme__large { flex: 2 1 18rem !important; }
+
+.jalon-forme__actions {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  margin-top: .4rem;
+
+  form { margin: 0; }
+}
+
+// Tâches non rattachées
+.orphelines { list-style: none; margin: 0; padding: 0; }
+
+.orphelines__ligne {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid $line-soft;
+  font-size: .88rem;
+}
+
+.orphelines__forme { margin: 0; flex: 0 0 12rem; }
+
+// Pastille du jalon sur une carte du tableau
+.kanban-card__jalon {
+  display: inline-block;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  border: 1px solid;
+  border-radius: 999px;
+  padding: .05rem .5rem;
+  margin-bottom: .35rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+  .roadmap { padding-left: 2rem; }
+  .roadmap::before { left: .7rem; }
+  .jalon__puce { left: -2rem; width: 1.5rem; height: 1.5rem; font-size: .72rem; }
+  .orphelines__ligne { flex-wrap: wrap; }
+  .orphelines__forme { flex: 1 0 100%; }
+}
+
+// --- diagramme de Gantt ---
+// Tout est en pourcentage de la piste : la mise en page reste au navigateur,
+// aucune bibliothèque n'est nécessaire.
+.gantt {
+  --gantt-libelle: 15rem;
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.gantt__defilement { overflow-x: auto; }
+
+.gantt__grille {
+  position: relative;
+  min-width: 42rem;
+}
+
+.gantt__ligne {
+  display: flex;
+  align-items: center;
+  min-height: 2.2rem;
+  border-bottom: 1px solid $line-soft;
+}
+
+.gantt__ligne:last-child { border-bottom: none; }
+
+.gantt__ligne--entete {
+  background: $surface;
+  min-height: 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.gantt__ligne--tache { min-height: 1.6rem; background: rgba($surface, .45); }
+
+.gantt__libelle {
+  flex: 0 0 var(--gantt-libelle);
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .25rem .7rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: $ink;
+  border-right: 1px solid $line;
+  background: #fff;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.gantt__ligne--entete .gantt__libelle { background: $surface; z-index: 3; }
+.gantt__ligne--tache .gantt__libelle {
+  font-weight: 400;
+  font-size: .76rem;
+  color: $muted;
+  padding-left: 2.1rem;
+}
+
+.gantt__nom {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gantt__pct {
+  margin-left: auto;
+  font-size: .72rem;
+  font-weight: 700;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.gantt__puce {
+  flex: 0 0 auto;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gantt__piste {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  min-height: inherit;
+  align-self: stretch;
+}
+
+.gantt__graduation {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .68rem;
+  font-weight: 600;
+  color: $muted;
+  border-left: 1px solid $line;
+  text-transform: capitalize;
+}
+
+.gantt__barre {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 1.15rem;
+  border: 1px solid;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.gantt__barre--retard { box-shadow: 0 0 0 2px rgba($red, .3); }
+
+.gantt__remplissage { height: 100%; border-radius: 999px; }
+
+.gantt__barre-tache {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: .4rem;
+  border-radius: 999px;
+  opacity: .75;
+}
+
+.gantt__barre-tache--finie { opacity: .35; }
+
+.gantt__sans-date {
+  position: absolute;
+  left: .6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .72rem;
+  color: $muted-soft;
+  font-style: italic;
+}
+
+// Repère du jour, tracé par-dessus toute la grille.
+.gantt__aujourdhui {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 2px dashed rgba($red, .55);
+  pointer-events: none;
+  z-index: 2;
+
+  span {
+    position: absolute;
+    top: .15rem;
+    left: .25rem;
+    font-size: .62rem;
+    font-weight: 700;
+    color: darken($red, 6%);
+    background: rgba(255, 255, 255, .85);
+    padding: 0 .25rem;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .gantt { --gantt-libelle: 9rem; }
+  .gantt__grille { min-width: 34rem; }
+}

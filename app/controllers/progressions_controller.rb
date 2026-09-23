@@ -3,6 +3,7 @@ class ProgressionsController < ApplicationController
     @team = Team.find(params[:team_id])
     authorize @team, :show?
     @users = policy_scope(User).where(team: @team).kept
+    @meeting = Meeting.new   # la barre latérale propose d'en créer un
     @referential = @team.project.batch.referentials.find_by(active: true)
     @skill_blocks = @referential.skill_blocks.includes(:skills).order(:position)
     @meetings = @team.meetings.includes(presences: :user).order(date: :desc)

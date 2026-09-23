@@ -22,7 +22,7 @@
             </span>
             <% if @lesson.rouvrable? %>
               <%= button_to "Rouvrir l'appel", rouvrir_teacher_lesson_path(@lesson),
-                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+                            form: {  }, class: "btn btn-outline-ink" %>
             <% else %>
               <span class="appel__note">
                 Créneau terminé — les corrections se font depuis
@@ -32,14 +32,14 @@
           <% else %>
             <% unless @lesson.attendance_code.present? %>
               <%= button_to "Ouvrir l'appel", ouvrir_teacher_lesson_path(@lesson),
-                            form: { data: { turbo: false } }, class: "btn btn-danger" %>
+                            form: {  }, class: "btn btn-danger" %>
             <% end %>
             <% if @lesson.verrouille? %>
               <%= button_to "Rouvrir aux étudiants", deverrouiller_teacher_lesson_path(@lesson),
-                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+                            form: {  }, class: "btn btn-outline-ink" %>
             <% elsif @lesson.attendance_code.present? %>
               <%= button_to "Figer les pointages", verrouiller_teacher_lesson_path(@lesson),
-                            form: { data: { turbo: false } }, class: "btn btn-outline-ink" %>
+                            form: {  }, class: "btn btn-outline-ink" %>
             <% end %>
             <% if @lesson.attendance_code.present? %>
               <%= button_to "Valider l'appel", valider_teacher_lesson_path(@lesson),
@@ -89,7 +89,7 @@
                 </span>
                 <%= button_to "Marquer présent",
                               teacher_lesson_attendance_path(@lesson, eleve, status: :present),
-                              method: :patch, form: { data: { turbo: false } },
+                              method: :patch, form: {  },
                               class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
               </li>
             <% end %>
@@ -97,7 +97,7 @@
 
           <h4 class="appel__sous-titre mt-4">Étudiant absent de la promotion</h4>
           <%= form_with url: teacher_lesson_attendances_path(@lesson), method: :post,
-                        data: { turbo: false }, class: "appel__saisie" do %>
+                         class: "appel__saisie" do %>
             <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
             <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
             <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>

@@ -3,6 +3,7 @@ class Team < ApplicationRecord
   belongs_to :user #, optional: true #remove after migration #team leader
   has_many :users, dependent: :nullify
   has_many :lists
+  has_many :milestones, dependent: :destroy
   has_many :cards, through: :lists
   # has_many :messages
   has_many :meetings, dependent: :destroy

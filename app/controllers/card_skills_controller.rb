@@ -1,33 +1,30 @@
 class CardSkillsController < ApplicationController
-
   def create
-    @card_skill = CardSkill.new(card_skill_params)
-    @card_skill.card = Card.find(params[:card_id])
-    authorize @card_skill
-    if @card_skill.save
-      redirect_to team_path(@card_skill.card.team)
-    else
-      @team = @card_skill.card.team
-      @card = Card.new
-      @assignment = Assignment.new
-      @meeting = Meeting.new
-      @all_skills = @team.project.batch.current_referential.skills
-      render "teams/show", status: :unprocessable_entity
+    @card = Card.find(params[:card_id])
+    ids = Array(params.dig(:card_skill, :skill_ids)).reject(&:blank?)
+    ajoutees = 0
+    ids.each do |skill_id|
+      lien = CardSkill.new(card: @card, skill_id: skill_id)
+      authorize lien
+      next if CardSkill.exists?(card_id: @card.id, skill_id: skill_id)
+      ajoutees += 1 if lien.save
     end
+    authorize CardSkill.new(card: @card) if ids.empty?
+    redirect_to volet(@card.team, @card.id, "competences"),
+                notice: ajoutees.zero? ? nil : "#{ajoutees} compétence#{'s' if ajoutees > 1} ajoutée#{'s' if ajoutees > 1}.", status: :see_other
   end
-
 
   def destroy
     @card_skill = CardSkill.find(params[:id])
     authorize @card_skill
+    carte = @card_skill.card
     @card_skill.destroy
-    redirect_to team_path(@card_skill.card.team)
+    redirect_to volet(carte.team, carte.id, "competences"), status: :see_other
   end
 
   private
 
-  def card_skill_params
-    params.require(:card_skill).permit(:skill, :skill_id)
+  def volet(team, card_id, nom)
+    team_path(team, carte: card_id, volet: nom, anchor: "carte#{card_id}")
   end
-
 end

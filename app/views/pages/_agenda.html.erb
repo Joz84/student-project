@@ -57,7 +57,7 @@
           <div class="modal fade" id="pointage<%= seance.id %>" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
               <%= form_with url: lesson_attendance_path(seance), method: :post,
-                            data: { turbo: false }, class: "modal-content" do %>
+                             class: "modal-content" do %>
                 <div class="modal-header">
                   <h5 class="modal-title">Signaler ma présence</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>

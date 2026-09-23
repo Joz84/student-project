@@ -1,0 +1,39 @@
+<% max = [semestre.heures_max_semaine, 1].max %>
+<section class="histo">
+  <div class="histo__entete">
+    <h3 class="roadmap__sous-titre mb-0">Heures de cours par semaine</h3>
+    <span class="histo__echelle">pic à <%= max.round %> h</span>
+  </div>
+
+  <div class="histo__cadre">
+    <div class="histo__axe">
+      <% [max, max * 0.5, 0].each do |graduation| %>
+        <span><%= graduation.round %> h</span>
+      <% end %>
+    </div>
+
+    <div class="histo__barres">
+      <% semestre.semaines.each do |semaine| %>
+        <div class="histo__colonne <%= "histo__colonne--courante" if semaine.courante? %> <%= "histo__colonne--passee" if semaine.passee? %>">
+          <% if semaine.courante? %>
+            <span class="histo__marqueur">cette semaine</span>
+          <% end %>
+          <div class="histo__pile" title="Semaine <%= semaine.numero %> — <%= semaine.total.round(1) %> h">
+            <% semaine.parts.each do |part| %>
+              <span class="histo__part"
+                    style="height: <%= (100.0 * part[:heures] / max).round(2) %>%; background: <%= part[:ue].teinte %>;"
+                    title="<%= part[:ue].name %> — <%= part[:heures].round(1) %> h"></span>
+            <% end %>
+          </div>
+          <span class="histo__semaine">S<%= semaine.numero %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <ul class="histo__legende">
+    <% semestre.matieres.each do |matiere| %>
+      <li><span class="histo__pastille" style="background: <%= matiere.teinte %>;"></span><%= matiere.ue.name %></li>
+    <% end %>
+  </ul>
+</section>

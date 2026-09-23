@@ -4,6 +4,8 @@ class Batch < ApplicationRecord
   has_many :specialities, -> { order(:position) }, dependent: :destroy
   has_many :projects
   has_many :teachers, through: :projects
+  has_many :ues, dependent: :destroy
+  has_many :lessons, dependent: :destroy
   validates :title, presence: true, uniqueness: true
 
   def discord_server_url
