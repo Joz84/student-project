@@ -55,7 +55,10 @@
                     <% @sheet.lessons.each do |l| %>
                       <th class="bilan__seance">
                         <span class="bilan__date"><%= @sheet.entete(l) %></span>
-                        <span class="bilan__sous"><%= @sheet.sous_entete(l) %></span>
+                        <span class="bilan__sous">
+                          <%= @sheet.sous_entete(l) %>
+                          <span class="bilan__attendus"><%= @sheet.nombre_attendus(l) %></span>
+                        </span>
                       </th>
                     <% end %>
                   </tr>
@@ -68,7 +71,9 @@
                       </th>
                       <% @sheet.lessons.each do |l| %>
                         <% statut = @sheet.statut(l, eleve) %>
-                        <td class="bilan__case bilan__case--<%= statut || 'vide' %>">
+                        <% attendu = @sheet.attendu?(l, eleve) %>
+                        <td class="bilan__case bilan__case--<%= statut || 'vide' %> <%= "bilan__case--hors" unless attendu %>"
+                            <%= "title=Étudiant\ d'un\ autre\ groupe".html_safe unless attendu %>>
                           <%= select_tag "statuts[#{l.id}][#{eleve.id}]",
                                 options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, statut),
                                 include_blank: "—", class: "bilan__select" %>

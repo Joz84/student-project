@@ -397,3 +397,34 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   padding: .9rem 0;
   background: linear-gradient(180deg, rgba($page, 0), $page 45%);
 }
+
+// Une colonne de TP ne concerne qu'une fraction des lignes. Les autres sont
+// estompées plutôt que masquées : un rattrapage se pointe quand même.
+.bilan__case--hors {
+  background-image: repeating-linear-gradient(
+    135deg, transparent, transparent 5px,
+    rgba($ink, .045) 5px, rgba($ink, .045) 10px
+  );
+}
+
+.bilan__case--hors .bilan__select {
+  opacity: .32;
+  color: $muted-soft;
+}
+
+.bilan__case--hors:hover .bilan__select,
+.bilan__case--hors .bilan__select:focus {
+  opacity: 1;
+  color: $ink;
+}
+
+.bilan__attendus {
+  display: inline-block;
+  margin-left: .3rem;
+  padding: 0 .3rem;
+  border-radius: 999px;
+  background: $line;
+  color: $ink;
+  font-size: .64rem;
+  font-weight: 700;
+}

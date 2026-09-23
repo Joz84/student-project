@@ -97,6 +97,38 @@ class BilanTest < ActionDispatch::IntegrationTest
     assert_equal "excused", Attendance.find_by(lesson: @s1, user: @b).status
   end
 
+  test "les cases hors du groupe de la séance sont estompées" do
+    # Un CM fait entrer toute la promotion dans la grille ; la colonne de TD,
+    # elle, ne concerne que son groupe.
+    hors = eleve("10000003", "Cta")
+    cm = seance(@ue, 2.days.ago, "CM - Mécanique", groupe: nil)
+    cm.lesson_groups.destroy_all
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert_includes sheet.eleves, hors, "le CM fait entrer toute la promotion"
+    assert sheet.attendu?(cm, hors), "le CM concerne toute la promotion"
+    refute sheet.attendu?(@s1, hors), "le TD ne concerne que son groupe"
+    assert sheet.attendu?(@s1, @a)
+    assert_equal 2, sheet.nombre_attendus(@s1)
+    assert_equal 3, sheet.nombre_attendus(cm)
+
+    sign_in @prof
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "bilan__case--hors", response.body
+    assert_match "bilan__attendus", response.body
+  end
+
+  test "une case hors groupe reste modifiable, pour un rattrapage" do
+    hors = eleve("10000004", "Dta")
+    cm = seance(@ue, 2.days.ago, "CM - Mécanique", groupe: nil)
+    cm.lesson_groups.destroy_all
+    sign_in @prof
+    patch teacher_bilan_path, params: {
+      ue_id: @ue.id, statuts: { @s1.id.to_s => { hors.id.to_s => "present" } }
+    }
+    assert_equal "present", Attendance.find_by(lesson: @s1, user: hors).status
+  end
+
   test "un étudiant n'accède pas au bilan" do
     sign_in @a
     get teacher_bilan_path
