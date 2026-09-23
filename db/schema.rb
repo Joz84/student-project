@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_23_090000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -137,7 +137,9 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
     t.integer "teacher_validation", default: 0
     t.float "time_estimate"
     t.string "time_unit"
+    t.bigint "milestone_id"
     t.index ["list_id"], name: "index_cards_on_list_id"
+    t.index ["milestone_id"], name: "index_cards_on_milestone_id"
   end
 
   create_table "courses", force: :cascade do |t|
@@ -249,6 +251,20 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
     t.datetime "updated_at", null: false
     t.index ["team_id"], name: "index_messages_on_team_id"
     t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "milestones", force: :cascade do |t|
+    t.bigint "team_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.date "starts_on"
+    t.date "due_on"
+    t.integer "position"
+    t.string "color"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["team_id", "position"], name: "index_milestones_on_team_id_and_position"
+    t.index ["team_id"], name: "index_milestones_on_team_id"
   end
 
   create_table "presences", force: :cascade do |t|
@@ -441,6 +457,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
   add_foreign_key "card_skills", "cards"
   add_foreign_key "card_skills", "skills"
   add_foreign_key "cards", "lists"
+  add_foreign_key "cards", "milestones"
   add_foreign_key "exercices", "courses"
   add_foreign_key "group_memberships", "groups"
   add_foreign_key "group_memberships", "users"
@@ -455,6 +472,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_22_230000) do
   add_foreign_key "meetings", "teams"
   add_foreign_key "messages", "teams"
   add_foreign_key "messages", "users"
+  add_foreign_key "milestones", "teams"
   add_foreign_key "presences", "meetings"
   add_foreign_key "presences", "users"
   add_foreign_key "project_specialities", "projects"

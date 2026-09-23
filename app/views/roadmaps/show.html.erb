@@ -1,0 +1,110 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+
+      <h2 class="text-center my-4">Feuille de route</h2>
+      <%= render "teams/onglets", team: @team, actif: :roadmap %>
+
+      <p class="roadmap__intro">
+        Découpez le projet en grandes étapes, puis rattachez-y les tâches du
+        tableau de bord. L'avancement de chaque jalon se calcule tout seul.
+      </p>
+
+      <% if @milestones.empty? %>
+        <div class="agenda__vide mb-4">
+          Aucun jalon pour le moment. Créez le premier ci-dessous.
+        </div>
+      <% end %>
+
+      <ol class="roadmap">
+        <% @milestones.each_with_index do |jalon, rang| %>
+          <li class="jalon <%= "jalon--retard" if jalon.en_retard? %>">
+            <span class="jalon__puce" style="background: <%= jalon.color %>;"><%= rang + 1 %></span>
+
+            <div class="jalon__corps">
+              <div class="jalon__entete">
+                <h3 class="jalon__titre"><%= jalon.name %></h3>
+                <span class="jalon__periode">
+                  <%= jalon.periode || "sans échéance" %>
+                  <% if jalon.en_retard? %><span class="jalon__alerte">en retard</span><% end %>
+                </span>
+              </div>
+
+              <% if jalon.description.present? %>
+                <p class="jalon__objectif"><%= jalon.description %></p>
+              <% end %>
+
+              <% if (pct = jalon.avancement) %>
+                <div class="jalon__jauge" title="<%= jalon.taches_finies.size %> tâche(s) terminée(s) sur <%= jalon.taches.size %>">
+                  <div class="jalon__jauge-barre" style="width: <%= pct %>%; background: <%= jalon.color %>;"></div>
+                </div>
+                <span class="jalon__compte"><%= pct %> % · <%= jalon.taches_finies.size %>/<%= jalon.taches.size %> tâches</span>
+              <% else %>
+                <span class="jalon__compte">aucune tâche rattachée</span>
+              <% end %>
+
+              <% if jalon.taches.any? %>
+                <ul class="jalon__taches">
+                  <% jalon.taches.sort_by { |c| [c.terminee? ? 1 : 0, c.name.to_s] }.each do |tache| %>
+                    <li class="jalon__tache <%= "jalon__tache--finie" if tache.terminee? %>">
+                      <span class="jalon__tache-nom"><%= tache.name %></span>
+                      <span class="jalon__tache-etat"><%= tache.archived? ? "archivée" : tache.list.name %></span>
+                      <%= button_to "Détacher", card_path(tache, card: { milestone_id: nil }),
+                                    method: :patch, form: { data: { turbo: false } },
+                                    class: "no-btn jalon__detacher" %>
+                    </li>
+                  <% end %>
+                </ul>
+              <% end %>
+
+              <div class="jalon__outils">
+                <a data-bs-toggle="collapse" href="#jalon<%= jalon.id %>" role="button" class="jalon__lien">Modifier</a>
+                <%= button_to "↑", monter_team_milestone_path(@team, jalon), method: :patch,
+                              form: { data: { turbo: false } }, class: "no-btn jalon__fleche",
+                              disabled: rang.zero? %>
+                <%= button_to "↓", descendre_team_milestone_path(@team, jalon), method: :patch,
+                              form: { data: { turbo: false } }, class: "no-btn jalon__fleche",
+                              disabled: rang == @milestones.size - 1 %>
+              </div>
+
+              <div class="collapse mt-3" id="jalon<%= jalon.id %>">
+                <%= render "milestones/formulaire", team: @team, milestone: jalon, bouton: "Enregistrer" %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+
+      <div class="card card-body p-4 mb-4">
+        <h3 class="roadmap__sous-titre">Ajouter une grande étape</h3>
+        <%= render "milestones/formulaire", team: @team, milestone: @milestone, bouton: "Créer le jalon" %>
+      </div>
+
+      <div class="card card-body p-4 mb-5">
+        <h3 class="roadmap__sous-titre">
+          Tâches sans jalon <span class="team-card__muted">(<%= @orphelines.size %>)</span>
+        </h3>
+        <% if @orphelines.empty? %>
+          <p class="text-grey mb-0"><small>Toutes les tâches du tableau sont rattachées à une étape.</small></p>
+        <% elsif @milestones.empty? %>
+          <p class="text-grey mb-0"><small>Créez d'abord un jalon pour pouvoir y rattacher ces tâches.</small></p>
+        <% else %>
+          <ul class="orphelines">
+            <% @orphelines.each do |tache| %>
+              <li class="orphelines__ligne">
+                <span><%= tache.name %> <span class="team-card__muted"><%= tache.list.name %></span></span>
+                <%= form_with url: card_path(tache), method: :patch, data: { turbo: false }, class: "orphelines__forme" do %>
+                  <%= select_tag "card[milestone_id]",
+                        options_from_collection_for_select(@milestones, :id, :name),
+                        include_blank: "Rattacher à…", class: "form-select form-select-sm",
+                        onchange: "this.form.requestSubmit()" %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -9,6 +9,14 @@
     <span class="kanban-note" title="Évaluation de l'enseignant"><%= notes[card.teacher_validation] %></span>
   <% end %>
 
+  <% if card.milestone %>
+    <%= link_to team_roadmap_path(card.team), class: "kanban-card__jalon",
+                style: "background: #{card.milestone.color}1F; color: #{card.milestone.color}; border-color: #{card.milestone.color}55;",
+                title: "Jalon de la feuille de route" do %>
+      <%= card.milestone.name %>
+    <% end %>
+  <% end %>
+
   <h6 class="kanban-card__title"><%= card.name %></h6>
 
   <div class="kanban-card__meta">

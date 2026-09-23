@@ -27,6 +27,13 @@ Rails.application.routes.draw do
     #resources :messages, only: [:create, :index]
     resources :progressions, only: [:index]
     resources :meetings, only: [:create, :update, :destroy]
+    resource :roadmap, only: [:show]
+    resources :milestones, only: [:create, :update, :destroy] do
+      member do
+        patch :monter
+        patch :descendre
+      end
+    end
   end
 
   resources :lists, only: [] do

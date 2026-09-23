@@ -107,6 +107,24 @@ Options
 
         <% end %>
 
+        <% if card.team&.milestones&.any? %>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseJalon<%= card.id %>" aria-expanded="false" aria-controls="collapseJalon<%= card.id %>">
+                Étape de la feuille de route
+              </button>
+            </h2>
+            <div id="collapseJalon<%= card.id %>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
+              <%= form_with url: card_path(card), method: :patch, data: { turbo: false } do %>
+                <%= select_tag "card[milestone_id]",
+                      options_from_collection_for_select(card.team.milestones.ordonnes, :id, :name, card.milestone_id),
+                      include_blank: "Aucune étape", class: "form-select form-select-sm mb-2",
+                      onchange: "this.form.requestSubmit()" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
         <div class="accordion-item">
         <h2 class="accordion-header">
             <button class="accordion-button accordion-padding collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour<%= card.id%>" aria-expanded="false" aria-controls="collapseFour<%= card.id%>">

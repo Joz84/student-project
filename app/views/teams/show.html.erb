@@ -1,7 +1,8 @@
 <div class="container-fluid page-min-height">
   <div class="row">
     <div class="col-md-9">
-      <h2 class="text-center my-5">Mon Tableau de bord</h2>
+      <h2 class="text-center my-4">Mon Tableau de bord</h2>
+      <%= render "teams/onglets", team: @team, actif: :kanban %>
       <div class="container">
         <div class="kanban">
           <% @team.lists.order(:position).each_with_index do |list, rang| %>

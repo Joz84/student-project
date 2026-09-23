@@ -1,5 +1,6 @@
 class Card < ApplicationRecord
   belongs_to :list
+  belongs_to :milestone, optional: true
   acts_as_list scope: :list
   has_many :assignments, dependent: :destroy
   has_many :card_skills, dependent: :destroy  
@@ -19,6 +20,14 @@ class Card < ApplicationRecord
 
   def team
     list&.team
+  end
+
+  # Une tâche est finie quand elle est archivée ou qu'elle a atteint la
+  # dernière colonne du tableau. C'est ce qui nourrit l'avancement des jalons.
+  def terminee?
+    return true if archived?
+    derniere = team&.lists&.order(:position)&.last
+    derniere.present? && list_id == derniere.id
   end
 
   def str_begin_at
