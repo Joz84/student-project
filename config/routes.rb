@@ -39,6 +39,10 @@ Rails.application.routes.draw do
   end
   
   namespace :teacher do
+    resource :bilan, only: [:show, :update], controller: "bilans" do
+      get  :export
+      post :import
+    end
     resources :lessons, only: [:show] do
       member do
         get  :liste

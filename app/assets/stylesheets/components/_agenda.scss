@@ -260,3 +260,140 @@
     border-color: $line;
   }
 }
+
+// --- bilan de présences ---
+.bilan__onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  list-style: none;
+  margin: 0 0 1.2rem;
+  padding: 0;
+}
+
+.bilan__onglet {
+  display: inline-block;
+  padding: .45rem .85rem;
+  border: 1px solid $line;
+  border-radius: 999px;
+  background: #fff;
+  font-size: .82rem;
+  font-weight: 600;
+  color: $muted;
+
+  &:hover { border-color: $blue; color: $blue; }
+}
+
+.bilan__onglet--actif {
+  background: $ink;
+  border-color: $ink;
+  color: #fff;
+
+  &:hover { background: $ink; color: #fff; }
+}
+
+.bilan__barre {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem;
+  margin-bottom: .5rem;
+
+  form { display: flex; gap: .4rem; align-items: center; margin: 0; }
+  .form-control { width: auto; }
+}
+
+.bilan__compte { font-size: .85rem; color: $muted; margin-right: auto; }
+
+.bilan__aide {
+  font-size: .78rem;
+  color: $muted-soft;
+  margin-bottom: 1rem;
+  max-width: 62rem;
+}
+
+// La grille peut être large : elle défile seule, l'en-tête et la colonne des
+// noms restant visibles.
+.bilan__cadre {
+  overflow: auto;
+  max-height: 70vh;
+  border: 1px solid $line;
+  border-radius: $radius;
+  background: #fff;
+}
+
+.bilan {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: .82rem;
+
+  th, td { border-bottom: 1px solid $line-soft; border-right: 1px solid $line-soft; }
+
+  thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: $surface;
+    padding: .45rem .5rem;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+}
+
+.bilan__eleve {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: #fff;
+  padding: .35rem .7rem;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  min-width: 13rem;
+}
+
+thead .bilan__eleve { z-index: 4; background: $surface; }
+
+.bilan__date {
+  display: block;
+  font-variant-numeric: tabular-nums;
+  color: $ink;
+}
+
+.bilan__sous {
+  display: block;
+  font-size: .68rem;
+  font-weight: 500;
+  color: $muted-soft;
+}
+
+.bilan__case { padding: .15rem; text-align: center; }
+
+.bilan__case--present { background: mix($danger, #fff, 14%); }
+.bilan__case--absent  { background: mix($red, #fff, 10%); }
+.bilan__case--excused { background: mix($notice, #fff, 22%); }
+.bilan__case--retard  { background: mix($blue, #fff, 12%); }
+
+.bilan__select {
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 3px;
+  font-size: .76rem;
+  padding: .12rem .2rem;
+  max-width: 9.5rem;
+  color: $ink;
+
+  &:hover, &:focus { border-color: $line; background: #fff; }
+}
+
+.bilan__fixe { font-size: .76rem; color: $muted; }
+
+.bilan__ligne-invite .bilan__eleve { font-style: italic; }
+
+.bilan__pied {
+  position: sticky;
+  bottom: 0;
+  padding: .9rem 0;
+  background: linear-gradient(180deg, rgba($page, 0), $page 45%);
+}

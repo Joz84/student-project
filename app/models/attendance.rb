@@ -6,7 +6,14 @@ class Attendance < ApplicationRecord
 
   # Sans préfixe, `present?` masquerait celui d'ActiveSupport : un pointage
   # absent répondrait « false » à la question « cet objet existe-t-il ? ».
-  enum status: { absent: 0, present: 1, excused: 2 }, _prefix: :statut
+  # absent = absence non justifiée, excused = absence justifiée. « Non
+  # renseigné » ne vaut pas un état : c'est l'absence de ligne.
+  enum status: { absent: 0, present: 1, excused: 2, retard: 3 }, _prefix: :statut
+
+  LIBELLES = { "present" => "Présent", "absent" => "Absent non justifié",
+               "excused" => "Absent justifié", "retard" => "En retard" }.freeze
+
+  def libelle = LIBELLES[status]
   enum declared_by: { student: 0, teacher: 1 }, _prefix: :by
 
   validates :user_id, uniqueness: { scope: :lesson_id }, if: -> { user_id.present? }
