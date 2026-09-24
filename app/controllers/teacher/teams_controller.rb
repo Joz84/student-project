@@ -1,5 +1,9 @@
 class Teacher::TeamsController < ApplicationController
+  # `verify_authorized` dispense les index : sans cette ligne, la seule barrière
+  # serait la portée de la policy, et un étudiant connecté atteignait la page
+  # en passant ?batch_id= dans l'adresse.
   def index
+    authorize [:teacher, Team], :index?
     load_index
   end
 

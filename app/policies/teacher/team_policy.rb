@@ -12,9 +12,10 @@ class Teacher::TeamPolicy < ApplicationPolicy
   end
 
   class Scope < ApplicationPolicy::Scope
-    # NOTE: Be explicit about which records you allow access to!
+    # Un étudiant n'a rien à lire ici. Les enseignants voient toutes les
+    # équipes : la page les regroupe ensuite par référent.
     def resolve
-      scope.all #where(id: user.supervised_teams.map(&:id))
+      user&.teacher? ? scope.all : scope.none
     end
   end
 end
