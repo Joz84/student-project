@@ -6,6 +6,7 @@ class Teacher::LessonPolicy < ApplicationPolicy
   def deverrouiller? = show?
   def rouvrir?       = show?
   def valider?       = show?
+  def tous_presents? = show?
   def update?        = show?
 
   class Scope < ApplicationPolicy::Scope

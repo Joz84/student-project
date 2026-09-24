@@ -38,6 +38,33 @@ class Teacher::LessonsController < ApplicationController
     end
   end
 
+  # Quand toute la classe est là, renseigner les lignes une par une est une
+  # perte de temps. Seuls les étudiants sans pointage sont touchés : une
+  # absence déjà saisie ne doit pas être effacée par un raccourci.
+  def tous_presents
+    if @lesson.valide?
+      return redirect_to teacher_lesson_path(@lesson), status: :see_other,
+                         alert: "L'appel est validé : rouvrez-le pour le modifier."
+    end
+
+    ajoutes = 0
+    ActiveRecord::Base.transaction do
+      @lesson.eleves_attendus.each do |eleve|
+        pointage = @lesson.pointage_de(eleve)
+        next if pointage.persisted?
+        pointage.update!(status: :present, declared_by: :teacher, declared_at: Time.current)
+        ajoutes += 1
+      end
+    end
+
+    message = if ajoutes.zero?
+                "Tous les étudiants étaient déjà renseignés : rien n'a changé."
+              else
+                "#{ajoutes} étudiant#{'s' if ajoutes > 1} marqué#{'s' if ajoutes > 1} présent#{'s' if ajoutes > 1}."
+              end
+    redirect_to teacher_lesson_path(@lesson), notice: message, status: :see_other
+  end
+
   def valider
     # Les attendus qui ne se sont pas signalés sont portés absents : sans cela
     # la séance resterait à moitié renseignée.

@@ -46,6 +46,39 @@ class EmargementTest < ActionDispatch::IntegrationTest
     assert_match "CM - UE de test", response.body
   end
 
+  test "« tous présents » renseigne les attendus sans toucher aux saisies existantes" do
+    @td.ouvrir_pointage!
+    @td.attendances.create!(user: @absent, status: :excused, declared_by: :teacher,
+                            declared_at: Time.current)
+    sign_in @prof
+    post tous_presents_teacher_lesson_path(@td)
+    assert_redirected_to teacher_lesson_path(@td)
+
+    assert_equal "present", @td.attendances.find_by(user: @eleve).status
+    assert_equal "excused", @td.attendances.find_by(user: @absent).status,
+                 "une absence déjà saisie ne doit pas être écrasée"
+    assert_nil @td.attendances.find_by(user: @sans_groupe),
+               "un étudiant hors du groupe n'est pas attendu à ce TD"
+  end
+
+  test "« tous présents » est refusé sur un appel validé" do
+    @td.ouvrir_pointage!
+    @td.valider!
+    sign_in @prof
+    post tous_presents_teacher_lesson_path(@td)
+    assert_equal 0, @td.attendances.count
+    assert_match(/validé/, flash[:alert])
+  end
+
+  test "la liste hors liste porte de quoi filtrer côté navigateur" do
+    @td.ouvrir_pointage!
+    sign_in @prof
+    get teacher_lesson_path(@td)
+    assert_response :success
+    assert_match 'data-controller="filtre"', response.body
+    assert_match @sans_groupe.student_number, response.body
+  end
+
   test "pointage refusé tant que l'enseignant n'a pas ouvert l'appel" do
     sign_in @eleve
     post lesson_attendance_path(@td), params: { code: "0000" }

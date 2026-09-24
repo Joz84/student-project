@@ -250,6 +250,17 @@
   align-self: center;
 }
 
+// Recherche dans le reste de la promotion : les lignes masquées le sont par
+// l'attribut `hidden`, que le `display: flex` des lignes écraserait sans cela.
+.appel__recherche {
+  margin-bottom: .6rem;
+  font-size: .88rem;
+
+  &:focus { border-color: $blue; box-shadow: 0 0 0 3px rgba($blue, .12); }
+}
+
+.appel__ligne[hidden] { display: none; }
+
 .appel__liste--compacte {
   max-height: 22rem;
   overflow-y: auto;

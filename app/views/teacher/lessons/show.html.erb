@@ -41,6 +41,9 @@
               <%= button_to "Figer les pointages", verrouiller_teacher_lesson_path(@lesson),
                             form: {  }, class: "btn btn-outline-ink" %>
             <% end %>
+            <%= button_to "Tous présents", tous_presents_teacher_lesson_path(@lesson),
+                          form: { data: { turbo_confirm: "Marquer présents tous les attendus qui ne sont pas encore renseignés ? Les absences et retards déjà saisis sont conservés." } },
+                          class: "btn btn-outline-ink" %>
             <% if @lesson.attendance_code.present? %>
               <%= button_to "Valider l'appel", valider_teacher_lesson_path(@lesson),
                             form: { data: { turbo: false,
@@ -79,21 +82,39 @@
         </small></p>
 
         <div class="collapse mt-3" id="horsListe">
-          <h4 class="appel__sous-titre">Reste de la promotion</h4>
-          <ul class="appel__liste appel__liste--compacte">
-            <% @lesson.eleves_hors_liste.each do |eleve| %>
-              <li class="appel__ligne">
-                <span class="appel__nom">
-                  <%= eleve.first_name %> <%= eleve.last_name %>
-                  <span class="appel__num"><%= eleve.student_number %></span>
-                </span>
-                <%= button_to "Marquer présent",
-                              teacher_lesson_attendance_path(@lesson, eleve, status: :present),
-                              method: :patch, form: {  },
-                              class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
-              </li>
-            <% end %>
-          </ul>
+          <% hors_liste = @lesson.eleves_hors_liste %>
+          <div data-controller="filtre">
+            <h4 class="appel__sous-titre">
+              Reste de la promotion
+              <span class="team-card__muted" data-filtre-target="compteur"><%= hors_liste.size %></span>
+            </h4>
+
+            <%# La promotion tient dans la page : le filtrage se fait sur place,
+                sans aller-retour serveur, pour trouver un nom en quelques frappes. %>
+            <%= search_field_tag :recherche_hors_liste, nil,
+                  placeholder: "Rechercher un nom ou un numéro…",
+                  autocomplete: "off", class: "form-control appel__recherche",
+                  data: { filtre_target: "champ", action: "input->filtre#filtrer" } %>
+
+            <ul class="appel__liste appel__liste--compacte">
+              <% hors_liste.each do |eleve| %>
+                <li class="appel__ligne" data-filtre-target="ligne"
+                    data-recherche="<%= "#{eleve.first_name} #{eleve.last_name} #{eleve.student_number}" %>">
+                  <span class="appel__nom">
+                    <%= eleve.first_name %> <%= eleve.last_name %>
+                    <span class="appel__num"><%= eleve.student_number %></span>
+                  </span>
+                  <%= button_to "Marquer présent",
+                                teacher_lesson_attendance_path(@lesson, eleve, status: :present),
+                                method: :patch, form: {  },
+                                class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
+                </li>
+              <% end %>
+            </ul>
+            <p class="text-grey mt-2 mb-0" data-filtre-target="vide" hidden>
+              <small>Aucun étudiant ne correspond à cette recherche.</small>
+            </p>
+          </div>
 
           <h4 class="appel__sous-titre mt-4">Étudiant absent de la promotion</h4>
           <%= form_with url: teacher_lesson_attendances_path(@lesson), method: :post,
