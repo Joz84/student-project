@@ -37,7 +37,11 @@ class Calendrier
     @seances ||= begin
       fenetre = lundi.beginning_of_day..(lundi + 6).end_of_day
       suivies = Ue.where(id: user.groups.select(:ue_id)).ids
-      Lesson.where(batch_id: user.batch_id, starts_at: fenetre)
+      # Sa promotion pour les événements sans matière, ses UE pour le reste :
+      # un redoublant suit des cours hors de la promotion qui porte son projet.
+      ids = Lesson.where(starts_at: fenetre, batch_id: user.batch_id).ids
+      ids |= Lesson.where(starts_at: fenetre, ue_id: suivies).ids if suivies.any?
+      Lesson.where(id: ids)
             .includes(:ue, :groups).order(:starts_at).to_a
             .select { |l| retenue?(l, suivies) }
     end

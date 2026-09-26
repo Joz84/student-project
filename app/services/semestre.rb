@@ -35,7 +35,11 @@ class Semestre
   def seances
     @seances ||= begin
       fenetre = debut.beginning_of_day..fin.end_of_day
-      Lesson.where(batch_id: user.batch_id, starts_at: fenetre)
+      # Pas de filtre sur la promotion de l'étudiant : un redoublant suit les
+      # enseignements d'une année en gardant son projet dans une autre, et
+      # `users.batch_id` désigne le projet. Les UE suivies suffisent à borner,
+      # elles appartiennent déjà à une promotion.
+      Lesson.where(starts_at: fenetre)
             .where(ue_id: ues_suivies.keys)
             .includes(:ue, :groups).to_a
             .select { |l| l.groups.empty? || (l.group_ids & user.group_ids).any? }

@@ -68,6 +68,22 @@ class SemestreTest < ActiveSupport::TestCase
     assert_equal 5.0, s.heures_max_semaine
   end
 
+  # Régression : le relevé filtrait sur la promotion de l'étudiant. Les quatre
+  # redoublants inscrits sur les groupes de L1 tout en gardant leur projet en L2
+  # voyaient donc une page vide, alors qu'ils suivent bien ces cours et figurent
+  # à l'appel.
+  test "un redoublant voit les matières de la promotion où il suit ses cours" do
+    seance(@maths, @g_maths, 2.days.ago, 2)
+    ailleurs = Batch.create!(title: "Promo du projet #{SecureRandom.hex(4)}")
+    redoublant = creer_eleve("88000001", batch: ailleurs)
+    GroupMembership.create!(user: redoublant, group: @g_maths)
+
+    releve = Semestre.new(redoublant)
+    refute releve.vide?, "son relevé ne doit pas être vide"
+    assert_equal ["Maths"], releve.matieres.map { |m| m.ue.name }
+    assert_equal 2.0, releve.heures_totales
+  end
+
   test "un étudiant sans cours ne fait pas tomber le relevé" do
     s = Semestre.new(@eleve)
     assert s.vide?
