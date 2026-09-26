@@ -369,3 +369,199 @@
 }
 
 .maison__taux--faible { color: darken($red, 6%); }
+
+// --- soutien tutoré : le bouton par matière, côté étudiant ---
+// Posé sous l'auto-évaluation : on demande de l'aide juste après s'être situé.
+.soutien-choix {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .8rem;
+  margin-top: 1rem;
+  padding: .8rem 1rem;
+  background: $surface;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+
+  form { margin: 0; }
+}
+
+.soutien-choix--prise {
+  background: mix($danger, #fff, 10%);
+  border-color: mix($danger, #fff, 45%);
+}
+
+.soutien-choix__aide {
+  flex: 1 1 14rem;
+  font-size: .8rem;
+  color: $muted;
+  line-height: 1.45;
+}
+
+.soutien-btn {
+  flex: 0 0 auto;
+  border: 1px solid $blue;
+  background: #fff;
+  color: $blue;
+  font-weight: 600;
+  font-size: .85rem;
+  padding: .42rem .95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background $ease, color $ease, border-color $ease;
+
+  &:hover { background: $ligthblue; }
+  &:focus-visible { outline: 2px solid $blue; outline-offset: 2px; }
+}
+
+.soutien-btn--prise {
+  background: $danger;
+  border-color: darken($danger, 8%);
+  color: $ink;
+
+  &:hover { background: darken($danger, 6%); }
+}
+
+// --- la page enseignante ---
+.soutien__chiffres {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1px;
+  background: $line;
+  border: 1px solid $line;
+  border-radius: $radius;
+  overflow: hidden;
+  margin: 1.5rem 0 2.5rem;
+}
+
+.soutien__chiffre {
+  background: #fff;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.soutien__valeur {
+  font-family: $headers-font;
+  font-weight: 800;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+
+.soutien__label { font-size: .8rem; color: $muted; }
+
+.soutien__ue {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1.1rem;
+  box-shadow: $shadow-sm;
+}
+
+.soutien__entete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .6rem;
+  padding-bottom: .7rem;
+  margin-bottom: .8rem;
+  border-bottom: 1px solid $line-soft;
+}
+
+.soutien__nom {
+  font-family: $headers-font;
+  font-size: 1.05rem;
+  margin: 0;
+  color: $ink;
+}
+
+.soutien__compte {
+  font-size: .85rem;
+  color: $muted;
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.soutien__alerte {
+  font-size: .74rem;
+  font-weight: 600;
+  padding: .12rem .5rem;
+  border-radius: 999px;
+  background: mix($notice, #fff, 30%);
+  border: 1px solid $notice;
+  color: $ink;
+}
+
+.enrobage-table { overflow-x: auto; }
+
+.soutien__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .86rem;
+
+  th {
+    text-align: left;
+    font-size: .7rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: $muted-soft;
+    font-weight: 600;
+    padding: 0 .8rem .4rem 0;
+    border-bottom: 1px solid $line;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: .45rem .8rem .45rem 0;
+    border-bottom: 1px solid $line-soft;
+    color: $ink-soft;
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.soutien__num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.soutien__mail { word-break: break-all; }
+
+.soutien__ligne--fragile td:first-child { font-weight: 600; color: $ink; }
+
+.soutien__niveau {
+  font-size: .74rem;
+  font-weight: 600;
+  padding: .12rem .5rem;
+  border-radius: 999px;
+  border: 1px solid $line;
+  background: $surface;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.soutien__niveau--inconnu     { background: mix($notice, #fff, 22%); border-color: $notice; color: $ink; }
+.soutien__niveau--notion      { background: mix($notice, #fff, 34%); border-color: $notice; color: $ink; }
+.soutien__niveau--initiation  { background: mix($primary, #fff, 40%); border-color: $primary; color: $ink; }
+.soutien__niveau--application { background: mix($danger, #fff, 22%);  border-color: mix($danger, #fff, 60%); color: $ink; }
+.soutien__niveau--maitrise    { background: mix($danger, #fff, 40%);  border-color: $danger; color: $ink; }
+
+.soutien__adresses {
+  margin: .9rem 0 0;
+  padding: .6rem .8rem;
+  background: $surface;
+  border-radius: $radius-sm;
+  font-size: .78rem;
+  color: $muted;
+  word-break: break-all;
+
+  strong { color: $ink-soft; }
+}
+
+@media (max-width: 575px) {
+  .soutien-choix { flex-direction: column; align-items: stretch; }
+  .soutien-btn { width: 100%; }
+}

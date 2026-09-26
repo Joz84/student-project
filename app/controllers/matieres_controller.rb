@@ -6,6 +6,7 @@ class MatieresController < ApplicationController
     @semestre = Semestre.new(current_user)
     @evaluations = UeAssessment.where(user: current_user).index_by(&:ue_id)
     @statut = @semestre.statut(@evaluations)
+    @demandes = TutoringRequest.where(user: current_user).pluck(:ue_id).to_set
     authorize current_user, :show?
   end
 end

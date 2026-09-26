@@ -1,0 +1,109 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <h2 class="text-center mb-2">Demandes de soutien</h2>
+      <p class="matieres__regle text-center">
+        Ce que les étudiants ont signalé depuis leur relevé de matières.
+        Le niveau affiché est celui qu'ils se sont eux-mêmes attribué.
+      </p>
+
+      <% if @batches.size > 1 %>
+        <div class="d-flex justify-content-center flex-wrap my-4" style="gap: .5rem;">
+          <% @batches.each do |batch| %>
+            <%= link_to batch.title, teacher_soutien_path(batch_id: batch.id),
+                        class: "btn btn-sm #{batch == @batch ? 'btn-danger' : 'btn-outline-ink'}" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @soutien.vide? %>
+        <div class="agenda__vide">
+          Aucune demande pour le moment. Les étudiants s'inscrivent depuis
+          « Mes matières », une matière à la fois.
+        </div>
+      <% else %>
+
+        <div class="soutien__chiffres">
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @soutien.demandeurs %></span>
+            <span class="soutien__label">étudiant<%= "s" if @soutien.demandeurs > 1 %> concerné<%= "s" if @soutien.demandeurs > 1 %></span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @soutien.total %></span>
+            <span class="soutien__label">demande<%= "s" if @soutien.total > 1 %> au total</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @soutien.sollicitees %></span>
+            <span class="soutien__label">matière<%= "s" if @soutien.sollicitees > 1 %> sollicitée<%= "s" if @soutien.sollicitees > 1 %></span>
+          </div>
+        </div>
+
+        <% @soutien.lignes.each do |ligne| %>
+          <% next if ligne.nombre.zero? %>
+          <section class="soutien__ue">
+            <div class="soutien__entete">
+              <h4 class="soutien__nom"><%= ligne.ue.name %></h4>
+              <span class="soutien__compte">
+                <strong><%= ligne.nombre %></strong>
+                demande<%= "s" if ligne.nombre > 1 %>
+                <% if ligne.suivi.positive? %>
+                  <span class="team-card__muted">sur <%= ligne.suivi %> inscrits</span>
+                <% end %>
+                <% if ligne.fragiles.positive? %>
+                  <span class="soutien__alerte"><%= ligne.fragiles %> en difficulté déclarée</span>
+                <% end %>
+              </span>
+            </div>
+
+            <div class="enrobage-table">
+              <table class="soutien__table">
+                <thead>
+                  <tr>
+                    <th>Étudiant</th>
+                    <th>N° étudiant</th>
+                    <th>Niveau déclaré</th>
+                    <th>Adresse</th>
+                    <th>Depuis</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% ligne.inscrits.each do |inscrit| %>
+                    <tr class="<%= "soutien__ligne--fragile" if inscrit.rang <= 2 %>">
+                      <td><%= inscrit.user.last_name.to_s.upcase %> <%= inscrit.user.first_name %></td>
+                      <td class="soutien__num"><%= inscrit.user.student_number %></td>
+                      <td>
+                        <span class="soutien__niveau soutien__niveau--<%= inscrit.niveau || 'inconnu' %>">
+                          <%= inscrit.libelle %>
+                        </span>
+                      </td>
+                      <td class="soutien__mail"><%= mail_to inscrit.user.email %></td>
+                      <td class="soutien__num"><%= l inscrit.depuis.to_date, format: "%d/%m" %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="soutien__adresses">
+              <strong>Toutes les adresses :</strong>
+              <%= ligne.inscrits.map { |i| i.user.email }.join(", ") %>
+            </p>
+          </section>
+        <% end %>
+
+        <% muettes = @soutien.lignes.select { |l| l.nombre.zero? } %>
+        <% if muettes.any? %>
+          <h4 class="appel__sous-titre mt-5">Aucune demande sur ces matières</h4>
+          <p class="text-grey"><small><%= muettes.map { |l| l.ue.name }.join(" · ") %></small></p>
+        <% end %>
+
+      <% end %>
+
+    </div>
+  </div>
+</div>

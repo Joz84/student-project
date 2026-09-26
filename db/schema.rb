@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_24_080000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_25_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -406,6 +406,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_080000) do
     t.index ["user_id"], name: "index_tickets_on_user_id"
   end
 
+  create_table "tutoring_requests", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "ue_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ue_id"], name: "index_tutoring_requests_on_ue_id"
+    t.index ["user_id", "ue_id"], name: "index_tutoring_requests_on_user_id_and_ue_id", unique: true
+    t.index ["user_id"], name: "index_tutoring_requests_on_user_id"
+  end
+
   create_table "ue_assessments", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "ue_id", null: false
@@ -519,6 +529,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_24_080000) do
   add_foreign_key "teams", "users"
   add_foreign_key "tickets", "courses"
   add_foreign_key "tickets", "users"
+  add_foreign_key "tutoring_requests", "ues"
+  add_foreign_key "tutoring_requests", "users"
   add_foreign_key "ue_assessments", "ues"
   add_foreign_key "ue_assessments", "users"
   add_foreign_key "ues", "batches"

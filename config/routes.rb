@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   resources :ratings, only: [:update]
   resources :ues, only: [] do
     resource :assessment, only: [:update], controller: "ue_assessments"
+    # Une seule action qui bascule : demander ou retirer sa demande de soutien.
+    resource :tutoring_request, only: [:create]
   end
   #resources :cw_nicknames, only: [:edit, :update]
   #resources :tickets, only: [:index, :create, :update, :destroy]
@@ -67,6 +69,7 @@ Rails.application.routes.draw do
       end
       resources :attendances, only: [:create, :update, :destroy]
     end
+    resource :soutien, only: [:show], controller: "soutiens"
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do
       resources :teams, only: [:index] do

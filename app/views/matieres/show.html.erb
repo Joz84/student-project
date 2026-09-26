@@ -108,6 +108,24 @@
                 <% end %>
               </div>
 
+              <% demande = @demandes.include?(matiere.ue.id) %>
+              <div class="soutien-choix <%= "soutien-choix--prise" if demande %>">
+                <%= form_with url: ue_tutoring_request_path(matiere.ue), method: :post,
+                               class: "soutien-choix__forme" do %>
+                  <button type="submit" class="soutien-btn <%= "soutien-btn--prise" if demande %>">
+                    <%= demande ? "Inscrit au soutien — me retirer" : "Je souhaite du soutien" %>
+                  </button>
+                <% end %>
+                <span class="soutien-choix__aide">
+                  <% if demande %>
+                    Votre demande est enregistrée. Vous serez contacté pour les créneaux.
+                  <% else %>
+                    Séances encadrées par des étudiants de L3.
+                    Seuls les enseignants voient votre demande, jamais les autres étudiants.
+                  <% end %>
+                </span>
+              </div>
+
               <p class="matiere__a-venir">
                 Les connaissances travaillées dans cette matière seront listées ici,
                 avec la même échelle, dès que le référentiel sera disponible.
