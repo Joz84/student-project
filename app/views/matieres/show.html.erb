@@ -19,6 +19,24 @@
         <%= render "matieres/statut", semestre: @semestre, statut: @statut, evaluations: @evaluations %>
         <%= render "matieres/histogramme", semestre: @semestre %>
 
+        <div class="soutien-annonce">
+          <span class="soutien-annonce__pastille" aria-hidden="true">?</span>
+          <div class="soutien-annonce__texte">
+            <h4 class="soutien-annonce__titre">Besoin d'un coup de main ?</h4>
+            <p>
+              Des séances de soutien encadrées par des étudiants de L3 sont organisées.
+              <% if @demandes.any? %>
+                Vous êtes inscrit sur
+                <strong><%= pluralize(@demandes.size, "matière") %></strong> :
+                vous serez contacté pour les créneaux.
+              <% else %>
+                Signalez-vous sur les matières où vous en avez besoin, avec le bouton vert
+                au bas de chaque matière.
+              <% end %>
+            </p>
+          </div>
+        </div>
+
         <h3 class="roadmap__sous-titre mt-5">Les matières du semestre</h3>
         <p class="matieres__regle">
           Le travail personnel attendu est d'autant d'heures que d'heures reçues en cours.
@@ -113,7 +131,14 @@
                 <%= form_with url: ue_tutoring_request_path(matiere.ue), method: :post,
                                class: "soutien-choix__forme" do %>
                   <button type="submit" class="soutien-btn <%= "soutien-btn--prise" if demande %>">
-                    <%= demande ? "Inscrit au soutien — me retirer" : "Je souhaite du soutien" %>
+                    <% if demande %>
+                      <span class="soutien-btn__coche" aria-hidden="true">✓</span>
+                      <span>Inscrit au soutien</span>
+                      <span class="soutien-btn__retrait">me retirer</span>
+                    <% else %>
+                      <span class="soutien-btn__libelle">Je souhaite du soutien</span>
+                      <span class="soutien-btn__matiere"><%= matiere.ue.name %></span>
+                    <% end %>
                   </button>
                 <% end %>
                 <span class="soutien-choix__aide">

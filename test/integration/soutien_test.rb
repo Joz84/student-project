@@ -31,6 +31,19 @@ class SoutienTest < ActionDispatch::IntegrationTest
     assert_match "Seuls les enseignants voient votre demande", response.body
   end
 
+  test "un bandeau annonce le dispositif, et compte les inscriptions" do
+    sign_in @eleve
+    get matieres_path
+    assert_match "Besoin d'un coup de main ?", response.body
+    assert_match "avec le bouton vert", response.body
+
+    TutoringRequest.create!(user: @eleve, ue: @maths)
+    get matieres_path
+    assert_match "Vous êtes inscrit sur", response.body
+    assert_match "1 matière", response.body
+    refute_match "avec le bouton vert", response.body
+  end
+
   test "le bouton bascule la demande et la retire" do
     sign_in @eleve
     assert_difference -> { TutoringRequest.count }, 1 do
@@ -49,7 +62,9 @@ class SoutienTest < ActionDispatch::IntegrationTest
     TutoringRequest.create!(user: @eleve, ue: @maths)
     sign_in @eleve
     get matieres_path
-    assert_match "Inscrit au soutien — me retirer", response.body
+    assert_match "Inscrit au soutien", response.body
+    assert_match "soutien-btn--prise", response.body
+    assert_match "me retirer", response.body
     assert_match "Je souhaite du soutien", response.body   # l'autre matière
   end
 
