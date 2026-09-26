@@ -16,7 +16,18 @@ class Lesson < ApplicationRecord
   validates :starts_at, uniqueness: { scope: [:batch_id, :ends_at, :title, :room],
                                       message: "cette séance est déjà enregistrée" }
 
+  # Seulement pour les feuilles saisies à la main : ADE publie parfois des
+  # événements sans DTEND, dont la fin vaut alors le début, et l'import ne doit
+  # pas s'en trouver bloqué.
+  validate :creneau_coherent, if: :manuelle?
+
+  def creneau_coherent
+    return if starts_at.blank? || ends_at.blank?
+    errors.add(:base, "L'heure de fin doit être après l'heure de début.") if ends_at <= starts_at
+  end
+
   scope :a_venir, -> { where("ends_at >= ?", Time.current).order(:starts_at) }
+  scope :manuelles, -> { where(manuelle: true) }
   scope :du_jour, -> { where(starts_at: Time.current.all_day).order(:starts_at) }
 
   def en_cours?(instant = Time.current)
@@ -33,6 +44,9 @@ class Lesson < ApplicationRecord
   def concerne?(user)
     return false if user.nil? || user[:drop] || user.teacher?
     return (user.group_ids & group_ids).any? if groups.any?
+    # Une feuille ajoutée à la main sans groupe ne vise personne d'office :
+    # l'enseignant fait l'appel à l'oral et désigne lui-même les présents.
+    return false if manuelle?
     # Séance sans groupe — un CM, un examen : toute la promotion est concernée,
     # y compris les étudiants rattachés à aucun groupe de TD ou de TP. Un
     # auditeur venu d'une autre promotion ne l'est que s'il suit l'UE.
@@ -41,6 +55,8 @@ class Lesson < ApplicationRecord
   end
 
   def eleves_attendus
+    return User.none if manuelle? && groups.empty?
+
     eleves = User.kept.where(teacher: nil)
     if groups.any?
       return eleves.joins(:group_memberships)

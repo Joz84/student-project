@@ -69,8 +69,10 @@ class TimetableImporter
         end
       end
 
-      # Réconciliation : ce que le flux ne contient plus n'a plus lieu.
-      disparues = Lesson.where(batch: @batch).where.not(id: vues.to_a)
+      # Réconciliation : ce que le flux ne contient plus n'a plus lieu. Les
+      # feuilles ajoutées à la main sont hors de son autorité — elles existent
+      # justement parce qu'ADE ne les connaît pas.
+      disparues = Lesson.where(batch: @batch, manuelle: false).where.not(id: vues.to_a)
       avec_appel = disparues.joins(:attendances).distinct.pluck(:id)
       conservees = avec_appel.size
       # destroy_all et non delete_all : les rattachements aux groupes ont une

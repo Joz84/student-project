@@ -24,6 +24,24 @@ class TimetableImporterTest < ActiveSupport::TestCase
     assert_equal 2, r.inchangees
   end
 
+  # Une feuille ajoutée à la main n'est pas dans le flux — c'est sa raison
+  # d'être. La réconciliation l'effacerait à la première nuit, avant même que
+  # l'enseignant ait pointé qui que ce soit.
+  test "une feuille créée à la main survit à l'import" do
+    importer(ics("A")).run
+    manuelle = Lesson.create!(batch: @batch, title: "Rattrapage Calcul fonctionnel",
+                              starts_at: 1.day.from_now, ends_at: 1.day.from_now + 2.hours,
+                              manuelle: true)
+
+    r = importer(ics("A")).run
+    assert_equal 0, r.supprimees
+    assert Lesson.exists?(manuelle.id), "elle ne doit pas être emportée par la réconciliation"
+
+    # Et elle survit même quand tout le reste disparaît du flux.
+    importer(ics("A", une_seule: true)).run
+    assert Lesson.exists?(manuelle.id)
+  end
+
   test "une séance retirée d'ADE est supprimée" do
     importer(ics("A")).run
     r = importer(ics("A", une_seule: true)).run

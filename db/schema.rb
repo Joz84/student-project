@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_25_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_26_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -228,9 +228,11 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_000000) do
     t.datetime "validated_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "manuelle", default: false, null: false
     t.index ["ade_uid"], name: "index_lessons_on_ade_uid"
     t.index ["batch_id", "starts_at"], name: "index_lessons_on_batch_id_and_starts_at"
     t.index ["batch_id"], name: "index_lessons_on_batch_id"
+    t.index ["manuelle"], name: "index_lessons_on_manuelle"
     t.index ["starts_at"], name: "index_lessons_on_starts_at"
     t.index ["teacher_id"], name: "index_lessons_on_teacher_id"
     t.index ["ue_id"], name: "index_lessons_on_ue_id"
@@ -434,7 +436,10 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_25_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "color"
+    t.string "code"
+    t.integer "position"
     t.index ["batch_id", "name"], name: "index_ues_on_batch_id_and_name", unique: true
+    t.index ["batch_id", "position"], name: "index_ues_on_batch_id_and_position"
     t.index ["batch_id"], name: "index_ues_on_batch_id"
   end
 

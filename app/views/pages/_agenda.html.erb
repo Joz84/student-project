@@ -5,6 +5,7 @@
     <span class="agenda__hint">
       <% if current_user.teacher? %>
         Ouvre l'appel depuis une séance pour afficher le code aux étudiants.
+        <%= link_to "Mon cours n'apparaît pas", new_teacher_lesson_path, class: "agenda__ajout" %>
       <% else %>
         Le cours en cours devient cliquable : entre le code affiché par ton enseignant.
       <% end %>
@@ -15,6 +16,7 @@
     <p class="agenda__vide">
       <% if current_user.teacher? %>
         Aucune séance à venir ne vous est rattachée dans l'emploi du temps.
+        <%= link_to "Ajouter une feuille d'appel", new_teacher_lesson_path, class: "agenda__ajout" %>
       <% else %>
         Aucun cours à venir. Si c'est inattendu, c'est que tu n'es rattaché à aucun
         groupe de TD ou de TP : signale-le à la scolarité.

@@ -1,0 +1,107 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <div class="card card-body p-4">
+        <h2 class="mb-1">Ajouter une feuille d'appel</h2>
+        <p class="text-grey mb-4">
+          Pour un cours qui ne figure pas dans l'emploi du temps : rattrapage,
+          séance ajoutée en cours d'année, créneau jamais publié dans ADE.
+          Vous ferez l'appel à l'oral en désignant les présents.
+        </p>
+
+        <% if @lesson.errors.any? %>
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              <% @lesson.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= form_with model: @lesson, url: teacher_lessons_path, method: :post,
+                      data: { turbo: false, controller: "groupes-ue" } do |f| %>
+
+          <div class="mb-3">
+            <%= f.label :ue_id, "Le cours", class: "form-label fw-bold" %>
+            <%= f.select :ue_id,
+                  @batches.map { |batch|
+                    [batch.title, @ues.select { |u| u.batch_id == batch.id }
+                                      .map { |u| [u.code.present? ? "#{u.code} — #{u.name}" : u.name, u.id] }]
+                  },
+                  { include_blank: "Choisissez dans la maquette…" },
+                  class: "form-select", required: true,
+                  data: { groupes_ue_target: "ue", action: "change->groupes-ue#filtrer" } %>
+            <div class="form-text">
+              La liste suit la numérotation de la scolarité. Si votre enseignement
+              n'y figure pas, signalez-le : il sera ajouté.
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-4 mb-3">
+              <%= label_tag :jour, "Date", class: "form-label fw-bold" %>
+              <%= date_field_tag :jour, Date.current, class: "form-control", required: true %>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <%= label_tag :debut, "Début", class: "form-label fw-bold" %>
+              <%= time_field_tag :debut, Time.current.change(min: 0).strftime("%H:%M"),
+                    class: "form-control", required: true %>
+            </div>
+            <div class="col-sm-4 mb-3">
+              <%= label_tag :fin, "Fin", class: "form-label fw-bold" %>
+              <%= time_field_tag :fin, 2.hours.from_now.change(min: 0).strftime("%H:%M"),
+                    class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <%= f.label :room, "Salle", class: "form-label fw-bold" %>
+              <%= f.text_field :room, class: "form-control", placeholder: "C2-2 (facultatif)" %>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <%= f.label :category, "Type de séance", class: "form-label fw-bold" %>
+              <%= f.select :category,
+                    [["Cours magistral", "cm"], ["Travaux dirigés", "td"], ["Travaux pratiques", "tp"],
+                     ["TP informatique", "tp_info"], ["Examen", "exam"], ["Autre", "autre"]],
+                    { selected: "autre" }, class: "form-select" %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <span class="form-label fw-bold d-block">Groupes concernés</span>
+            <p class="text-grey mb-2"><small>
+              Facultatif. Si vous en cochez, leurs étudiants sont pré-remplis sur la
+              feuille et peuvent se signaler avec le code. Sinon la feuille part
+              vide et vous ajoutez les présents un par un.
+            </small></p>
+
+            <div class="appel__liste--compacte p-2" style="max-height: 14rem;">
+              <% @ues.each do |ue| %>
+                <% ue.groups.sort_by(&:label).each do |groupe| %>
+                  <label class="choix__ligne" data-groupes-ue-target="ligne" data-ue="<%= ue.id %>" hidden>
+                    <%= check_box_tag "group_ids[]", groupe.id, false, id: "g-#{groupe.id}" %>
+                    <span><%= groupe.label %></span>
+                  </label>
+                <% end %>
+              <% end %>
+              <p class="text-grey mb-0" data-groupes-ue-target="vide">
+                <small>Choisissez d'abord un cours ci-dessus.</small>
+              </p>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4" style="gap: .6rem;">
+            <%= link_to "Annuler", root_path, class: "btn btn-outline-ink" %>
+            <%= f.submit "Créer la feuille d'appel", class: "btn btn-danger" %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

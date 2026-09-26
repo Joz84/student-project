@@ -539,3 +539,15 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   .appel__actions .btn { flex: 1 1 auto; }
   .appel__saisie .form-control { flex: 1 1 100%; }
 }
+
+// Lien discret vers la création d'une feuille d'appel : l'enseignant dont le
+// cours ne figure pas dans ADE doit le trouver là où il l'a cherché.
+.agenda__ajout {
+  display: inline-block;
+  margin-left: .5rem;
+  font-weight: 600;
+  color: $blue;
+  border-bottom: 1px dashed currentColor;
+
+  &:hover { color: darken($blue, 10%); }
+}

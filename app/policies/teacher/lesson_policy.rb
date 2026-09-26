@@ -1,5 +1,7 @@
 class Teacher::LessonPolicy < ApplicationPolicy
   def show?          = user.teacher?
+  def new?           = user.teacher?
+  def create?        = new?
   def liste?         = show?
   def ouvrir?        = show?
   def verrouiller?   = show?

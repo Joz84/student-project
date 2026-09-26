@@ -48,4 +48,14 @@ namespace :timetable do
       raise
     end
   end
+
+  desc "Applique la maquette officielle de L1 : codes sur les UE existantes, création des manquantes"
+  task :maquette, [:promo] => :environment do |_t, args|
+    titre = args[:promo] || "LSPI 2026-2029"
+    batch = Batch.find_by!(title: titre)
+    simulation = ENV["ECRIRE"] != "oui"
+    resultat = MaquetteL1.new(batch).appliquer!(dry_run: simulation)
+    puts "#{simulation ? '[simulation] ' : ''}#{titre} : #{resultat}"
+    puts "Relancez avec ECRIRE=oui pour appliquer." if simulation
+  end
 end

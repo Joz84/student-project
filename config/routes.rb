@@ -57,7 +57,7 @@ Rails.application.routes.draw do
       get  :export
       post :import
     end
-    resources :lessons, only: [:show] do
+    resources :lessons, only: [:new, :create, :show] do
       member do
         get  :liste
         post :ouvrir

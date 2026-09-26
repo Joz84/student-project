@@ -1,8 +1,37 @@
 # Feuille d'appel tenue par l'enseignant.
 class Teacher::LessonsController < ApplicationController
-  before_action :charger
+  before_action :charger, except: [:new, :create]
 
   def show
+  end
+
+  # Certains enseignements ne figurent pas dans ADE — un rattrapage, un cours
+  # ajouté en cours d'année, un créneau qui n'a jamais été publié. L'enseignant
+  # crée alors sa feuille, choisit son cours dans la maquette, et fait l'appel
+  # à l'oral en désignant les présents.
+  def new
+    @lesson = Lesson.new(starts_at: Time.current.change(min: 0), ends_at: 2.hours.from_now.change(min: 0))
+    autoriser_creation
+    charger_choix
+  end
+
+  def create
+    @lesson = Lesson.new(parametres)
+    @lesson.assign_attributes(teacher: current_user, manuelle: true, batch: @lesson.ue&.batch,
+                              teacher_label: "#{current_user.last_name} #{current_user.first_name}")
+    @lesson.title = intitule(@lesson)
+    autoriser_creation
+
+    if @lesson.batch.nil?
+      @lesson.errors.add(:ue_id, "doit être choisie")
+    elsif @lesson.save
+      @lesson.group_ids = groupes_retenus(@lesson)
+      return redirect_to teacher_lesson_path(@lesson), status: :see_other,
+                         notice: "Feuille d'appel créée. Ajoutez les présents depuis « Ajouter un étudiant hors liste »."
+    end
+
+    charger_choix
+    render :new, status: :unprocessable_entity
   end
 
   # Rafraîchissement de la liste, appelé toutes les cinq secondes par le
@@ -82,6 +111,49 @@ class Teacher::LessonsController < ApplicationController
   end
 
   private
+
+  def autoriser_creation
+    authorize [:teacher, @lesson], :new?
+  end
+
+  # Les promotions où l'enseignant intervient, plus celles qu'il supervise :
+  # sans cela un vacataire nouvellement arrivé n'aurait aucune liste.
+  def charger_choix
+    ids = Lesson.where(teacher: current_user).distinct.pluck(:batch_id)
+    ids |= current_user.supervised_batches.ids
+    ids = Batch.where.not(title: "Equipe Pédagogique").ids if ids.empty? || current_user.admin
+    @batches = Batch.where(id: ids).order(:title)
+    @ues = Ue.where(batch: @batches).order(Arel.sql("position NULLS LAST"), :name).includes(:batch, :groups)
+  end
+
+  def parametres
+    attrs = params.require(:lesson).permit(:ue_id, :room, :category)
+    attrs.merge(starts_at: horodate(params[:debut]), ends_at: horodate(params[:fin]))
+  end
+
+  # Le formulaire sépare la date des heures : c'est plus sûr à saisir sur un
+  # téléphone que deux champs date-et-heure. On les recompose ici, dans le
+  # fuseau de l'application.
+  def horodate(heure)
+    jour = Date.parse(params[:jour].to_s)
+    h, m = heure.to_s.split(":")
+    Time.zone.local(jour.year, jour.month, jour.day, h.to_i, m.to_i)
+  rescue ArgumentError, TypeError
+    nil
+  end
+
+  def groupes_retenus(lesson)
+    demandes = Array(params[:group_ids]).reject(&:blank?).map(&:to_i)
+    # Un groupe d'une autre UE n'a rien à faire sur cette feuille.
+    Group.where(id: demandes, ue_id: lesson.ue_id).ids
+  end
+
+  def intitule(lesson)
+    return "Séance" if lesson.ue.nil?
+    labels = Group.where(id: Array(params[:group_ids]).reject(&:blank?), ue_id: lesson.ue_id)
+                  .order(:label).pluck(:label)
+    labels.any? ? "#{labels.join(', ')} - #{lesson.ue.name}" : lesson.ue.name
+  end
 
   def charger
     @lesson = Lesson.find(params[:id])
