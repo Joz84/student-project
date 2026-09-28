@@ -16,6 +16,37 @@ class TimetableImporterTest < ActiveSupport::TestCase
     assert_equal 2, Lesson.where(batch: @batch).count, "la même séance sous un autre UID reste la même séance"
   end
 
+  # Marania Hopuare figure dans ADE sous son nom d'avant, « Klouman Marania ».
+  # Le rapprochement par le nom ne la retrouvait pas : ses séances repartaient
+  # sans enseignant à chaque import et elle ne voyait plus ses cours.
+  test "un alias ADE rattache les séances au bon compte" do
+    prof = creer_prof_ade("Hopuare", "Marania", "Klouman Marania (Mme)")
+    importer(ics("A", enseignant: "Klouman Marania (Mme)")).run
+
+    seances = Lesson.where(batch: @batch)
+    assert_equal [prof.id], seances.map(&:teacher_id).uniq
+    assert_equal 0, seances.where(teacher_id: nil).count
+  end
+
+  test "l'alias vaut avec ou sans la civilité" do
+    prof = creer_prof_ade("Hopuare", "Marania", "Klouman Marania")
+    importer(ics("A", enseignant: "Klouman Marania (Mme)")).run
+    assert_equal [prof.id], Lesson.where(batch: @batch).map(&:teacher_id).uniq
+  end
+
+  test "sans alias, le rapprochement par le nom continue de valoir" do
+    prof = creer_prof_ade("Serafini", "Jonathan", nil)
+    importer(ics("A", enseignant: "Serafini Jonathan (M.)")).run
+    assert_equal [prof.id], Lesson.where(batch: @batch).map(&:teacher_id).uniq
+  end
+
+  test "un libellé inconnu laisse la séance sans enseignant" do
+    creer_prof_ade("Hopuare", "Marania", "Klouman Marania (Mme)")
+    r = importer(ics("A", enseignant: "Inconnu Quelquun (M.)")).run
+    assert_equal 2, r.sans_enseignant
+    assert_equal 2, Lesson.where(batch: @batch, teacher_id: nil).count
+  end
+
   test "deux passages identiques ne changent rien" do
     importer(ics("A")).run
     r = importer(ics("A")).run
@@ -81,14 +112,20 @@ class TimetableImporterTest < ActiveSupport::TestCase
     end
   end
 
-  def ics(prefixe, une_seule: false, decale: false)
+  def ics(prefixe, une_seule: false, decale: false, enseignant: "Adam David (M.)")
     debut = decale ? "20261001T200000Z" : "20261001T190000Z"
     evs = [["#{prefixe}-1", debut, "20261001T203000Z", "TD-01 - Analyse", "G3-2"]]
     evs << ["#{prefixe}-2", "20261002T190000Z", "20261002T203000Z", "CM - Analyse", "AMPHI"] unless une_seule
     corps = evs.map do |uid, d, f, resume, salle|
       "BEGIN:VEVENT\nUID:#{uid}\nDTSTART:#{d}\nDTEND:#{f}\nSUMMARY:#{resume}\n" \
-      "LOCATION:#{salle}\nDESCRIPTION:\\n\\n#{resume}\\nAdam David (M.)\\n\nEND:VEVENT"
+      "LOCATION:#{salle}\nDESCRIPTION:\\n\\n#{resume}\\n#{enseignant}\\n\nEND:VEVENT"
     end.join("\n")
     "BEGIN:VCALENDAR\nVERSION:2.0\n#{corps}\nEND:VCALENDAR\n"
+  end
+
+  def creer_prof_ade(nom, prenom, libelle)
+    User.create!(email: "p-#{SecureRandom.hex(5)}@upf.pf", first_name: prenom, last_name: nom,
+                 student_number: "12345678", teacher: true, batch: @batch,
+                 password: "motdepasse", ade_label: libelle)
   end
 end

@@ -104,11 +104,31 @@ class TimetableImporter
   end
 
   # ADE écrit « Serafini Jonathan (M.) », nous stockons prénom et nom séparés.
+  #
+  # Certains n'y figurent pas sous le nom de leur compte — un changement d'état
+  # civil qu'ADE n'a pas répercuté. `users.ade_label` porte alors le libellé
+  # exact du flux, et prime sur le rapprochement par le nom : sans cela leurs
+  # séances repartaient sans enseignant à chaque import, et ils ne voyaient
+  # plus leurs cours.
   def trouver_enseignant(libelle)
     return nil if libelle.blank?
-    @profs ||= User.where(teacher: true).index_by { |u| cle(u.last_name, u.first_name) }
+    charger_enseignants
     nom = libelle.sub(/\s*\((M\.|Mme)\)\s*\z/, "").strip
-    @profs[cle(nom)] || @profs[cle(nom.split.rotate(-1).join(" "))]
+    @alias_ade[cle(libelle)] || @alias_ade[cle(nom)] ||
+      @profs[cle(nom)] || @profs[cle(nom.split.rotate(-1).join(" "))]
+  end
+
+  def charger_enseignants
+    return if @profs
+    profs = User.where(teacher: true).to_a
+    @profs = profs.index_by { |u| cle(u.last_name, u.first_name) }
+    # Le libellé est indexé tel quel et sans la civilité : la scolarité le
+    # recopie parfois avec, parfois sans.
+    @alias_ade = {}
+    profs.select { |u| u.ade_label.present? }.each do |u|
+      @alias_ade[cle(u.ade_label)] = u
+      @alias_ade[cle(u.ade_label.sub(/\s*\((M\.|Mme)\)\s*\z/, "").strip)] = u
+    end
   end
 
   def cle(*parties) = I18n.transliterate(parties.join(" ")).downcase.gsub(/[^a-z]/, "")

@@ -58,4 +58,34 @@ namespace :timetable do
     puts "#{simulation ? '[simulation] ' : ''}#{titre} : #{resultat}"
     puts "Relancez avec ECRIRE=oui pour appliquer." if simulation
   end
+
+  desc "Rattache les séances orphelines aux comptes, d'après les alias ADE"
+  task :alias, [:promo] => :environment do |_t, args|
+    titre = args[:promo] || "LSPI 2026-2029"
+    batch = Batch.find_by!(title: titre)
+    simulation = ENV["ECRIRE"] != "oui"
+
+    alias_par_cle = User.where(teacher: true).where.not(ade_label: [nil, ""])
+                        .each_with_object({}) { |u, h| h[u.ade_label] = u }
+
+    orphelines = Lesson.where(batch: batch, teacher_id: nil).where.not(teacher_label: [nil, ""])
+    par_libelle = orphelines.group_by(&:teacher_label)
+
+    if par_libelle.empty?
+      puts "#{titre} : aucune séance orpheline."
+      next
+    end
+
+    par_libelle.sort_by { |_, s| -s.size }.each do |libelle, seances|
+      prof = alias_par_cle[libelle]
+      if prof
+        puts format("  %-32s → ##%-4d %-38s %3d séances", libelle, prof.id, prof.email, seances.size)
+        Lesson.where(id: seances.map(&:id)).update_all(teacher_id: prof.id) unless simulation
+      else
+        puts format("  %-32s   aucun alias déclaré%13s %3d séances", libelle, "", seances.size)
+      end
+    end
+
+    puts simulation ? "[simulation] Relancez avec ECRIRE=oui pour rattacher." : "Rattachement effectué."
+  end
 end
