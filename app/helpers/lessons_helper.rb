@@ -9,10 +9,22 @@ module LessonsHelper
           .first(limite)
   end
 
-  def seances_enseignant(user, limite: 8)
+  # Les prochaines séances de l'enseignant. L'administrateur peut demander
+  # celles de toute la promotion : il dépanne les collègues qui n'arrivent pas
+  # à faire leur appel, et doit pour cela atteindre leur feuille.
+  def seances_enseignant(user, limite: 8, toutes: false)
     return Lesson.none unless user&.teacher?
-    Lesson.where(teacher: user).where("ends_at >= ?", Time.current)
-          .order(:starts_at).limit(limite)
+
+    scope = Lesson.where("ends_at >= ?", Time.current).order(:starts_at)
+    scope = scope.where(teacher: user) unless toutes && user.admin
+    scope.includes(:teacher).limit(toutes && user.admin ? 25 : limite)
+  end
+
+  # Le filtre n'est offert qu'à l'administrateur, et « tous » est sa vue par
+  # défaut : c'est pour dépanner qu'il ouvre cette page.
+  def toutes_les_seances?(user, params)
+    return false unless user&.admin
+    params[:cours].to_s != "miens"
   end
 
   def creneau(lesson)

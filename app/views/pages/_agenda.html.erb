@@ -1,10 +1,25 @@
-<% seances = current_user.teacher? ? seances_enseignant(current_user) : prochaines_seances(current_user) %>
+<% toutes = toutes_les_seances?(current_user, params) %>
+<% seances = current_user.teacher? ? seances_enseignant(current_user, toutes: toutes) : prochaines_seances(current_user) %>
 <section class="agenda">
   <div class="agenda__head">
-    <h2>Mes cours</h2>
+    <h2><%= toutes ? "Les cours de la promotion" : "Mes cours" %></h2>
+    <% if current_user.admin %>
+      <div class="agenda__filtre" role="group" aria-label="Quels cours afficher">
+        <%= link_to "Tous les cours", root_path,
+                    class: "agenda__onglet #{'agenda__onglet--actif' if toutes}" %>
+        <%= link_to "Les miens", root_path(cours: "miens"),
+                    class: "agenda__onglet #{'agenda__onglet--actif' unless toutes}" %>
+      </div>
+    <% end %>
+
     <span class="agenda__hint">
       <% if current_user.teacher? %>
-        Ouvre l'appel depuis une séance pour afficher le code aux étudiants.
+        <% if toutes %>
+          Toutes les séances à venir de la promotion : vous pouvez ouvrir l'appel
+          à la place d'un collègue.
+        <% else %>
+          Ouvre l'appel depuis une séance pour afficher le code aux étudiants.
+        <% end %>
         <%= link_to "Mon cours n'apparaît pas", new_teacher_lesson_path, class: "agenda__ajout" %>
       <% else %>
         Le cours en cours devient cliquable : entre le code affiché par ton enseignant.
@@ -15,7 +30,11 @@
   <% if seances.empty? %>
     <p class="agenda__vide">
       <% if current_user.teacher? %>
-        Aucune séance à venir ne vous est rattachée dans l'emploi du temps.
+        <% if toutes %>
+          Aucune séance à venir dans l'emploi du temps de la promotion.
+        <% else %>
+          Aucune séance à venir ne vous est rattachée dans l'emploi du temps.
+        <% end %>
         <%= link_to "Ajouter une feuille d'appel", new_teacher_lesson_path, class: "agenda__ajout" %>
       <% else %>
         Aucun cours à venir. Si c'est inattendu, c'est que tu n'es rattaché à aucun
@@ -37,7 +56,12 @@
             <p class="seance__meta">
               <%= creneau(seance) %>
               <% if seance.room.present? %> · <%= seance.room %><% end %>
-              <% if seance.teacher_label.present? && !current_user.teacher? %> · <%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %><% end %>
+              <% if seance.teacher_label.present? && (!current_user.teacher? || toutes) %> · <%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %><% end %>
+              <% if toutes && seance.teacher.nil? %>
+                <span class="agenda__orphelin" title="Aucun compte n'est rattaché : personne ne voit cette séance">
+                  sans compte enseignant
+                </span>
+              <% end %>
             </p>
           </div>
 
