@@ -26,6 +26,53 @@ class UserTest < ActiveSupport::TestCase
     assert u.errors[:batch].any?
   end
 
+  # Une étudiante n'ayant pas reçu son lien de réinitialisation s'était créé un
+  # second compte : elle s'y retrouvait sans projet, sans groupe et sans vœux.
+  test "un numéro déjà pris par un compte actif est refusé à la création" do
+    creer_eleve("20259001")
+    doublon = User.new(email: "autre-#{SecureRandom.hex(4)}@etudiant.upf.pf", first_name: "A",
+                       last_name: "B", student_number: "20259001", batch: @batch,
+                       password: "motdepasse")
+    refute doublon.valid?
+    assert_match(/compte existant/, doublon.errors[:student_number].join)
+    assert_match(/Mot de passe oublié/, doublon.errors[:student_number].join)
+  end
+
+  test "un compte désactivé libère son numéro" do
+    parti = creer_eleve("20259002")
+    parti.update!(drop: true)
+    assert creer_eleve("20259002").valid?, "un redoublant doit pouvoir être réinscrit"
+  end
+
+  test "les enseignants partagent un numéro de convenance" do
+    creer_eleve("12345678", "Prof", teacher: true)
+    second = User.new(email: "p2-#{SecureRandom.hex(4)}@upf.pf", first_name: "B", last_name: "C",
+                      student_number: "12345678", batch: @batch, teacher: true,
+                      password: "motdepasse")
+    assert second.valid?, "la règle ne vise pas les comptes enseignants"
+  end
+
+  test "un étudiant ne bute pas sur le numéro des enseignants" do
+    creer_eleve("12345678", "Prof", teacher: true)
+    eleve = User.new(email: "e-#{SecureRandom.hex(4)}@etudiant.upf.pf", first_name: "D", last_name: "E",
+                     student_number: "12345678", batch: @batch, password: "motdepasse")
+    assert eleve.valid?
+  end
+
+  # Quelques comptes de production partagent déjà un numéro : la contrainte ne
+  # doit pas les rendre impossibles à modifier.
+  test "un doublon existant reste modifiable" do
+    premier = creer_eleve("20259003")
+    second = creer_eleve("20259004")
+    second.update_column(:student_number, "20259003")
+
+    second.reload
+    second.first_name = "Nouveau"
+    assert second.valid?, "la règle ne vaut qu'à la création"
+    assert second.save
+    assert_equal premier.student_number, second.reload.student_number
+  end
+
   # Un compte n'est jamais effacé : les départs sont marqués, pas supprimés.
   test "la portée kept écarte les comptes désactivés" do
     actif = creer_eleve("20250001")

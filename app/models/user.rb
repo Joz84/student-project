@@ -28,6 +28,20 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates :student_number, presence: true,
             format: { with: /\A\d{8}\z/, message: "doit contenir exactement 8 chiffres" }
+
+  # Un numéro désigne une personne : deux comptes actifs ne peuvent le partager.
+  # Une étudiante s'était créé un second compte faute de recevoir son lien de
+  # réinitialisation, et se retrouvait sans projet, sans groupe et sans vœux.
+  #
+  # À la création seulement, et pour trois raisons. Les enseignants partagent
+  # tous un numéro de convenance. Un compte désactivé libère le sien, ce qui
+  # permet de réinscrire un redoublant. Et quelques comptes historiques violent
+  # déjà la règle : les rendre invalides interdirait toute modification de leur
+  # profil, alors qu'ils fonctionnent.
+  validates :student_number,
+            uniqueness: { conditions: -> { where(teacher: nil, drop: false) },
+                          message: "correspond à un compte existant. Utilisez « Mot de passe oublié ? » sur la page de connexion pour y accéder." },
+            on: :create, unless: :teacher?
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
   before_create :initialize_avatar_color
