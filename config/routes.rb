@@ -69,7 +69,9 @@ Rails.application.routes.draw do
       end
       resources :attendances, only: [:create, :update, :destroy]
     end
-    resource :soutien, only: [:show], controller: "soutiens"
+    resource :soutien, only: [:show], controller: "soutiens" do
+      get :recap
+    end
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do
       resources :teams, only: [:index] do

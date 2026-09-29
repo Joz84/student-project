@@ -20,6 +20,18 @@ class Soutien
     # Combien d'inscrits se disent en difficulté — la part qui appelle une
     # attention immédiate.
     def fragiles = inscrits.count { |i| i.rang <= 2 }
+
+    # La part de ceux qui suivent la matière. Sans elle, dix demandes sur une
+    # option de quinze et dix sur un tronc commun de quatre-vingts se lisent
+    # pareil, alors que la première est un signal bien plus fort.
+    def taux
+      return nil if suivi.zero?
+      (100.0 * nombre / suivi).round
+    end
+
+    def par_niveau
+      inscrits.group_by { |i| i.niveau }.transform_values(&:size)
+    end
   end
 
   def initialize(batches)
@@ -40,6 +52,23 @@ class Soutien
         Ligne.new(ue: ue, inscrits: inscrits)
       }.sort_by { |l| [-l.nombre, l.ue.name.to_s] }
     end
+  end
+
+  # Répartition d'ensemble par niveau déclaré, pour situer la demande : un
+  # gros volume de « notion » n'appelle pas le même dispositif qu'un gros
+  # volume d'« application ».
+  def par_niveau
+    lignes.flat_map(&:inscrits).group_by(&:niveau).transform_values(&:size)
+  end
+
+  # Les étudiants qui se signalent sur plusieurs matières : ce sont eux qu'il
+  # faut regarder en premier, la difficulté y est rarement ponctuelle.
+  def cumulards(seuil = 3)
+    lignes.flat_map { |l| l.inscrits.map { |i| [i.user, l.ue] } }
+          .group_by { |user, _| user }
+          .transform_values { |paires| paires.map(&:last) }
+          .select { |_, ues| ues.size >= seuil }
+          .sort_by { |user, ues| [-ues.size, user.last_name.to_s.downcase] }
   end
 
   def total      = lignes.sum(&:nombre)

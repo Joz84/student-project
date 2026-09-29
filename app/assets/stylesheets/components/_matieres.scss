@@ -677,3 +677,122 @@
   .soutien-btn__matiere { display: none; }   // le nom est déjà en tête de la carte
   .soutien-annonce { flex-direction: column; gap: .7rem; }
 }
+
+// --- récapitulatif du soutien, réservé à l'administration ---
+.recap__prive {
+  display: inline-block;
+  margin-left: .5rem;
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  background: mix($blue, #fff, 12%);
+  border: 1px solid mix($blue, #fff, 45%);
+  color: $ink;
+}
+
+.recap__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+  min-width: 34rem;
+
+  th {
+    text-align: left;
+    font-size: .7rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: $muted-soft;
+    font-weight: 600;
+    padding: 0 .8rem .45rem 0;
+    border-bottom: 1px solid $line;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: .5rem .8rem .5rem 0;
+    border-bottom: 1px solid $line-soft;
+    color: $ink-soft;
+    vertical-align: middle;
+  }
+
+  tr:last-child td { border-bottom: none; }
+}
+
+.recap__nombre {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding-right: 1.2rem !important;
+}
+
+.recap__ligne--muette td { color: $muted-soft; }
+
+.recap__teinte {
+  display: inline-block;
+  width: .7rem;
+  height: .7rem;
+  border-radius: 2px;
+  margin-right: .45rem;
+  vertical-align: baseline;
+}
+
+.recap__code {
+  font-weight: 700;
+  color: $blue;
+  margin-right: .3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.recap__matieres { font-size: .8rem; color: $muted; }
+
+.recap__barre {
+  height: 8px;
+  background: $line-soft;
+  border-radius: 999px;
+  overflow: hidden;
+  min-width: 4rem;
+}
+
+.recap__barre-part {
+  height: 100%;
+  border-radius: 999px;
+  background: $blue;
+}
+
+.recap__barre-part--inconnu     { background: $notice; }
+.recap__barre-part--notion      { background: mix($notice, $red, 60%); }
+.recap__barre-part--initiation  { background: $primary; }
+.recap__barre-part--application { background: mix($danger, #fff, 70%); }
+.recap__barre-part--maitrise    { background: $danger; }
+
+.recap__niveaux {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: .9rem;
+  margin-top: .8rem;
+}
+
+.recap__niveau {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: .8rem .9rem;
+}
+
+.recap__niveau-nombre {
+  display: block;
+  font-family: $headers-font;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: $ink;
+  font-variant-numeric: tabular-nums;
+}
+
+.recap__niveau-libelle {
+  display: block;
+  font-size: .78rem;
+  color: $muted;
+  margin: .15rem 0 .5rem;
+}
