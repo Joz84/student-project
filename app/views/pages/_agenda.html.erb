@@ -56,7 +56,9 @@
             <p class="seance__meta">
               <%= creneau(seance) %>
               <% if seance.room.present? %> · <%= seance.room %><% end %>
-              <% if seance.teacher_label.present? && (!current_user.teacher? || toutes) %> · <%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %><% end %>
+              <% if seance.teacher_label.present? && (!current_user.teacher? || toutes || current_user.admin) %>
+                <span class="seance__prof"><%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %></span>
+              <% end %>
               <% unless current_user.teacher? || seance.concerne?(current_user) %>
                 <span class="agenda__orphelin" title="Cette séance n'est pas celle de vos groupes : votre enseignant vous y a ajouté">
                   rattrapage

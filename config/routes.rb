@@ -70,6 +70,7 @@ Rails.application.routes.draw do
       end
       resources :attendances, only: [:create, :update, :destroy]
     end
+    resource :suivi, only: [:show], controller: "suivis"
     resource :soutien, only: [:show], controller: "soutiens" do
       get :recap
     end

@@ -662,3 +662,14 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
 .bilan__case[data-etat="erreur"] {
   box-shadow: inset 0 0 0 2px $red;
 }
+
+// Le nom de l'intervenant à côté du créneau : discret, mais toujours là pour
+// l'administrateur, qui parcourt des séances qui ne sont pas les siennes.
+.seance__prof {
+  display: inline-block;
+  margin-left: .45rem;
+  padding-left: .45rem;
+  border-left: 1px solid $line;
+  font-size: .72rem;
+  color: $muted-soft;
+}

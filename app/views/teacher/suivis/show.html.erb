@@ -1,0 +1,141 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <h2 class="text-center mb-1">Suivi de l'émargement</h2>
+      <p class="matieres__regle text-center">
+        Qui tient sa feuille d'appel, et qui ne l'a jamais ouverte.
+        <span class="recap__prive">Page réservée à l'administration</span>
+      </p>
+
+      <% if @batches.size > 1 %>
+        <div class="d-flex justify-content-center flex-wrap my-4" style="gap: .5rem;">
+          <% @batches.each do |batch| %>
+            <%= link_to batch.title, teacher_suivi_path(batch_id: batch.id),
+                        class: "btn btn-sm #{batch == @batch ? 'btn-danger' : 'btn-outline-ink'}" %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @suivi.nil? || @suivi.vide? %>
+        <div class="agenda__vide">Aucune séance passée sur cette promotion.</div>
+      <% else %>
+
+        <div class="soutien__chiffres">
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @suivi.taux %> %</span>
+            <span class="soutien__label">des séances ont donné lieu à un appel</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @suivi.appelees %></span>
+            <span class="soutien__label">sur <%= @suivi.seances %> séances passées</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @suivi.validees %></span>
+            <span class="soutien__label">appels validés</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @suivi.par_etat[:jamais].to_i + @suivi.par_etat[:sans_compte].to_i %></span>
+            <span class="soutien__label">intervenants n'ayant jamais fait d'appel</span>
+          </div>
+        </div>
+
+        <h3 class="roadmap__sous-titre">Semaine par semaine</h3>
+        <p class="matieres__regle">
+          C'est l'évolution qui dit si le dispositif s'installe ou s'essouffle —
+          un taux global la masque.
+        </p>
+        <div class="suivi__semaines">
+          <% @suivi.semaines.each do |semaine| %>
+            <div class="suivi__semaine">
+              <div class="suivi__colonne" title="<%= semaine[:appelees] %> appels sur <%= semaine[:seances] %> séances">
+                <div class="suivi__colonne-part"
+                     style="height: <%= semaine[:taux] || 0 %>%;"></div>
+              </div>
+              <span class="suivi__taux"><%= semaine[:taux] ? "#{semaine[:taux]} %" : "—" %></span>
+              <span class="suivi__lundi"><%= l semaine[:lundi], format: "%d/%m" %></span>
+            </div>
+          <% end %>
+        </div>
+
+        <h3 class="roadmap__sous-titre mt-5">Par intervenant</h3>
+        <p class="matieres__regle">
+          Classé par volume de séances : c'est là que l'absence d'appel pèse le plus.
+        </p>
+
+        <div class="enrobage-table">
+          <table class="recap__table">
+            <thead>
+              <tr>
+                <th>Intervenant</th>
+                <th class="recap__nombre">Séances</th>
+                <th class="recap__nombre">Appels</th>
+                <th class="recap__nombre">Validés</th>
+                <th class="recap__nombre">Taux</th>
+                <th>Dernier appel</th>
+                <th>État</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @suivi.lignes.each do |ligne| %>
+                <tr class="<%= "recap__ligne--muette" if ligne.appelees.zero? %>">
+                  <td>
+                    <%= ligne.libelle %>
+                    <% if ligne.enseignant %>
+                      <span class="soutien__num"><%= ligne.enseignant.email %></span>
+                    <% end %>
+                  </td>
+                  <td class="recap__nombre"><%= ligne.seances %></td>
+                  <td class="recap__nombre"><strong><%= ligne.appelees %></strong></td>
+                  <td class="recap__nombre"><%= ligne.validees %></td>
+                  <td class="recap__nombre"><%= ligne.taux ? "#{ligne.taux} %" : "—" %></td>
+                  <td class="soutien__num">
+                    <%= ligne.dernier_appel ? l(ligne.dernier_appel.to_date, format: "%d/%m") : "—" %>
+                  </td>
+                  <td>
+                    <span class="suivi__etat suivi__etat--<%= ligne.etat %>"><%= ligne.libelle_etat %></span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="matieres__regle mt-3">
+          <strong>Sans compte</strong> : ADE nomme un intervenant qu'aucun compte ne
+          représente. Il ne peut pas faire l'appel, et ce n'est pas un oubli de sa part.
+        </p>
+
+        <% sans_appel = @suivi.seances_sans_appel %>
+        <% if sans_appel.any? %>
+          <h3 class="roadmap__sous-titre mt-5">Les dernières séances sans appel</h3>
+          <div class="enrobage-table">
+            <table class="recap__table">
+              <thead>
+                <tr><th>Séance</th><th>Quand</th><th>Matière</th><th>Intervenant</th></tr>
+              </thead>
+              <tbody>
+                <% sans_appel.each do |seance| %>
+                  <tr>
+                    <td><%= link_to seance.title, teacher_lesson_path(seance), class: "text-decoration-none" %></td>
+                    <td class="soutien__num"><%= l seance.starts_at, format: "%d/%m %H:%M" %></td>
+                    <td class="recap__matieres"><%= seance.ue&.name || "—" %></td>
+                    <td class="recap__matieres">
+                      <%= seance.teacher_label.to_s.sub(/\s*\((M\.|Mme)\)\z/, "").presence || "—" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+
+      <% end %>
+
+    </div>
+  </div>
+</div>

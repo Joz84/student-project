@@ -17,6 +17,7 @@
           <%= link_to "Soutien", teacher_soutien_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
           <% if current_user.admin %>
             <%= link_to "Récap", recap_teacher_soutien_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
+            <%= link_to "Suivi", teacher_suivi_path, class: "navbar-mihivai-item navbar-mihivai-link" %>
           <% end %>
 
           <%# <div class="notifs-bg"> %>
@@ -71,6 +72,7 @@
                 <%= link_to "Soutien", teacher_soutien_path, class: "navbar-link" %>
                 <% if current_user.admin %>
                   <%= link_to "Récap", recap_teacher_soutien_path, class: "navbar-link" %>
+                  <%= link_to "Suivi", teacher_suivi_path, class: "navbar-link" %>
                 <% end %>
 
                 <%# <div class="notifs-bg"> %>
