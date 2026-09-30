@@ -45,11 +45,29 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "les enseignants partagent un numéro de convenance" do
-    creer_eleve("12345678", "Prof", teacher: true)
+    creer_eleve(User::NUMERO_DE_CONVENANCE, "Prof", teacher: true)
     second = User.new(email: "p2-#{SecureRandom.hex(4)}@upf.pf", first_name: "B", last_name: "C",
-                      student_number: "12345678", batch: @batch, teacher: true,
+                      student_number: User::NUMERO_DE_CONVENANCE, batch: @batch, teacher: true,
                       password: "motdepasse")
     assert second.valid?, "la règle ne vise pas les comptes enseignants"
+  end
+
+  # Le numéro de convenance est un remplissage, pas une identité : il doit
+  # rester partageable même si le drapeau enseignant n'est pas encore posé au
+  # moment de la création.
+  test "le numéro de convenance se partage sans être enseignant" do
+    creer_eleve(User::NUMERO_DE_CONVENANCE, "Premier")
+    second = User.new(email: "c2-#{SecureRandom.hex(4)}@upf.pf", first_name: "B", last_name: "C",
+                      student_number: User::NUMERO_DE_CONVENANCE, batch: @batch,
+                      password: "motdepasse")
+    assert second.valid?
+    assert second.save
+  end
+
+  test "il reste soumis au format à huit chiffres" do
+    u = User.new(email: "c3-#{SecureRandom.hex(4)}@upf.pf", first_name: "B", last_name: "C",
+                 student_number: "1234567", batch: @batch, password: "motdepasse")
+    refute u.valid?
   end
 
   test "un étudiant ne bute pas sur le numéro des enseignants" do

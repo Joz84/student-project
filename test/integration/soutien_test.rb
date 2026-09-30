@@ -120,6 +120,32 @@ class SoutienTest < ActionDispatch::IntegrationTest
     assert_match "Aucune demande pour le moment", response.body
   end
 
+  # Une matière qui a des TD et des TP comptait deux fois chaque étudiant :
+  # 132 inscrits affichés pour une promotion de 87, et une part divisée par
+  # deux dans le récapitulatif.
+  test "l'effectif d'une matière compte les personnes, pas les appartenances" do
+    tp = Group.create!(ue: @maths, label: "TP-01", kind: :tp)
+    GroupMembership.create!(user: @eleve, group: tp)      # déjà dans le TD-01
+    GroupMembership.create!(user: @camarade, group: tp)
+
+    ligne = Soutien.new(@batch).lignes.find { |l| l.ue == @maths }
+    assert_equal 2, ligne.suivi, "deux étudiants, quatre appartenances"
+  end
+
+  test "la part rapporte la demande à l'effectif réel" do
+    TutoringRequest.create!(user: @eleve, ue: @maths)
+    ligne = Soutien.new(@batch).lignes.find { |l| l.ue == @maths }
+    assert_equal 2, ligne.suivi
+    assert_equal 1, ligne.nombre
+    assert_equal 50, ligne.taux
+  end
+
+  test "une matière sans inscrit n'a pas de part" do
+    ligne = Soutien.new(@batch).lignes.find { |l| l.ue == @option }
+    assert_equal 0, ligne.suivi
+    assert_nil ligne.taux, "on ne divise pas par zéro, on n'affiche rien"
+  end
+
   test "un compte désactivé ne compte plus dans la demande" do
     TutoringRequest.create!(user: @eleve, ue: @maths)
     TutoringRequest.create!(user: @camarade, ue: @maths)

@@ -29,19 +29,31 @@ class User < ApplicationRecord
   validates :student_number, presence: true,
             format: { with: /\A\d{8}\z/, message: "doit contenir exactement 8 chiffres" }
 
+  # Numéro de convenance des comptes qui n'en ont pas de vrai — les
+  # enseignants, et quelques comptes créés avant que la scolarité ne fournisse
+  # les numéros. Il se partage volontairement : c'est un remplissage, pas une
+  # identité.
+  NUMERO_DE_CONVENANCE = "12345678".freeze
+
   # Un numéro désigne une personne : deux comptes actifs ne peuvent le partager.
   # Une étudiante s'était créé un second compte faute de recevoir son lien de
   # réinitialisation, et se retrouvait sans projet, sans groupe et sans vœux.
   #
   # À la création seulement, et pour trois raisons. Les enseignants partagent
-  # tous un numéro de convenance. Un compte désactivé libère le sien, ce qui
+  # tous le numéro de convenance. Un compte désactivé libère le sien, ce qui
   # permet de réinscrire un redoublant. Et quelques comptes historiques violent
   # déjà la règle : les rendre invalides interdirait toute modification de leur
   # profil, alors qu'ils fonctionnent.
   validates :student_number,
             uniqueness: { conditions: -> { where(teacher: nil, drop: false) },
                           message: "correspond à un compte existant. Utilisez « Mot de passe oublié ? » sur la page de connexion pour y accéder." },
-            on: :create, unless: :teacher?
+            on: :create, unless: :numero_libre_de_partage?
+
+  # Le numéro de convenance échappe à la règle quel que soit le type de compte :
+  # un compte enseignant créé sans que le drapeau soit encore posé doit passer.
+  def numero_libre_de_partage?
+    teacher? || student_number == NUMERO_DE_CONVENANCE
+  end
   # validates :student_number, inclusion: { in: ["1", "2", "3"],
     # message: "Votre numéro étudiant n'est pas valide" }
   before_create :initialize_avatar_color

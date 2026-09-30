@@ -14,9 +14,8 @@ class Soutien
     def rang    = RANGS.fetch(niveau, 0)
   end
 
-  Ligne = Struct.new(:ue, :inscrits, keyword_init: true) do
+  Ligne = Struct.new(:ue, :inscrits, :suivi, keyword_init: true) do
     def nombre = inscrits.size
-    def suivi  = ue.groups.sum { |g| g.group_memberships.size }
     # Combien d'inscrits se disent en difficulté — la part qui appelle une
     # attention immédiate.
     def fragiles = inscrits.count { |i| i.rang <= 2 }
@@ -40,16 +39,17 @@ class Soutien
 
   def lignes
     @lignes ||= begin
-      ues = Ue.where(batch: @batches).includes(:batch, groups: :group_memberships).to_a
+      ues = Ue.where(batch: @batches).includes(:batch).to_a
       demandes = TutoringRequest.vivantes.where(ue: ues).includes(:user).group_by(&:ue_id)
       niveaux = UeAssessment.where(ue: ues).pluck(:user_id, :ue_id, :level)
                             .each_with_object({}) { |(u, e, n), h| h[[u, e]] = n }
+      suivis = effectifs(ues)
 
       ues.map { |ue|
         inscrits = (demandes[ue.id] || []).map { |d|
           Inscrit.new(user: d.user, niveau: niveaux[[d.user_id, ue.id]], depuis: d.created_at)
         }.sort_by { |i| [i.rang, i.user.last_name.to_s.downcase, i.user.first_name.to_s.downcase] }
-        Ligne.new(ue: ue, inscrits: inscrits)
+        Ligne.new(ue: ue, inscrits: inscrits, suivi: suivis[ue.id].to_i)
       }.sort_by { |l| [-l.nombre, l.ue.name.to_s] }
     end
   end
@@ -69,6 +69,19 @@ class Soutien
           .transform_values { |paires| paires.map(&:last) }
           .select { |_, ues| ues.size >= seuil }
           .sort_by { |user, ues| [-ues.size, user.last_name.to_s.downcase] }
+  end
+
+  # Combien d'étudiants suivent chaque UE. Le compte se fait sur les personnes,
+  # pas sur les appartenances : une matière qui a des TD et des TP compte deux
+  # fois chaque étudiant, et affichait 132 inscrits pour une promotion de 87.
+  def effectifs(ues)
+    GroupMembership.joins(:group).merge(User.kept.where(teacher: nil))
+                   .joins(:user)
+                   .where(groups: { ue_id: ues.map(&:id) })
+                   .pluck(Arel.sql("groups.ue_id"), :user_id)
+                   .uniq
+                   .group_by(&:first)
+                   .transform_values(&:size)
   end
 
   def total      = lignes.sum(&:nombre)
