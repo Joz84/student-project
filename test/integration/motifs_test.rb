@@ -22,12 +22,13 @@ class MotifsTest < ActionDispatch::IntegrationTest
     assert_match ".agenda__vide", css
   end
 
-  test "quatre frises sont disponibles, le tressage par défaut" do
+  test "cinq frises sont disponibles, les écailles par défaut" do
+    assert_match "M-16 16 A16 16 0 0 1 16 16", css, "les écailles"
     assert_match "M0 9 Q10 1 20 9", css, "le tressage"
     assert_match "M0 12 Q9 2 18 12", css, "les vagues"
     assert_match "M0 4 L14 14 L28 4", css, "les chevrons"
     assert_match "M14 2 L26 9 L14 16", css, "les losanges"
-    %w[frise--vagues frise--chevrons frise--losanges frise--triangles].each do |variante|
+    %w[frise--vagues frise--chevrons frise--losanges frise--triangles frise--tressage].each do |variante|
       assert_match variante, css
     end
   end
@@ -48,7 +49,30 @@ class MotifsTest < ActionDispatch::IntegrationTest
     refute_match 'aria-hidden', rose
   end
 
-  test "elle coiffe les trois pages de l'équipe" do
+  test "elle est en fond de page, fixée, estompée et de travers" do
+    regle = css[/\.rose-fond\s*\{[^}]*\}/m]
+    assert regle, "la règle .rose-fond doit exister"
+    assert_match "position:fixed", regle.delete(" "), "fixée au défilement"
+    assert_match "z-index:-1", regle.delete(" "), "derrière le contenu"
+    assert_match(/rotate\(-1[0-9]deg\)/, regle.delete(" "), "pas alignée sur le nord")
+    opacite = regle[/opacity:\s*([\d.]+)/, 1].to_f
+    assert_operator opacite, :<=, 0.15, "franchement estompée"
+  end
+
+  test "elle est présente sur toutes les pages, connecté ou non" do
+    montrer_les_erreurs!
+    get new_user_session_path
+    assert_match "rose-fond", response.body, "même sur la page de connexion"
+
+    batch = Batch.create!(title: "Promo fond #{SecureRandom.hex(4)}")
+    sign_in creer_eleve("84000003", batch: batch)
+    [root_path, projects_path, matieres_path].each do |chemin|
+      get chemin
+      assert_match "rose-fond", response.body, chemin
+    end
+  end
+
+  test "elle ne coiffe plus les pages d'équipe : elle est partout" do
     montrer_les_erreurs!
     batch = Batch.create!(title: "Promo rose #{SecureRandom.hex(4)}")
     ref = Referential.create!(title: "Réf", batch: batch, active: true)
@@ -63,7 +87,8 @@ class MotifsTest < ActionDispatch::IntegrationTest
     [team_path(team), team_roadmap_path(team), team_progressions_path(team)].each do |chemin|
       get chemin
       assert_response :success, chemin
-      assert_match "entete-equipe__rose", response.body, chemin
+      assert_match "rose-fond", response.body, chemin
+      refute_match "entete-equipe__rose", response.body, chemin
     end
   end
 

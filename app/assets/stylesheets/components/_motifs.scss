@@ -25,6 +25,15 @@
   @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='2' stroke-linecap='round' opacity='#{$opacite}'%3E%3Cpath d='M0 9 Q10 1 20 9 T40 9'/%3E%3Cpath d='M0 9 Q10 17 20 9 T40 9'/%3E%3C/g%3E%3Ccircle cx='20' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3Ccircle cx='0' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3Ccircle cx='40' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3C/svg%3E");
 }
 
+// Écailles : des demi-cercles qui se recouvrent, sur deux rangs décalés.
+// Motif ancien des tapa et des tīfaifai, et le plus doux à l'œil de tous :
+// aucune pointe, aucune arête, il tient sur toute la largeur d'une page sans
+// jamais accrocher le regard.
+@function frise-ecailles($couleur, $opacite: .5) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='20' viewBox='0 0 32 20'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.5' opacity='#{$opacite}'%3E%3Cpath d='M-16 16 A16 16 0 0 1 16 16'/%3E%3Cpath d='M0 16 A16 16 0 0 1 32 16'/%3E%3Cpath d='M16 16 A16 16 0 0 1 48 16'/%3E%3C/g%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.2' opacity='#{$opacite * .5}'%3E%3Cpath d='M-8 20 A8 8 0 0 1 8 20'/%3E%3Cpath d='M8 20 A8 8 0 0 1 24 20'/%3E%3Cpath d='M24 20 A8 8 0 0 1 40 20'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 // Vagues enchaînées : les arcs du sillage d'une pirogue, motif de tīfaifai.
 @function frise-vagues($couleur, $opacite: .5) {
   $c: sans-diese($couleur);
@@ -59,13 +68,14 @@
 
 // Frise autonome, à poser entre deux sections.
 .frise {
-  height: 18px;
-  background-image: frise-tressage($blue, .5);
+  height: 20px;
+  background-image: frise-ecailles($blue, .55);
   background-repeat: repeat-x;
   background-position: center;
 }
 
-.frise--danger    { background-image: frise-tressage($danger, .6); }
+.frise--danger    { background-image: frise-ecailles($danger, .6); }
+.frise--tressage  { background-image: frise-tressage($blue, .5); }
 .frise--vagues    { background-image: frise-vagues($blue, .5); }
 .frise--chevrons  { background-image: frise-chevrons($blue, .5); }
 .frise--losanges  { background-image: frise-losanges($blue, .5); }
@@ -85,7 +95,7 @@
   width: 7rem;
   height: 12px;
   border-radius: 0;
-  background: frise-tressage($blue, .55) repeat-x center;
+  background: frise-ecailles($blue, .6) repeat-x center;
 }
 
 // Le bandeau d'accueil porte une trame de losanges en filigrane, sous les
@@ -114,7 +124,7 @@
   left: 0;
   right: 0;
   height: 12px;
-  background: frise-tressage($blue, .45) repeat-x center;
+  background: frise-ecailles($blue, .5) repeat-x center;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
@@ -123,9 +133,9 @@
 .agenda__vide {
   position: relative;
   padding-top: 2.6rem;
-  background-image: frise-tressage($blue, .4);
+  background-image: frise-ecailles($blue, .45);
   background-repeat: repeat-x;
-  background-position: center .8rem;
+  background-position: center .7rem;
 }
 
 // --- rose des vents ---
@@ -150,35 +160,39 @@
 .rose__coeur-losange { fill: currentColor; opacity: .5; }
 .rose__coeur-point   { fill: $danger; }
 
-// La rose en tête des pages d'équipe. Grande et franche sur un écran large,
-// elle passe derrière les onglets en dessous de 992 px plutôt que de manger
-// la hauteur utile d'un téléphone.
-.entete-equipe {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.entete-equipe__rose {
-  position: absolute;
-  top: -2.2rem;
-  right: -1rem;
-  width: 15rem;
-  opacity: .5;
+// La rose en fond de page, sur toutes les pages.
+//
+// Fixée en bas à gauche et débordant du cadre : cadrée serré, elle se lit
+// comme un grand motif imprimé plutôt que comme une vignette posée là. Elle
+// est légèrement tournée — une rose parfaitement alignée sur le nord a l'air
+// d'un schéma technique, de travers elle redevient un ornement.
+//
+// La trame de points, peinte après elle, la voile encore un peu.
+.rose-fond {
+  position: fixed;
+  left: -9rem;
+  bottom: -11rem;
+  width: clamp(26rem, 46vw, 46rem);
+  z-index: -1;
   pointer-events: none;
-  z-index: 0;
+  opacity: .09;
+  transform: rotate(-17deg);
 
   .rose { color: $blue; }
+  .rose__rayon--majeur { fill: $blue; }
+  .rose__coeur { fill: none; }
+  .rose__coeur-point { fill: $blue; }
 }
 
-.entete-equipe .onglets-equipe {
-  position: relative;
-  z-index: 1;
+@media (max-width: 991px) {
+  .rose-fond {
+    left: -7rem;
+    bottom: -8rem;
+    width: clamp(20rem, 72vw, 30rem);
+    opacity: .07;
+  }
 }
 
-@media (max-width: 1199px) {
-  .entete-equipe__rose { width: 11rem; top: -1.4rem; opacity: .34; }
-}
-
-@media (max-width: 767px) {
-  .entete-equipe__rose { width: 8rem; top: -1rem; right: -2rem; opacity: .22; }
+@media print {
+  .rose-fond { display: none; }
 }

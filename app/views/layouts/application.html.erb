@@ -28,6 +28,9 @@
     <link rel="icon" href="/favicon.png" type="image/png">
   </head>
   <body>
+    <%# Fond de page commun à tout le site : la rose des vents, fixée, en
+        arrière-plan. Purement décorative, donc muette pour un lecteur d'écran. %>
+    <div class="rose-fond"><%= render "shared/rose_des_vents" %></div>
     <%= render 'shared/navbar' %>
     <div id='flash'>
       <%= render 'shared/flashes' %>
