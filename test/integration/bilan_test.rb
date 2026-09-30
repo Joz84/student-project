@@ -207,6 +207,58 @@ class BilanTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
+  # Attendre un bouton final fait perdre la saisie d'un enseignant qui quitte
+  # la page. Chaque case part seule, et la réponse reste vide : le navigateur
+  # a déjà mis la couleur à jour.
+  test "une case envoyée seule est enregistrée sans recharger la page" do
+    sign_in @prof
+    patch teacher_bilan_path, params: { ue_id: @ue.id, cellule: "1",
+      statuts: { @s1.id.to_s => { @a.id.to_s => "present" } } }
+
+    assert_equal 204, response.status
+    assert_empty response.body
+    assert_equal "present", Attendance.find_by(lesson: @s1, user: @a).status
+  end
+
+  test "une case vidée seule efface le pointage" do
+    @s1.attendances.create!(user: @a, status: :present, declared_by: :teacher)
+    sign_in @prof
+    patch teacher_bilan_path, params: { ue_id: @ue.id, cellule: "1",
+      statuts: { @s1.id.to_s => { @a.id.to_s => "" } } }
+
+    assert_equal 204, response.status
+    assert_nil Attendance.find_by(lesson: @s1, user: @a)
+  end
+
+  test "une case d'un étudiant ajouté à la main part aussi seule" do
+    UeGuest.create!(ue: @ue, first_name: "Vaiana", last_name: "Tepuhiarii",
+                    student_number: "20260999")
+    sign_in @prof
+    patch teacher_bilan_path, params: { ue_id: @ue.id, cellule: "1",
+      invites: { "0" => { nom: "Tepuhiarii", prenom: "Vaiana", numero: "20260999",
+                          statuts: { @s1.id.to_s => "retard" } } } }
+
+    assert_equal 204, response.status
+    assert_equal "retard", Attendance.find_by(lesson: @s1, user_id: nil).status
+  end
+
+  test "l'enregistrement d'ensemble reste possible sans JavaScript" do
+    sign_in @prof
+    patch teacher_bilan_path, params: { ue_id: @ue.id,
+      statuts: { @s1.id.to_s => { @a.id.to_s => "present" } } }
+
+    assert_redirected_to teacher_bilan_path(ue_id: @ue.id)
+    assert_match(/enregistrée/, flash[:notice])
+  end
+
+  test "la question de portée ne parle plus d'un relevé à choisir" do
+    sign_in @prof
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "Faut-il l'attendre aux prochaines séances ?", response.body
+    assert_match "Non, seulement dans ce tableau", response.body
+    refute_match "Ce relevé seulement", response.body
+  end
+
   test "un étudiant n'accède pas au bilan" do
     sign_in @a
     get teacher_bilan_path

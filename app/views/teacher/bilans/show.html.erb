@@ -45,7 +45,10 @@
             sont compris indifféremment.
           </p>
 
-          <%= form_with url: teacher_bilan_path, method: :patch, data: { turbo: false } do %>
+          <%= form_with url: teacher_bilan_path, method: :patch,
+                         data: { turbo: false, controller: "bilan",
+                                 bilan_url_value: teacher_bilan_path,
+                                 bilan_ue_value: @ue.id } do %>
             <%= hidden_field_tag :ue_id, @ue.id %>
             <div class="bilan__cadre">
               <table class="bilan">
@@ -76,7 +79,8 @@
                             <%= "title=Étudiant\ d'un\ autre\ groupe".html_safe unless attendu %>>
                           <%= select_tag "statuts[#{l.id}][#{eleve.id}]",
                                 options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, statut),
-                                include_blank: "—", class: "bilan__select" %>
+                                include_blank: "—", class: "bilan__select",
+                                data: { action: "change->bilan#enregistrer" } %>
                         </td>
                       <% end %>
                     </tr>
@@ -98,7 +102,8 @@
                         <td class="bilan__case bilan__case--<%= statut || 'vide' %>">
                           <%= select_tag "invites[#{i}][statuts][#{l.id}]",
                                 options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, statut),
-                                include_blank: "—", class: "bilan__select", id: nil %>
+                                include_blank: "—", class: "bilan__select", id: nil,
+                                data: { action: "change->bilan#enregistrer" } %>
                         </td>
                       <% end %>
                     </tr>
@@ -108,7 +113,13 @@
             </div>
 
             <div class="bilan__pied">
-              <%= submit_tag "Enregistrer la grille", class: "btn btn-danger" %>
+              <%# Sans JavaScript, le bouton reste la seule façon d'enregistrer.
+                  Avec, chaque case part seule et le bouton s'efface. %>
+              <%= submit_tag "Enregistrer la grille", class: "btn btn-danger",
+                    data: { bilan_target: "bouton" } %>
+              <span class="bilan__etat" data-bilan-target="etat" hidden>
+                Chaque modification est enregistrée aussitôt.
+              </span>
             </div>
           <% end %>
 
@@ -132,16 +143,17 @@
                 <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
 
                 <fieldset class="portee">
-                  <legend class="portee__titre">Pour combien de temps ?</legend>
+                  <legend class="portee__titre">Faut-il l'attendre aux prochaines séances ?</legend>
                   <label class="portee__choix">
                     <%= radio_button_tag :portee, "matiere", true %>
-                    <span><strong>Toute la matière</strong><br>
-                      <small>Attendu à chaque séance, et proposé à l'appel.</small></span>
+                    <span><strong>Oui, à chaque séance de <%= @ue.name %></strong><br>
+                      <small>Il figurera sur les feuilles d'appel, comme les autres.</small></span>
                   </label>
                   <label class="portee__choix">
                     <%= radio_button_tag :portee, "releve", false %>
-                    <span><strong>Ce relevé seulement</strong><br>
-                      <small>Une ligne dans la grille, sans figurer aux appels.</small></span>
+                    <span><strong>Non, seulement dans ce tableau</strong><br>
+                      <small>Pour quelqu'un venu une fois : vous renseignez ses cases ici,
+                        il n'apparaît sur aucune feuille d'appel.</small></span>
                   </label>
                 </fieldset>
 

@@ -24,6 +24,10 @@ class Teacher::BilansController < ApplicationController
         end
       end
     end
+    # Une case envoyée seule n'a pas besoin qu'on lui renvoie la page : le
+    # navigateur a déjà mis la couleur à jour.
+    return head(:no_content) if params[:cellule].present?
+
     redirect_to teacher_bilan_path(ue_id: @ue&.id),
                 notice: "#{modifiees} case#{'s' if modifiees > 1} enregistrée#{'s' if modifiees > 1}.", status: :see_other
   end
