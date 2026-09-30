@@ -709,3 +709,16 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   border-radius: 999px;
   padding: .2rem .7rem;
 }
+
+// Colonne d'une séance qui n'a pas encore eu lieu : on y anticipe une absence
+// justifiée plutôt qu'on n'y constate une présence. Le fond hachuré le dit
+// sans avoir à lire la date.
+.bilan__seance--future {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 5px,
+    rgba($blue, .07) 5px 10px
+  );
+
+  .bilan__date { color: $muted; }
+}

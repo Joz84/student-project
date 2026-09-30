@@ -22,7 +22,7 @@ class BilanTest < ActionDispatch::IntegrationTest
     seance(@autre, 2.days.ago, "CM - Chimie", groupe: nil)
   end
 
-  test "la grille montre un onglet par UE et les séances passées seulement" do
+  test "la grille montre un onglet par UE et toutes les séances" do
     sign_in @prof
     get teacher_bilan_path
     assert_response :success
@@ -33,7 +33,19 @@ class BilanTest < ActionDispatch::IntegrationTest
     get teacher_bilan_path(ue_id: @ue.id)
     assert_match @s1.starts_at.strftime("%d/%m"), response.body
     assert_match @s2.starts_at.strftime("%d/%m"), response.body
-    refute_match "à venir", response.body, "une séance future n'a pas sa place dans un bilan"
+    # Un certificat arrive souvent avant le cours : la colonne d'une séance à
+    # venir doit exister pour qu'on puisse y porter l'absence tout de suite.
+    assert_match @futur.starts_at.strftime("%d/%m"), response.body
+    assert_match "bilan__seance--future", response.body, "elle se distingue des séances passées"
+  end
+
+  test "une séance à venir se renseigne dès maintenant" do
+    sign_in @prof
+    patch teacher_bilan_path, params: { ue_id: @ue.id, cellule: "1",
+      statuts: { @futur.id.to_s => { @a.id.to_s => "excused" } } }
+
+    assert_equal 204, response.status
+    assert_equal "excused", Attendance.find_by(lesson: @futur, user: @a).status
   end
 
   test "la grille est pré-remplie par les appels déjà faits" do
@@ -312,6 +324,63 @@ class BilanTest < ActionDispatch::IntegrationTest
     get teacher_bilan_path
     assert_match @prof.last_name.upcase, response.body
     refute_match sans_seance.last_name.upcase, response.body
+  end
+
+  # Un étudiant d'un autre groupe qu'on a en cours doit pouvoir entrer dans la
+  # grille, sans qu'on lui invente une appartenance de TD.
+  test "l'enseignant ajoute un étudiant de la promotion au relevé" do
+    hors = creer_eleve("85000001", "Horsgroupe")   # même promo, pas dans @groupe
+    sign_in @prof
+
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "Ajouter un étudiant de la promotion", response.body
+    assert_match hors.student_number, response.body
+    assert_match 'data-controller="filtre"', response.body, "la même recherche que sur la feuille d'appel"
+
+    assert_difference -> { UeGuest.count }, 1 do
+      post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
+    end
+    invite = UeGuest.last
+    assert_equal hors, invite.user
+    assert invite.permanent?
+
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match hors.last_name, response.body
+    refute_match "Ajouter un étudiant de la promotion\n", response.body.sub(hors.last_name, "")
+  end
+
+  test "ajouté pour ce relevé seulement, il reste estompé sur les colonnes" do
+    hors = creer_eleve("85000002", "Ponctuel")
+    sign_in @prof
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "releve" }
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert_includes sheet.eleves.map(&:id), hors.id, "il a sa ligne"
+    refute sheet.attendu?(@s1, hors), "mais il n'est pas attendu aux séances"
+  end
+
+  test "inscrit sur toute la matière, il est attendu partout" do
+    hors = creer_eleve("85000003", "Permanent")
+    sign_in @prof
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert sheet.attendu?(@s1, hors)
+    assert sheet.attendu?(@futur, hors)
+  end
+
+  test "l'ajouter deux fois ne fait pas deux lignes" do
+    hors = creer_eleve("85000004", "Doublon")
+    sign_in @prof
+    2.times { post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" } }
+    assert_equal 1, UeGuest.where(ue: @ue, user: hors).count
+  end
+
+  test "un étudiant déjà dans la grille n'est plus proposé" do
+    sign_in @prof
+    get teacher_bilan_path(ue_id: @ue.id)
+    bloc = response.body[/ajoutPromo.*?<\/ul>/m].to_s
+    refute_match @a.student_number, bloc, "il est déjà dans la grille par son groupe"
   end
 
   test "un étudiant n'accède pas au bilan" do

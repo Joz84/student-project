@@ -82,7 +82,8 @@
                   <tr>
                     <th class="bilan__eleve">Étudiant</th>
                     <% @sheet.lessons.each do |l| %>
-                      <th class="bilan__seance">
+                      <th class="bilan__seance <%= "bilan__seance--future" if @sheet.future?(l) %>"
+                          <%= "title=\"Séance à venir — vous pouvez déjà y porter une absence justifiée\"".html_safe if @sheet.future?(l) %>>
                         <span class="bilan__date"><%= @sheet.entete(l) %></span>
                         <span class="bilan__sous">
                           <%= @sheet.sous_entete(l) %>
@@ -149,10 +150,58 @@
             </div>
           <% end %>
 
+          <% reste = @sheet.reste_de_la_promo %>
+          <% if reste.any? %>
+            <div class="card card-body p-4 mt-4">
+              <a class="appel__replier" data-bs-toggle="collapse" href="#ajoutPromo" role="button"
+                 aria-expanded="false" aria-controls="ajoutPromo">
+                Ajouter un étudiant de la promotion
+              </a>
+              <p class="text-grey mt-2 mb-0"><small>
+                Pour quelqu'un qui n'était pas prévu dans ce TD ou ce TP mais que
+                vous avez en cours. Il prend une ligne dans la grille.
+              </small></p>
+
+              <div class="collapse mt-3" id="ajoutPromo">
+                <div data-controller="filtre">
+                  <%= search_field_tag :recherche_promo, nil,
+                        placeholder: "Rechercher un nom ou un numéro…",
+                        autocomplete: "off", class: "form-control appel__recherche",
+                        data: { filtre_target: "champ", action: "input->filtre#filtrer" } %>
+
+                  <ul class="appel__liste appel__liste--compacte">
+                    <% reste.each do |eleve| %>
+                      <li class="appel__ligne" data-filtre-target="ligne"
+                          data-recherche="<%= "#{eleve.first_name} #{eleve.last_name} #{eleve.student_number}" %>">
+                        <span class="appel__nom">
+                          <%= eleve.first_name %> <%= eleve.last_name %>
+                          <span class="appel__num"><%= eleve.student_number %></span>
+                        </span>
+                        <span class="appel__portee">
+                          <%= button_to "Toute la matière",
+                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "matiere"),
+                                        form: { data: { turbo: false } }, class: "btn btn-sm btn-portee",
+                                        title: "Attendu à chaque séance et proposé à l'appel" %>
+                          <%= button_to "Ce relevé",
+                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "releve"),
+                                        form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-ink",
+                                        title: "Une ligne dans ce tableau, sans figurer aux appels" %>
+                        </span>
+                      </li>
+                    <% end %>
+                  </ul>
+                  <p class="text-grey mt-2 mb-0" data-filtre-target="vide" hidden>
+                    <small>Aucun étudiant ne correspond à cette recherche.</small>
+                  </p>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
           <div class="card card-body p-4 mt-4">
             <a class="appel__replier" data-bs-toggle="collapse" href="#ajoutEleve" role="button"
                aria-expanded="false" aria-controls="ajoutEleve">
-              Ajouter un étudiant à la liste
+              Ajouter un étudiant absent de la promotion
             </a>
             <p class="text-grey mt-2 mb-0"><small>
               Pour un nouvel inscrit, un auditeur, ou quelqu'un que la scolarité

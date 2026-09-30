@@ -4,13 +4,13 @@
 class AttendanceSheet
   attr_reader :ue, :teacher, :lessons
 
-  def initialize(teacher:, ue:, passees_seulement: true)
+  def initialize(teacher:, ue:, passees_seulement: false)
     @teacher = teacher
     @ue = ue
     scope = Lesson.where(teacher: teacher, ue: ue).includes(:groups)
-    # Une séance compte dès qu'elle a commencé : l'appel se fait pendant le
-    # cours, et l'enseignant doit le retrouver dans son bilan sans attendre la
-    # fin. Une séance future déjà renseignée compte aussi.
+    # Les séances à venir figurent elles aussi : un certificat médical arrive
+    # souvent avant le cours, et il n'y a aucune raison d'attendre le jour dit
+    # pour porter l'absence justifiée.
     if passees_seulement
       scope = scope.where("starts_at <= :t OR lessons.id IN (:avec)",
                           t: Time.current,
@@ -19,11 +19,37 @@ class AttendanceSheet
     @lessons = scope.order(:starts_at).to_a
   end
 
+  # Une séance qui n'a pas encore commencé : la colonne se lit autrement, on y
+  # anticipe plutôt qu'on n'y constate.
+  def future?(lesson) = lesson.starts_at > Time.current
+
+  def passees = lessons.reject { |l| future?(l) }
+  def a_venir = lessons.select { |l| future?(l) }
+
+  # Les comptes ajoutés à la main sur la liste de la matière : un étudiant
+  # d'un autre groupe, d'une autre promotion, ou que la scolarité n'a pas
+  # rattaché. `permanent` dit s'il est attendu à chaque séance ou s'il ne
+  # figure que dans ce relevé.
+  def comptes_ajoutes
+    @comptes_ajoutes ||= ue ? UeGuest.where(ue: ue).where.not(user_id: nil)
+                                     .pluck(:user_id, :permanent).to_h : {}
+  end
+
   def eleves
     @eleves ||= begin
       ids = attendus_par_seance.values.reduce(Set.new, :|)
+      ids |= comptes_ajoutes.keys
       User.where(id: ids.to_a).order(:last_name, :first_name).to_a
     end
+  end
+
+  # La promotion, moins ceux qui figurent déjà dans la grille : ce qu'on peut
+  # encore ajouter.
+  def reste_de_la_promo
+    return User.none if ue.nil?
+    User.kept.where(teacher: nil, batch_id: ue.batch_id)
+        .where.not(id: eleves.map(&:id))
+        .order(:last_name, :first_name)
   end
 
   # Les lignes sans compte. Deux origines qui se rejoignent sur la même clé :
@@ -84,9 +110,13 @@ class AttendanceSheet
                    .pluck(:group_id, :user_id)
                    .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(g, u), h| h[g] << u }
 
+      # Les comptes inscrits sur toute la matière sont attendus partout ; ceux
+      # ajoutés pour ce seul relevé apparaissent en ligne mais restent estompés.
+      permanents = comptes_ajoutes.select { |_, p| p }.keys
+
       table = {}
       avec_groupes.each do |l|
-        table[l.id] = l.group_ids.flat_map { |g| par_groupe[g] }.to_set
+        table[l.id] = (l.group_ids.flat_map { |g| par_groupe[g] } + permanents).to_set
       end
 
       unless sans_groupes.empty?
@@ -95,7 +125,7 @@ class AttendanceSheet
                      .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(b, u), h| h[b] << u }
         auditeurs = ue ? GroupMembership.where(group_id: ue.group_ids).pluck(:user_id) : []
         sans_groupes.each do |l|
-          table[l.id] = (promos[l.batch_id] + auditeurs).to_set
+          table[l.id] = (promos[l.batch_id] + auditeurs + permanents).to_set
         end
       end
       table

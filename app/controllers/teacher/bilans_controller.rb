@@ -64,10 +64,18 @@ class Teacher::BilansController < ApplicationController
     # ce relevé, pour une personne venue une fois.
     permanent = params[:portee] != "releve"
 
-    invite = UeGuest.new(ue: @ue, permanent: permanent,
-                         first_name: params[:guest_first_name].to_s.strip,
-                         last_name: params[:guest_last_name].to_s.strip,
-                         student_number: params[:guest_student_number].to_s.strip)
+    invite = if params[:user_id].present?
+               # Un étudiant de la promotion qui n'était pas prévu dans ce
+               # groupe : on le rattache par son compte, pas par son nom.
+               eleve = User.kept.where(teacher: nil).find(params[:user_id])
+               UeGuest.find_or_initialize_by(ue: @ue, user_id: eleve.id)
+                      .tap { |g| g.permanent = permanent }
+             else
+               UeGuest.new(ue: @ue, permanent: permanent,
+                           first_name: params[:guest_first_name].to_s.strip,
+                           last_name: params[:guest_last_name].to_s.strip,
+                           student_number: params[:guest_student_number].to_s.strip)
+             end
 
     if invite.save
       suite = permanent ? "Il sera attendu à chaque séance." : "Il ne figure que dans ce relevé."
