@@ -1,0 +1,100 @@
+// Motifs d'inspiration polynésienne.
+//
+// Le vocabulaire retenu est volontairement abstrait — triangles, chevrons,
+// losanges, pointillés — celui des bordures de tapa et des tīfaifai. Les
+// symboles figuratifs du tatau portent des significations précises qu'un
+// habillage de site web n'a pas à s'approprier ; ils sont écartés.
+//
+// Tout est en SVG encodé dans la feuille de style : aucun fichier à charger,
+// et les motifs se teintent avec les couleurs de la charte.
+
+@function sans-diese($couleur) {
+  @return str-slice("#{$couleur}", 2);
+}
+
+// Frise de triangles alternés, la bordure la plus courante d'un tapa.
+@function frise-triangles($couleur, $opacite: .5) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='14' viewBox='0 0 32 14'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.4' stroke-linejoin='round' opacity='#{$opacite}'%3E%3Cpath d='M0 11 L8 2 L16 11 L24 2 L32 11'/%3E%3Cpath d='M0 13 H32' opacity='.45'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+// Losanges enlacés, trame de fond large et très pâle.
+@function trame-losanges($couleur, $opacite: .25) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1' opacity='#{$opacite}'%3E%3Cpath d='M32 0 L64 32 L32 64 L0 32 Z'/%3E%3Cpath d='M32 16 L48 32 L32 48 L16 32 Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+// Tressage serré, pour les pieds de page et les surfaces sombres.
+@function trame-tressage($couleur, $opacite: .18) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.2' opacity='#{$opacite}'%3E%3Cpath d='M0 6 H24 M0 18 H24 M6 0 V24 M18 0 V24'/%3E%3Cpath d='M0 0 L6 6 M18 18 L24 24 M24 0 L18 6 M6 18 L0 24' opacity='.6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+// --- bandes décoratives ---
+
+// Frise autonome, à poser entre deux sections.
+.frise {
+  height: 14px;
+  background-image: frise-triangles($blue, .45);
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
+.frise--danger { background-image: frise-triangles($danger, .55); }
+
+// Frise dégradée sur les bords : elle naît et s'éteint, plutôt que de buter
+// contre le bord de l'écran.
+.frise--fondue {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+}
+
+// --- applications ---
+
+// Le filet sous les titres de section devient une frise.
+.section-head h2::after {
+  width: 7rem;
+  height: 12px;
+  border-radius: 0;
+  background: frise-triangles($blue, .55) repeat-x center;
+}
+
+// Le bandeau d'accueil porte une trame de losanges en filigrane, sous les
+// halos de marque qui existaient déjà.
+.band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: trame-losanges($blue, .22);
+  -webkit-mask-image: radial-gradient(70% 90% at 82% 22%, #000, transparent 72%);
+  mask-image: radial-gradient(70% 90% at 82% 22%, #000, transparent 72%);
+}
+
+// Le pied de page reçoit une frise en surplomb et un tressage discret.
+.footer {
+  position: relative;
+  background-image: trame-tressage($blue, .12);
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: frise-triangles($blue, .4) repeat-x center;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+// Les pages vides ne sont plus une phrase seule au milieu du blanc.
+.agenda__vide {
+  position: relative;
+  padding-top: 2.6rem;
+  background-image: frise-triangles($blue, .35);
+  background-repeat: repeat-x;
+  background-position: center .9rem;
+}

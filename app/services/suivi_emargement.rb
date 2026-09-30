@@ -7,8 +7,13 @@
 # Une séance compte dès qu'elle a commencé — l'appel se fait pendant le cours —
 # et les séances à venir sont hors du calcul.
 class SuiviEmargement
-  Ligne = Struct.new(:enseignant, :libelle, :seances, :appelees, :validees,
-                     :dernier_appel, keyword_init: true) do
+  Ligne = Struct.new(:enseignant, :libelle, :seances, :appelees, :en_seance,
+                     :validees, :dernier_appel, keyword_init: true) do
+    # Une séance renseignée après coup depuis le relevé compte autant qu'un
+    # appel pris en cours : le registre est tenu. Les distinguer dit seulement
+    # quelle pratique s'installe.
+    def apres_coup = appelees - en_seance
+
     def taux
       return nil if seances.zero?
       (100.0 * appelees / seances).round
@@ -41,8 +46,13 @@ class SuiviEmargement
       seances = Lesson.where(batch: @batch)
                       .where("starts_at <= ?", @maintenant)
                       .includes(:teacher).to_a
+      # Une séance est tenue dès qu'elle porte un pointage, qu'il vienne de
+      # l'appel en salle ou du relevé rempli plus tard.
       avec_appel = Attendance.where(lesson_id: seances.map(&:id))
                              .distinct.pluck(:lesson_id).to_set
+      # Le code n'est posé que par l'ouverture de l'appel : sa présence
+      # distingue les deux pratiques.
+      ouvertes = seances.select { |l| l.attendance_code.present? }.map(&:id).to_set
 
       seances.group_by { |l| l.teacher_id || l.teacher_label.presence }
              .filter_map { |_, groupe|
@@ -56,6 +66,7 @@ class SuiviEmargement
                          libelle: nettoyer(libelle),
                          seances: groupe.size,
                          appelees: appelees.size,
+                         en_seance: appelees.count { |l| ouvertes.include?(l.id) },
                          validees: groupe.count(&:valide?),
                          dernier_appel: appelees.map(&:starts_at).max)
              }
@@ -65,6 +76,8 @@ class SuiviEmargement
 
   def seances    = lignes.sum(&:seances)
   def appelees   = lignes.sum(&:appelees)
+  def en_seance  = lignes.sum(&:en_seance)
+  def apres_coup = lignes.sum(&:apres_coup)
   def validees   = lignes.sum(&:validees)
   def enseignants = lignes.size
 

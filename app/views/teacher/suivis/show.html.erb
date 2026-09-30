@@ -35,8 +35,8 @@
             <span class="soutien__label">sur <%= @suivi.seances %> séances passées</span>
           </div>
           <div class="soutien__chiffre">
-            <span class="soutien__valeur"><%= @suivi.validees %></span>
-            <span class="soutien__label">appels validés</span>
+            <span class="soutien__valeur"><%= @suivi.en_seance %><em> / <%= @suivi.apres_coup %></em></span>
+            <span class="soutien__label">appel en salle / saisi depuis le relevé</span>
           </div>
           <div class="soutien__chiffre">
             <span class="soutien__valeur"><%= @suivi.par_etat[:jamais].to_i + @suivi.par_etat[:sans_compte].to_i %></span>
@@ -73,7 +73,9 @@
               <tr>
                 <th>Intervenant</th>
                 <th class="recap__nombre">Séances</th>
-                <th class="recap__nombre">Appels</th>
+                <th class="recap__nombre">Tenues</th>
+                <th class="recap__nombre" title="Appel ouvert pendant le cours">En salle</th>
+                <th class="recap__nombre" title="Renseigné après coup depuis le relevé">Après coup</th>
                 <th class="recap__nombre">Validés</th>
                 <th class="recap__nombre">Taux</th>
                 <th>Dernier appel</th>
@@ -91,6 +93,8 @@
                   </td>
                   <td class="recap__nombre"><%= ligne.seances %></td>
                   <td class="recap__nombre"><strong><%= ligne.appelees %></strong></td>
+                  <td class="recap__nombre"><%= ligne.en_seance.positive? ? ligne.en_seance : "—" %></td>
+                  <td class="recap__nombre"><%= ligne.apres_coup.positive? ? ligne.apres_coup : "—" %></td>
                   <td class="recap__nombre"><%= ligne.validees %></td>
                   <td class="recap__nombre"><%= ligne.taux ? "#{ligne.taux} %" : "—" %></td>
                   <td class="soutien__num">
@@ -106,6 +110,13 @@
         </div>
 
         <p class="matieres__regle mt-3">
+          <strong>Tenues</strong> : séances portant au moins un pointage, quelle que
+          soit la façon dont il a été saisi. <strong>En salle</strong> compte celles où
+          l'appel a été ouvert pendant le cours, <strong>après coup</strong> celles
+          renseignées plus tard depuis l'onglet Présences. Les deux tiennent le
+          registre ; les distinguer dit seulement quelle pratique s'installe.
+        </p>
+        <p class="matieres__regle">
           <strong>Sans compte</strong> : ADE nomme un intervenant qu'aucun compte ne
           représente. Il ne peut pas faire l'appel, et ce n'est pas un oubli de sa part.
         </p>

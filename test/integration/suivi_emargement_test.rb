@@ -67,6 +67,40 @@ class SuiviEmargementTest < ActionDispatch::IntegrationTest
     assert_equal :sans_compte, lignes["Mousson Namata"].etat
   end
 
+  # Une séance renseignée depuis l'onglet Présences compte autant qu'un appel
+  # pris en salle : dans les deux cas le registre est tenu.
+  test "une séance renseignée depuis le relevé compte comme tenue" do
+    releve = seance(@absent, 7.days.ago)
+    releve.attendances.create!(user: @eleve, status: :present, declared_by: :teacher)
+
+    suivi = SuiviEmargement.new(@batch)
+    ligne = suivi.lignes.find { |l| l.libelle == "Ortega Test" }
+    assert_equal 1, ligne.appelees
+    assert_equal 0, ligne.en_seance, "aucun code n'a été posé : l'appel n'a pas été ouvert"
+    assert_equal 1, ligne.apres_coup
+  end
+
+  test "les deux pratiques se distinguent sans se confondre" do
+    @a1.update!(attendance_code: "1234")   # appel ouvert en salle
+    releve = seance(@assidu, 8.days.ago)   # renseigné après coup
+    releve.attendances.create!(user: @eleve, status: :present, declared_by: :teacher)
+
+    suivi = SuiviEmargement.new(@batch)
+    ligne = suivi.lignes.find { |l| l.libelle == "Adam Test" }
+    assert_equal 3, ligne.appelees
+    assert_equal 1, ligne.en_seance
+    assert_equal 2, ligne.apres_coup
+    assert_equal ligne.appelees, ligne.en_seance + ligne.apres_coup
+  end
+
+  test "la page explique la différence entre les deux colonnes" do
+    sign_in @admin
+    get teacher_suivi_path(batch_id: @batch.id)
+    assert_match "En salle", response.body
+    assert_match "Après coup", response.body
+    assert_match "quelle pratique s'installe", response.body
+  end
+
   test "les intervenants sont classés par volume de séances" do
     libelles = SuiviEmargement.new(@batch).lignes.map(&:libelle)
     assert_equal "Ortega Test", libelles.first, "trois séances, c'est là que ça pèse"

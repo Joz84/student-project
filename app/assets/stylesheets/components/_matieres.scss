@@ -855,3 +855,12 @@
 .suivi__etat--partiel     { background: mix($notice, #fff, 34%); border-color: $notice; color: $ink; }
 .suivi__etat--jamais      { background: mix($red, #fff, 20%); border-color: mix($red, #fff, 55%); color: $ink; }
 .suivi__etat--sans_compte { background: $surface; border-color: $line; color: $muted; }
+
+// Deux nombres dans un même compteur : le second, plus discret, se lit comme
+// un complément et non comme une seconde mesure.
+.soutien__valeur em {
+  font-style: normal;
+  font-size: 1rem;
+  font-weight: 600;
+  color: $muted;
+}
