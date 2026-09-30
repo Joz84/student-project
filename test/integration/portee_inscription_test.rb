@@ -126,6 +126,63 @@ class PorteeInscriptionTest < ActionDispatch::IntegrationTest
     assert_includes sheet.invites.map(&:libelle), "Moana Faatau"
   end
 
+  # --- ce que l'étudiant ajouté voit de son côté ---
+
+  test "l'étudiant pointé en rattrapage voit la séance et son état" do
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "present", portee: "seance" }
+    sign_out @prof
+
+    refute @aujourdhui.concerne?(@promo), "ce n'est pas une séance de ses groupes"
+
+    sign_in @promo
+    get root_path
+    assert_response :success
+    assert_match @aujourdhui.title, response.body, "la séance doit apparaître chez lui"
+    assert_match "Présence enregistrée", response.body
+    assert_match "par votre enseignant", response.body
+    assert_match "rattrapage", response.body
+  end
+
+  test "une séance où il n'est ni attendu ni pointé reste invisible" do
+    sign_out @prof
+    sign_in @promo
+    get root_path
+    refute_match @demain.title, response.body
+  end
+
+  test "un pointage d'absence lui montre aussi la séance" do
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "excused", portee: "seance" }
+    sign_out @prof
+
+    sign_in @promo
+    get root_path
+    assert_match @aujourdhui.title, response.body
+    refute_match "Présence enregistrée", response.body
+  end
+
+  test "inscrit sur toute la matière, il voit les séances à venir" do
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "present", portee: "matiere" }
+    sign_out @prof
+
+    sign_in @promo
+    get root_path
+    assert_match @demain.title, response.body, "les séances suivantes aussi"
+    refute_match "rattrapage", response.body, "il fait désormais partie de la liste"
+  end
+
+  test "l'étudiant de la liste reste maître de son propre pointage" do
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "present", portee: "matiere" }
+    sign_out @prof
+
+    sign_in @promo
+    post lesson_attendance_path(@aujourdhui), params: { code: @aujourdhui.attendance_code }
+    assert_equal 1, @aujourdhui.attendances.where(user: @promo).count
+  end
+
   private
 
   def seance(debut)

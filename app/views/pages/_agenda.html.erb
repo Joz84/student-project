@@ -57,6 +57,11 @@
               <%= creneau(seance) %>
               <% if seance.room.present? %> · <%= seance.room %><% end %>
               <% if seance.teacher_label.present? && (!current_user.teacher? || toutes) %> · <%= seance.teacher_label.sub(/\s*\((M\.|Mme)\)\z/, "") %><% end %>
+              <% unless current_user.teacher? || seance.concerne?(current_user) %>
+                <span class="agenda__orphelin" title="Cette séance n'est pas celle de vos groupes : votre enseignant vous y a ajouté">
+                  rattrapage
+                </span>
+              <% end %>
               <% if toutes && seance.teacher.nil? %>
                 <span class="agenda__orphelin" title="Aucun compte n'est rattaché : personne ne voit cette séance">
                   sans compte enseignant
@@ -68,8 +73,13 @@
           <div class="seance__action">
             <% if current_user.teacher? %>
               <%= link_to "Feuille d'appel", teacher_lesson_path(seance), class: "btn btn-danger btn-sm" %>
-            <% elsif seance.attendances.find_by(user: current_user)&.statut_present? %>
-              <span class="seance__etat seance__etat--ok">Présence enregistrée</span>
+            <% elsif (pointage = seance.attendances.find_by(user: current_user))&.statut_present? %>
+              <span class="seance__etat seance__etat--ok">
+                Présence enregistrée
+                <% if pointage.by_teacher? %>
+                  <small>par votre enseignant</small>
+                <% end %>
+              </span>
             <% elsif en_cours && seance.pointage_ouvert? %>
               <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                       data-bs-target="#pointage<%= seance.id %>">Je suis présent</button>

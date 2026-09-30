@@ -1,11 +1,20 @@
 module LessonsHelper
   # Les séances du jour et des prochains jours pour l'étudiant connecté.
+  #
+  # Ses groupes d'abord, mais aussi toute séance où un pointage le concerne :
+  # un enseignant qui l'ajoute en rattrapage doit lui donner la même vue qu'aux
+  # autres, sans quoi il est marqué présent sans jamais le savoir.
   def prochaines_seances(user, limite: 6)
     return Lesson.none if user.nil? || user.teacher?
-    Lesson.where(batch_id: [user.batch_id, *user.groups.joins(:ue).pluck("ues.batch_id")].uniq)
-          .where("ends_at >= ?", Time.current)
+
+    promos = [user.batch_id, *user.groups.joins(:ue).pluck("ues.batch_id")].uniq
+    pointees = Attendance.where(user_id: user.id).pluck(:lesson_id)
+
+    Lesson.where("ends_at >= ?", Time.current)
+          .where("batch_id IN (:promos) OR id IN (:pointees)",
+                 promos: promos, pointees: pointees.presence || [0])
           .order(:starts_at).limit(60)
-          .select { |l| l.concerne?(user) }
+          .select { |l| l.concerne?(user) || pointees.include?(l.id) }
           .first(limite)
   end
 
