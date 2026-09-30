@@ -56,6 +56,7 @@ Rails.application.routes.draw do
     resource :bilan, only: [:show, :update], controller: "bilans" do
       get  :export
       post :import
+      post :eleve      # ajoute une ligne à la liste de la matière
     end
     resources :lessons, only: [:new, :create, :show] do
       member do

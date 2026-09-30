@@ -26,13 +26,41 @@ class AttendanceSheet
     end
   end
 
-  # Les lignes saisies à la main n'ont pas de compte : elles forment des
-  # lignes supplémentaires, identifiées par leur libellé.
+  # Les lignes sans compte. Deux origines qui se rejoignent sur la même clé :
+  # un pointage saisi pendant un appel, et une inscription faite à la main sur
+  # la liste de la matière. Une personne ajoutée à la liste apparaît donc même
+  # si elle n'a encore été pointée nulle part.
+  Invite = Struct.new(:cle, :nom, :prenom, :numero, :pointages, keyword_init: true) do
+    def libelle
+      [prenom, nom].map(&:presence).compact.join(" ").presence&.titleize ||
+        numero.presence || "Sans nom"
+    end
+
+    def statut(lesson_id) = pointages[lesson_id]&.status
+  end
+
   def invites
-    @invites ||= Attendance.where(lesson_id: lessons.map(&:id), user_id: nil)
-                           .group_by { |a| [a.guest_last_name.to_s.strip.downcase,
-                                            a.guest_first_name.to_s.strip.downcase,
-                                            a.guest_student_number.to_s.strip] }
+    @invites ||= begin
+      lignes = {}
+
+      # Ce que la liste de la matière déclare.
+      (ue ? UeGuest.where(ue: ue).order(:last_name, :first_name) : []).each do |g|
+        lignes[g.cle] ||= Invite.new(cle: g.cle, nom: g.last_name, prenom: g.first_name,
+                                     numero: g.student_number, pointages: {})
+      end
+
+      # Ce que les appels ont enregistré. Le libellé du pointage fait foi
+      # quand la ligne n'a pas été déclarée : c'est la saisie la plus récente.
+      Attendance.where(lesson_id: lessons.map(&:id), user_id: nil).each do |a|
+        cle = UeGuest.cle_de(a.guest_last_name, a.guest_first_name, a.guest_student_number)
+        ligne = lignes[cle] ||= Invite.new(cle: cle, nom: a.guest_last_name,
+                                           prenom: a.guest_first_name,
+                                           numero: a.guest_student_number, pointages: {})
+        ligne.pointages[a.lesson_id] = a
+      end
+
+      lignes.values.sort_by { |i| [i.nom.to_s.downcase, i.prenom.to_s.downcase, i.numero.to_s] }
+    end
   end
 
   def pointages

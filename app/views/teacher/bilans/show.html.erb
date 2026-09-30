@@ -82,17 +82,23 @@
                     </tr>
                   <% end %>
 
-                  <% @sheet.invites.each do |(nom, prenom, numero), pointages| %>
+                  <% @sheet.invites.each_with_index do |invite, i| %>
                     <tr class="bilan__ligne-invite">
                       <th class="bilan__eleve">
-                        <%= [prenom, nom].map(&:presence).compact.join(" ").titleize.presence || numero %>
-                        <span class="team-card__muted">saisie manuelle</span>
+                        <%= invite.libelle %>
+                        <span class="team-card__muted">
+                          ajouté à la main<%= " · #{invite.numero}" if invite.numero.present? %>
+                        </span>
+                        <%= hidden_field_tag "invites[#{i}][nom]", invite.nom, id: nil %>
+                        <%= hidden_field_tag "invites[#{i}][prenom]", invite.prenom, id: nil %>
+                        <%= hidden_field_tag "invites[#{i}][numero]", invite.numero, id: nil %>
                       </th>
-                      <% par_seance = pointages.index_by(&:lesson_id) %>
                       <% @sheet.lessons.each do |l| %>
-                        <% a = par_seance[l.id] %>
-                        <td class="bilan__case bilan__case--<%= a&.status || 'vide' %>">
-                          <span class="bilan__fixe"><%= a ? Attendance::LIBELLES[a.status] : "—" %></span>
+                        <% statut = invite.statut(l.id) %>
+                        <td class="bilan__case bilan__case--<%= statut || 'vide' %>">
+                          <%= select_tag "invites[#{i}][statuts][#{l.id}]",
+                                options_for_select(Attendance::LIBELLES.map { |k, v| [v, k] }, statut),
+                                include_blank: "—", class: "bilan__select", id: nil %>
                         </td>
                       <% end %>
                     </tr>
@@ -105,6 +111,32 @@
               <%= submit_tag "Enregistrer la grille", class: "btn btn-danger" %>
             </div>
           <% end %>
+
+          <div class="card card-body p-4 mt-4">
+            <a class="appel__replier" data-bs-toggle="collapse" href="#ajoutEleve" role="button"
+               aria-expanded="false" aria-controls="ajoutEleve">
+              Ajouter un étudiant à la liste
+            </a>
+            <p class="text-grey mt-2 mb-0"><small>
+              Pour un nouvel inscrit, un auditeur, ou quelqu'un que la scolarité
+              n'a pas encore rattaché à cette matière. Il apparaîtra en bas de la
+              grille et vous pourrez renseigner ses séances comme les autres.
+            </small></p>
+
+            <div class="collapse mt-3 <%= "show" if flash.now[:alert] %>" id="ajoutEleve">
+              <%= form_with url: eleve_teacher_bilan_path, method: :post,
+                             class: "appel__saisie", data: { turbo: false } do %>
+                <%= hidden_field_tag :ue_id, @ue.id %>
+                <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
+                <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
+                <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+                <%= submit_tag "Ajouter", class: "btn btn-danger" %>
+              <% end %>
+              <p class="text-grey mt-2 mb-0"><small>
+                Aucun champ n'est obligatoire ni vérifié : saisissez ce dont vous disposez.
+              </small></p>
+            </div>
+          </div>
         <% end %>
       <% end %>
 

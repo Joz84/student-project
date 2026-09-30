@@ -3,6 +3,7 @@ class Teacher::BilanPolicy < ApplicationPolicy
   def update? = show?
   def export? = show?
   def import? = show?
+  def eleve?  = show?
 
   class Scope < ApplicationPolicy::Scope
     def resolve = user&.teacher? ? scope.all : scope.none

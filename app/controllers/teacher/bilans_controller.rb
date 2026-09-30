@@ -2,7 +2,7 @@
 # lignes. Affichage, export et import partagent la même grille.
 class Teacher::BilansController < ApplicationController
   before_action :autoriser
-  before_action :charger_grille, except: [:import]
+  before_action :charger_grille, except: [:import, :eleve]
 
   def show
   end
@@ -14,6 +14,13 @@ class Teacher::BilansController < ApplicationController
         lesson = @sheet.lessons.find { |l| l.id.to_s == lesson_id.to_s } or next
         par_eleve.each do |user_id, statut|
           modifiees += 1 if appliquer(lesson, user_id, statut)
+        end
+      end
+
+      (params[:invites] || {}).each_value do |ligne|
+        (ligne[:statuts] || {}).each do |lesson_id, statut|
+          lesson = @sheet.lessons.find { |l| l.id.to_s == lesson_id.to_s } or next
+          modifiees += 1 if appliquer_invite(lesson, ligne, statut)
         end
       end
     end
@@ -44,6 +51,25 @@ class Teacher::BilansController < ApplicationController
     end
   end
 
+  # Ajoute une personne sans compte à la liste de la matière. Elle apparaît
+  # alors dans la grille, sans être encore pointée nulle part — c'est
+  # précisément ce qu'un pointage seul ne permettait pas d'exprimer.
+  def eleve
+    @ue = Ue.find(params[:ue_id])
+    invite = UeGuest.new(ue: @ue,
+                         first_name: params[:guest_first_name].to_s.strip,
+                         last_name: params[:guest_last_name].to_s.strip,
+                         student_number: params[:guest_student_number].to_s.strip)
+
+    if invite.save
+      redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
+                  notice: "#{invite.nom_complet} ajouté à la liste de #{@ue.name}."
+    else
+      redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
+                  alert: invite.errors.full_messages.to_sentence
+    end
+  end
+
   private
 
   def autoriser
@@ -67,6 +93,29 @@ class Teacher::BilansController < ApplicationController
     end
     return false if existant&.status == statut
     (existant || Attendance.new(lesson_id: lesson.id, user_id: user_id))
+      .update!(status: statut, declared_by: :teacher, declared_at: Time.current)
+    true
+  end
+
+  # Même logique pour une ligne sans compte, retrouvée sur sa clé plutôt que
+  # sur un identifiant : c'est ce qui réunit une inscription faite ici et un
+  # pointage pris pendant l'appel.
+  def appliquer_invite(lesson, ligne, statut)
+    cle = UeGuest.cle_de(ligne[:nom], ligne[:prenom], ligne[:numero])
+    existant = Attendance.where(lesson_id: lesson.id, user_id: nil).find do |a|
+      UeGuest.cle_de(a.guest_last_name, a.guest_first_name, a.guest_student_number) == cle
+    end
+
+    if statut.blank?
+      return false if existant.nil?
+      existant.destroy!
+      return true
+    end
+    return false if existant&.status == statut
+
+    (existant || Attendance.new(lesson_id: lesson.id,
+                                guest_last_name: ligne[:nom], guest_first_name: ligne[:prenom],
+                                guest_student_number: ligne[:numero]))
       .update!(status: statut, declared_by: :teacher, declared_at: Time.current)
     true
   end

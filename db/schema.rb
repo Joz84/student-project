@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_28_000000) do
+ActiveRecord::Schema[7.1].define(version: 2026_09_29_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -430,6 +430,16 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_000000) do
     t.index ["user_id"], name: "index_ue_assessments_on_user_id"
   end
 
+  create_table "ue_guests", force: :cascade do |t|
+    t.bigint "ue_id", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "student_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ue_id"], name: "index_ue_guests_on_ue_id"
+  end
+
   create_table "ues", force: :cascade do |t|
     t.bigint "batch_id", null: false
     t.string "name", null: false
@@ -540,6 +550,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_28_000000) do
   add_foreign_key "tutoring_requests", "users"
   add_foreign_key "ue_assessments", "ues"
   add_foreign_key "ue_assessments", "users"
+  add_foreign_key "ue_guests", "ues"
   add_foreign_key "ues", "batches"
   add_foreign_key "user_skill_statuses", "skills"
   add_foreign_key "user_skill_statuses", "users"

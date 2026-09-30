@@ -129,6 +129,84 @@ class BilanTest < ActionDispatch::IntegrationTest
     assert_equal "present", Attendance.find_by(lesson: @s1, user: hors).status
   end
 
+  # Jusqu'ici une ligne sans compte n'existait qu'au travers d'un pointage :
+  # impossible d'inscrire quelqu'un sans le déclarer présent quelque part.
+  test "l'enseignant ajoute un étudiant à la liste de la matière" do
+    sign_in @prof
+    assert_difference -> { UeGuest.count }, 1 do
+      post eleve_teacher_bilan_path, params: { ue_id: @ue.id,
+        guest_first_name: "Vaiana", guest_last_name: "Tepuhiarii",
+        guest_student_number: "20260999" }
+    end
+    assert_redirected_to teacher_bilan_path(ue_id: @ue.id)
+
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "Vaiana Tepuhiarii", response.body
+    assert_match "ajouté à la main", response.body
+    assert_equal 0, Attendance.where(user_id: nil).count, "l'ajout ne pointe personne"
+  end
+
+  test "un seul des trois champs suffit" do
+    sign_in @prof
+    assert_difference -> { UeGuest.count }, 1 do
+      post eleve_teacher_bilan_path, params: { ue_id: @ue.id, guest_student_number: "20260888" }
+    end
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "20260888", response.body
+  end
+
+  test "une ligne entièrement vide est refusée" do
+    sign_in @prof
+    assert_no_difference -> { UeGuest.count } do
+      post eleve_teacher_bilan_path, params: { ue_id: @ue.id, guest_first_name: " " }
+    end
+    assert_match(/au moins un nom/, flash[:alert])
+  end
+
+  test "les séances d'un étudiant ajouté se renseignent depuis la grille" do
+    UeGuest.create!(ue: @ue, first_name: "Vaiana", last_name: "Tepuhiarii",
+                    student_number: "20260999")
+    sign_in @prof
+
+    patch teacher_bilan_path, params: { ue_id: @ue.id, invites: { "0" => {
+      nom: "Tepuhiarii", prenom: "Vaiana", numero: "20260999",
+      statuts: { @s1.id.to_s => "present", @s2.id.to_s => "excused" }
+    } } }
+
+    assert_equal 2, Attendance.where(user_id: nil).count
+    assert_equal "present", Attendance.find_by(lesson: @s1, user_id: nil).status
+    assert_equal "excused", Attendance.find_by(lesson: @s2, user_id: nil).status
+
+    # Vider une case efface le pointage, comme pour un compte.
+    patch teacher_bilan_path, params: { ue_id: @ue.id, invites: { "0" => {
+      nom: "Tepuhiarii", prenom: "Vaiana", numero: "20260999",
+      statuts: { @s1.id.to_s => "" }
+    } } }
+    assert_nil Attendance.find_by(lesson: @s1, user_id: nil)
+    assert_equal 1, Attendance.where(user_id: nil).count
+  end
+
+  test "un pointage pris pendant l'appel rejoint la ligne de la liste" do
+    UeGuest.create!(ue: @ue, first_name: "Vaiana", last_name: "Tepuhiarii",
+                    student_number: "20260999")
+    # L'enseignant l'avait aussi saisi pendant un appel, avec la même identité.
+    @s1.attendances.create!(guest_first_name: "Vaiana", guest_last_name: "Tepuhiarii",
+                            guest_student_number: "20260999", status: :present,
+                            declared_by: :teacher)
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert_equal 1, sheet.invites.size, "une seule ligne, pas deux"
+    assert_equal "present", sheet.invites.first.statut(@s1.id)
+  end
+
+  test "un étudiant ne peut pas ajouter de ligne" do
+    sign_in @a
+    assert_no_difference -> { UeGuest.count } do
+      post eleve_teacher_bilan_path, params: { ue_id: @ue.id, guest_last_name: "Intrus" }
+    end
+    assert_redirected_to root_path
+  end
+
   test "un étudiant n'accède pas au bilan" do
     sign_in @a
     get teacher_bilan_path
