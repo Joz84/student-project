@@ -96,24 +96,9 @@ body::after {
   .text-white { color: $ink !important; }
 }
 
-// Titre de section avec un filet d'accent, plus tenu qu'un titre nu.
-.section-head h2 {
-  position: relative;
-  display: inline-block;
-  padding-bottom: .7rem;
-}
-
-.section-head h2::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 3rem;
-  height: 3px;
-  border-radius: 2px;
-  background: linear-gradient(90deg, $blue, $danger);
-}
+// Rien sous les titres de section : le filet d'accent n'existait que sur les
+// trois pages qui emploient `.section-head`, et cette irrégularité se voyait
+// plus que l'ornement lui-même.
 
 // Filet coloré en haut de carte, repris de .team-card__bar.
 .step {
