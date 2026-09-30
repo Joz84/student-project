@@ -74,13 +74,19 @@ class Teacher::TeamsController < ApplicationController
     load_repartition
   end
 
-  # Où en est chaque élève dans le classement de ses vœux.
+  # Où en est chaque étudiant dans le classement de ses vœux.
   def load_avancement
     eleves = @batch.users.kept.where(teacher: nil)
-                   .includes(:ratings, :speciality)
+                   .includes(:ratings, :speciality, team: :project)
                    .order(:last_name, :first_name)
     @valides, en_cours = eleves.partition(&:booked?)
     @modifies, @non_modifies = en_cours.partition(&:ratings_reordered?)
+
+    # Sans équipe au sens de l'enseignant : aucune équipe du tout, ou l'équipe
+    # d'attente, qui ne donne accès à aucun tableau de bord. Les deux se
+    # ressemblent de l'extérieur et doivent se lire ensemble.
+    @sans_equipe = eleves.select { |u| u.team.nil? || u.team.project_id.nil? }
+    @en_equipe = eleves.size - @sans_equipe.size
   end
 
   # Les équipes de chaque enseignant, en une passe plutôt qu'une requête par projet.

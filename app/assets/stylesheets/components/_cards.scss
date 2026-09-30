@@ -134,3 +134,57 @@
   border-radius: 999px;
   color: $ink;
 }
+
+// Listes dépliantes de l'avancement des équipes. Quatre listes de vingt noms
+// déroulées d'office noient celle qu'on cherche.
+.liste-pliante {
+  width: 100%;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  margin-bottom: .6rem;
+  background: #fff;
+  overflow: hidden;
+}
+
+.liste-pliante__tete {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .7rem .9rem;
+  text-decoration: none;
+  color: $ink;
+  font-weight: 600;
+  font-size: .92rem;
+
+  &:hover { background: $surface; color: $ink; }
+  &[aria-expanded="true"] { border-bottom: 1px solid $line-soft; }
+}
+
+.liste-pliante__puce {
+  flex: 0 0 auto;
+  width: .85rem;
+  height: .85rem;
+  border-radius: 3px;
+  border: 1px solid rgba($ink, .12);
+}
+
+.liste-pliante__titre { flex: 1 1 auto; }
+
+.liste-pliante__compte {
+  flex: 0 0 auto;
+  font-size: .78rem;
+  font-weight: 700;
+  padding: .1rem .55rem;
+  border-radius: 999px;
+  background: $surface;
+  border: 1px solid $line;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+}
+
+.liste-pliante__corps {
+  padding: .8rem .9rem;
+
+  ul { padding-left: 1.2rem; }
+  li { margin-bottom: .25rem; font-size: .88rem; }
+}
