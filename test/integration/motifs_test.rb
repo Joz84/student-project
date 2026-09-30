@@ -22,13 +22,14 @@ class MotifsTest < ActionDispatch::IntegrationTest
     assert_match ".agenda__vide", css
   end
 
-  test "cinq frises sont disponibles, les écailles par défaut" do
+  test "six frises sont disponibles, les chevrons par défaut" do
+    assert_match "M0 4 L14 14 L28 4", css, "les chevrons, motif retenu"
     assert_match "M-16 16 A16 16 0 0 1 16 16", css, "les écailles"
     assert_match "M0 9 Q10 1 20 9", css, "le tressage"
     assert_match "M0 12 Q9 2 18 12", css, "les vagues"
     assert_match "M0 4 L14 14 L28 4", css, "les chevrons"
     assert_match "M14 2 L26 9 L14 16", css, "les losanges"
-    %w[frise--vagues frise--chevrons frise--losanges frise--triangles frise--tressage].each do |variante|
+    %w[frise--vagues frise--ecailles frise--losanges frise--triangles frise--tressage].each do |variante|
       assert_match variante, css
     end
   end

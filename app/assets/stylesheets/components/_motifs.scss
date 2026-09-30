@@ -68,16 +68,16 @@
 
 // Frise autonome, à poser entre deux sections.
 .frise {
-  height: 20px;
-  background-image: frise-ecailles($blue, .55);
+  height: 18px;
+  background-image: frise-chevrons($blue, .5);
   background-repeat: repeat-x;
   background-position: center;
 }
 
-.frise--danger    { background-image: frise-ecailles($danger, .6); }
+.frise--danger    { background-image: frise-chevrons($danger, .55); }
 .frise--tressage  { background-image: frise-tressage($blue, .5); }
 .frise--vagues    { background-image: frise-vagues($blue, .5); }
-.frise--chevrons  { background-image: frise-chevrons($blue, .5); }
+.frise--ecailles  { background-image: frise-ecailles($blue, .55); }
 .frise--losanges  { background-image: frise-losanges($blue, .5); }
 .frise--triangles { background-image: frise-triangles($blue, .5); }
 
@@ -95,7 +95,7 @@
   width: 7rem;
   height: 12px;
   border-radius: 0;
-  background: frise-ecailles($blue, .6) repeat-x center;
+  background: frise-chevrons($blue, .55) repeat-x center;
 }
 
 // Le bandeau d'accueil porte une trame de losanges en filigrane, sous les
@@ -124,7 +124,7 @@
   left: 0;
   right: 0;
   height: 12px;
-  background: frise-ecailles($blue, .5) repeat-x center;
+  background: frise-chevrons($blue, .45) repeat-x center;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
@@ -133,7 +133,7 @@
 .agenda__vide {
   position: relative;
   padding-top: 2.6rem;
-  background-image: frise-ecailles($blue, .45);
+  background-image: frise-chevrons($blue, .42);
   background-repeat: repeat-x;
   background-position: center .7rem;
 }
