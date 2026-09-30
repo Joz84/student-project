@@ -337,6 +337,12 @@ class BilanTest < ActionDispatch::IntegrationTest
     assert_match hors.student_number, response.body
     assert_match 'data-controller="filtre"', response.body, "la même recherche que sur la feuille d'appel"
 
+    # Les deux boutons disent ce qu'ils font, pas où ils écrivent.
+    assert_match "attendre aux séances", response.body
+    assert_match "Ne pas l", response.body
+    refute_match "Ce relevé", response.body
+    refute_match "Toute la matière", response.body
+
     assert_difference -> { UeGuest.count }, 1 do
       post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
     end

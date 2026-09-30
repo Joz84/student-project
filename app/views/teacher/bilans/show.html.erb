@@ -159,7 +159,8 @@
               </a>
               <p class="text-grey mt-2 mb-0"><small>
                 Pour quelqu'un qui n'était pas prévu dans ce TD ou ce TP mais que
-                vous avez en cours. Il prend une ligne dans la grille.
+                vous avez en cours. Il prend une ligne dans la grille — la question
+                est de savoir s'il faut aussi l'attendre aux prochaines séances.
               </small></p>
 
               <div class="collapse mt-3" id="ajoutPromo">
@@ -178,14 +179,14 @@
                           <span class="appel__num"><%= eleve.student_number %></span>
                         </span>
                         <span class="appel__portee">
-                          <%= button_to "Toute la matière",
+                          <%= button_to "L'attendre aux séances",
                                         eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "matiere"),
                                         form: { data: { turbo: false } }, class: "btn btn-sm btn-portee",
-                                        title: "Attendu à chaque séance et proposé à l'appel" %>
-                          <%= button_to "Ce relevé",
+                                        title: "Attendu à chaque séance de #{@ue.name} et proposé à l'appel" %>
+                          <%= button_to "Ne pas l'attendre",
                                         eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "releve"),
                                         form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-ink",
-                                        title: "Une ligne dans ce tableau, sans figurer aux appels" %>
+                                        title: "Une ligne dans ce tableau, sans figurer sur aucune feuille d'appel" %>
                         </span>
                       </li>
                     <% end %>
