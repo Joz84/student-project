@@ -90,13 +90,9 @@
 
 // --- applications ---
 
-// Le filet sous les titres de section devient une frise.
-.section-head h2::after {
-  width: 7rem;
-  height: 12px;
-  border-radius: 0;
-  background: frise-chevrons($blue, .55) repeat-x center;
-}
+// Pas de frise sous les titres : seules trois pages emploient
+// `.section-head`, le motif y apparaissait donc de façon arbitraire. Le filet
+// dégradé d'origine, lui, reste discret assez pour supporter cette irrégularité.
 
 // Le bandeau d'accueil porte une trame de losanges en filigrane, sous les
 // halos de marque qui existaient déjà.

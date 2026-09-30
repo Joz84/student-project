@@ -16,10 +16,19 @@ class MotifsTest < ActionDispatch::IntegrationTest
     assert_match(/%232c6eb8/i, css, "la couleur doit être interpolée dans le SVG")
   end
 
-  test "les motifs habillent le bandeau, le pied de page et les titres" do
+  test "les motifs habillent le bandeau, le pied de page et les pages vides" do
     assert_match ".band::before", css
     assert_match ".footer::before", css
     assert_match ".agenda__vide", css
+  end
+
+  # Trois pages seulement emploient `.section-head` : une frise y aurait été
+  # arbitraire, présente ici et absente ailleurs.
+  test "aucune frise sous les titres de section" do
+    regle = css[/\.section-head h2::after[^{]*\{[^}]*\}/m]
+    assert regle, "le filet d'origine doit subsister"
+    refute_match "data:image/svg", regle, "aucun motif sous les titres"
+    assert_match "linear-gradient", regle
   end
 
   test "six frises sont disponibles, les chevrons par défaut" do
