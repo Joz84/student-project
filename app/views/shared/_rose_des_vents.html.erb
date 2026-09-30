@@ -1,0 +1,61 @@
+<%#
+  Rose des vents polynésienne — le compas stellaire des navigateurs du
+  Pacifique. Les trente-deux repères de l'anneau sont les « maisons » où se
+  lèvent et se couchent les étoiles ; c'est l'instrument, pas un symbole
+  cérémoniel, ce qui le rend légitime dans un habillage d'école.
+
+  Le dessin se teinte par `currentColor` et n'a aucune dimension propre :
+  c'est le conteneur qui décide.
+
+  locals : titre (facultatif, sinon décoratif et muet pour les lecteurs d'écran)
+%>
+<% titre = local_assigns[:titre] %>
+<% centre = 100 %>
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg"
+     class="rose"
+     <%= titre ? "role=img aria-label=\"#{titre}\"".html_safe : 'role="presentation" aria-hidden="true"'.html_safe %>>
+
+  <%# Bordure de tapa : trente-deux triangles sur le pourtour. %>
+  <g class="rose__bordure">
+    <% 32.times do |i| %>
+      <% a = i * 2 * Math::PI / 32 %>
+      <% p1 = [centre + 97 * Math.cos(a), centre + 97 * Math.sin(a)] %>
+      <% p2 = [centre + 89 * Math.cos(a - 0.085), centre + 89 * Math.sin(a - 0.085)] %>
+      <% p3 = [centre + 89 * Math.cos(a + 0.085), centre + 89 * Math.sin(a + 0.085)] %>
+      <polygon points="<%= [p1, p2, p3].map { |x, y| "#{x.round(2)},#{y.round(2)}" }.join(" ") %>" />
+    <% end %>
+  </g>
+
+  <circle cx="100" cy="100" r="86" class="rose__anneau" />
+  <circle cx="100" cy="100" r="72" class="rose__anneau" />
+
+  <%# Les maisons d'étoiles : un repère tous les 11,25°, appuyé aux points cardinaux. %>
+  <g class="rose__maisons">
+    <% 32.times do |i| %>
+      <% a = i * 2 * Math::PI / 32 - Math::PI / 2 %>
+      <% long = (i % 8).zero? ? 14 : ((i % 4).zero? ? 9 : 5) %>
+      <line x1="<%= (centre + 72 * Math.cos(a)).round(2) %>" y1="<%= (centre + 72 * Math.sin(a)).round(2) %>"
+            x2="<%= (centre + (72 + long) * Math.cos(a)).round(2) %>" y2="<%= (centre + (72 + long) * Math.sin(a)).round(2) %>"
+            stroke-width="<%= (i % 8).zero? ? 2.4 : 1.2 %>" />
+    <% end %>
+  </g>
+
+  <%# Les huit rayons : quatre longs pour les cardinaux, quatre courts entre eux. %>
+  <g class="rose__rayons">
+    <% 8.times do |i| %>
+      <% a = i * Math::PI / 4 - Math::PI / 2 %>
+      <% longueur = i.even? ? 66 : 42 %>
+      <% largeur = i.even? ? 11 : 8 %>
+      <% pointe = [centre + longueur * Math.cos(a), centre + longueur * Math.sin(a)] %>
+      <% g = [centre + largeur * Math.cos(a - Math::PI / 2), centre + largeur * Math.sin(a - Math::PI / 2)] %>
+      <% d = [centre + largeur * Math.cos(a + Math::PI / 2), centre + largeur * Math.sin(a + Math::PI / 2)] %>
+      <polygon class="<%= i.even? ? "rose__rayon--majeur" : "rose__rayon--mineur" %>"
+               points="<%= [pointe, g, [centre, centre], d].map { |x, y| "#{x.round(2)},#{y.round(2)}" }.join(" ") %>" />
+    <% end %>
+  </g>
+
+  <%# Le cœur : un losange sur un disque, motif de tapa. %>
+  <circle cx="100" cy="100" r="17" class="rose__coeur" />
+  <polygon points="100,86 114,100 100,114 86,100" class="rose__coeur-losange" />
+  <circle cx="100" cy="100" r="4.5" class="rose__coeur-point" />
+</svg>

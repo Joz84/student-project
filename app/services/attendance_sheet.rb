@@ -117,6 +117,13 @@ class AttendanceSheet
 
   def vide? = lessons.empty?
 
+  # Les intervenants qui ont au moins une séance rattachée à leur compte :
+  # eux seuls ont un relevé à consulter.
+  def self.enseignants_avec_seances
+    User.where(id: Lesson.where.not(teacher_id: nil).select(:teacher_id))
+        .order(:last_name, :first_name)
+  end
+
   # Les UE pour lesquelles l'enseignant a au moins une séance.
   def self.ues_de(teacher)
     Ue.where(id: Lesson.where(teacher: teacher).where.not(ue_id: nil).select(:ue_id))

@@ -8,7 +8,7 @@ import { Controller } from "@hotwired/stimulus"
 // touchée, et la couleur suit aussitôt.
 export default class extends Controller {
   static targets = ["bouton", "etat"]
-  static values = { url: String, ue: Number }
+  static values = { url: String, ue: Number, enseignant: Number }
 
   connect() {
     // Le bouton n'a de sens que sans JavaScript : ici il induirait en erreur.
@@ -23,6 +23,9 @@ export default class extends Controller {
     corps.append("_method", "patch")
     corps.append("ue_id", this.ueValue)
     corps.append("cellule", "1")
+    // L'administrateur peut consulter le relevé d'un collègue : la case doit
+    // partir avec celui à qui elle appartient.
+    if (this.hasEnseignantValue) corps.append("teacher_id", this.enseignantValue)
     corps.append(champ.name, champ.value)
 
     // Une ligne sans compte est retrouvée sur son identité, pas sur un

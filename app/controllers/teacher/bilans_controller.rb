@@ -28,7 +28,7 @@ class Teacher::BilansController < ApplicationController
     # navigateur a déjà mis la couleur à jour.
     return head(:no_content) if params[:cellule].present?
 
-    redirect_to teacher_bilan_path(ue_id: @ue&.id),
+    redirect_to teacher_bilan_path(parametres_de_retour),
                 notice: "#{modifiees} case#{'s' if modifiees > 1} enregistrée#{'s' if modifiees > 1}.", status: :see_other
   end
 
@@ -40,7 +40,7 @@ class Teacher::BilansController < ApplicationController
 
   def import
     @ue = Ue.find(params[:ue_id])
-    sheet = AttendanceSheet.new(teacher: current_user, ue: @ue)
+    sheet = AttendanceSheet.new(teacher: enseignant_consulte, ue: @ue)
     if params[:fichier].blank?
       return redirect_to teacher_bilan_path(ue_id: @ue.id), alert: "Aucun fichier sélectionné.", status: :see_other
     end
@@ -86,9 +86,26 @@ class Teacher::BilansController < ApplicationController
   end
 
   def charger_grille
-    @ues = AttendanceSheet.ues_de(current_user)
+    @enseignant = enseignant_consulte
+    @ues = AttendanceSheet.ues_de(@enseignant)
     @ue = params[:ue_id].present? ? @ues.find_by(id: params[:ue_id]) : @ues.first
-    @sheet = AttendanceSheet.new(teacher: current_user, ue: @ue) if @ue
+    @sheet = AttendanceSheet.new(teacher: @enseignant, ue: @ue) if @ue
+    @enseignants = AttendanceSheet.enseignants_avec_seances if current_user.admin
+  end
+
+  # L'administrateur consulte le relevé de n'importe quel intervenant : il
+  # dépanne, et ne peut le faire à l'aveugle. Les autres ne voient que le leur,
+  # même en forçant le paramètre.
+  def enseignant_consulte
+    return current_user unless current_user.admin && params[:teacher_id].present?
+    User.where(teacher: true).find_by(id: params[:teacher_id]) || current_user
+  end
+
+  # Conserve l'intervenant consulté d'une redirection à l'autre.
+  def parametres_de_retour(supplement = {})
+    base = { ue_id: @ue&.id }
+    base[:teacher_id] = @enseignant.id if @enseignant && @enseignant != current_user
+    base.merge(supplement)
   end
 
   # Une case laissée vide efface le pointage : le bilan doit pouvoir revenir

@@ -259,6 +259,61 @@ class BilanTest < ActionDispatch::IntegrationTest
     refute_match "Ce relevé seulement", response.body
   end
 
+  # L'administrateur dépanne les collègues : il ne peut pas le faire à l'aveugle.
+  test "l'administrateur consulte le relevé d'un autre intervenant" do
+    admin = creer_prof("Serafini")
+    admin.update!(admin: true)
+    sign_in admin
+
+    get teacher_bilan_path(teacher_id: @prof.id, ue_id: @ue.id)
+    assert_response :success
+    assert_match "Relevé de", response.body
+    assert_match "relevé d'un collègue", response.body
+    assert_match @a.last_name, response.body, "les étudiants du collègue s'affichent"
+  end
+
+  test "il peut y écrire, et la case part au bon nom" do
+    admin = creer_prof("Serafini")
+    admin.update!(admin: true)
+    sign_in admin
+
+    patch teacher_bilan_path, params: { teacher_id: @prof.id, ue_id: @ue.id, cellule: "1",
+      statuts: { @s1.id.to_s => { @a.id.to_s => "present" } } }
+    assert_equal 204, response.status
+    assert_equal "present", Attendance.find_by(lesson: @s1, user: @a).status
+  end
+
+  test "un enseignant ordinaire ne voit que le sien, même en forçant l'adresse" do
+    autre = creer_prof("Adam")
+    seance_autre = Lesson.create!(batch: @batch, ue: @autre, teacher: autre,
+                                  title: "TD - Chimie", starts_at: 2.days.ago,
+                                  ends_at: 2.days.ago + 2.hours)
+    seance_autre.attendances.create!(user: @a, status: :present, declared_by: :teacher)
+
+    sign_in @prof
+    get teacher_bilan_path(teacher_id: autre.id, ue_id: @autre.id)
+    assert_response :success
+    refute_match "Relevé de", response.body, "le sélecteur ne lui est pas proposé"
+
+    # La grille servie reste la sienne : la séance du collègue n'y est pas.
+    sienne = AttendanceSheet.new(teacher: @prof, ue: @autre)
+    refute_includes sienne.lessons.map(&:id), seance_autre.id
+    assert_equal sienne.lessons.size,
+                 response.body.scan("bilan__seance").size,
+                 "autant de colonnes que de séances qui lui appartiennent"
+  end
+
+  test "le sélecteur ne liste que les intervenants ayant des séances" do
+    sans_seance = creer_prof("Sansrien")
+    admin = creer_prof("Serafini")
+    admin.update!(admin: true)
+    sign_in admin
+
+    get teacher_bilan_path
+    assert_match @prof.last_name.upcase, response.body
+    refute_match sans_seance.last_name.upcase, response.body
+  end
+
   test "un étudiant n'accède pas au bilan" do
     sign_in @a
     get teacher_bilan_path

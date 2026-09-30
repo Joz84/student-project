@@ -18,6 +18,31 @@
   @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='14' viewBox='0 0 32 14'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.4' stroke-linejoin='round' opacity='#{$opacite}'%3E%3Cpath d='M0 11 L8 2 L16 11 L24 2 L32 11'/%3E%3Cpath d='M0 13 H32' opacity='.45'/%3E%3C/g%3E%3C/svg%3E");
 }
 
+// Tressage de niʻau : deux brins qui passent l'un sur l'autre, la natte de
+// pandanus. Le motif le plus reconnaissable et le plus lisible en petit.
+@function frise-tressage($couleur, $opacite: .55) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='18' viewBox='0 0 40 18'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='2' stroke-linecap='round' opacity='#{$opacite}'%3E%3Cpath d='M0 9 Q10 1 20 9 T40 9'/%3E%3Cpath d='M0 9 Q10 17 20 9 T40 9'/%3E%3C/g%3E%3Ccircle cx='20' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3Ccircle cx='0' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3Ccircle cx='40' cy='9' r='1.6' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3C/svg%3E");
+}
+
+// Vagues enchaînées : les arcs du sillage d'une pirogue, motif de tīfaifai.
+@function frise-vagues($couleur, $opacite: .5) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='16' viewBox='0 0 36 16'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.5' stroke-linecap='round' opacity='#{$opacite}'%3E%3Cpath d='M0 12 Q9 2 18 12 Q27 2 36 12'/%3E%3Cpath d='M0 15 Q9 6 18 15 Q27 6 36 15' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+// Chevrons emboîtés, la frise des bordures de tapa marquisiennes.
+@function frise-chevrons($couleur, $opacite: .5) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='18' viewBox='0 0 28 18'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.6' stroke-linejoin='round' stroke-linecap='round' opacity='#{$opacite}'%3E%3Cpath d='M0 4 L14 14 L28 4'/%3E%3Cpath d='M0 10 L14 20 L28 10' opacity='.55'/%3E%3Cpath d='M0 -2 L14 8 L28 -2' opacity='.55'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+// Losanges à cœur : la maille des tīfaifai, avec un point au centre.
+@function frise-losanges($couleur, $opacite: .5) {
+  $c: sans-diese($couleur);
+  @return url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='18' viewBox='0 0 28 18'%3E%3Cg fill='none' stroke='%23#{$c}' stroke-width='1.4' stroke-linejoin='round' opacity='#{$opacite}'%3E%3Cpath d='M14 2 L26 9 L14 16 L2 9 Z'/%3E%3Cpath d='M0 9 H2 M26 9 H28'/%3E%3C/g%3E%3Ccircle cx='14' cy='9' r='2' fill='%23#{$c}' opacity='#{$opacite}'/%3E%3C/svg%3E");
+}
+
 // Losanges enlacés, trame de fond large et très pâle.
 @function trame-losanges($couleur, $opacite: .25) {
   $c: sans-diese($couleur);
@@ -34,13 +59,17 @@
 
 // Frise autonome, à poser entre deux sections.
 .frise {
-  height: 14px;
-  background-image: frise-triangles($blue, .45);
+  height: 18px;
+  background-image: frise-tressage($blue, .5);
   background-repeat: repeat-x;
   background-position: center;
 }
 
-.frise--danger { background-image: frise-triangles($danger, .55); }
+.frise--danger    { background-image: frise-tressage($danger, .6); }
+.frise--vagues    { background-image: frise-vagues($blue, .5); }
+.frise--chevrons  { background-image: frise-chevrons($blue, .5); }
+.frise--losanges  { background-image: frise-losanges($blue, .5); }
+.frise--triangles { background-image: frise-triangles($blue, .5); }
 
 // Frise dégradée sur les bords : elle naît et s'éteint, plutôt que de buter
 // contre le bord de l'écran.
@@ -56,7 +85,7 @@
   width: 7rem;
   height: 12px;
   border-radius: 0;
-  background: frise-triangles($blue, .55) repeat-x center;
+  background: frise-tressage($blue, .55) repeat-x center;
 }
 
 // Le bandeau d'accueil porte une trame de losanges en filigrane, sous les
@@ -85,7 +114,7 @@
   left: 0;
   right: 0;
   height: 12px;
-  background: frise-triangles($blue, .4) repeat-x center;
+  background: frise-tressage($blue, .45) repeat-x center;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
@@ -94,7 +123,62 @@
 .agenda__vide {
   position: relative;
   padding-top: 2.6rem;
-  background-image: frise-triangles($blue, .35);
+  background-image: frise-tressage($blue, .4);
   background-repeat: repeat-x;
-  background-position: center .9rem;
+  background-position: center .8rem;
+}
+
+// --- rose des vents ---
+// Un seul dessin, décliné par la taille du conteneur et l'opacité. Les
+// couleurs viennent de la charte : bleu pour la structure, vert pour les
+// rayons cardinaux, qui donnent le point d'appui.
+.rose {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: $blue;
+}
+
+.rose__bordure  { fill: currentColor; opacity: .45; }
+.rose__anneau   { stroke: currentColor; stroke-width: 1.4; opacity: .55; }
+.rose__maisons  { stroke: currentColor; opacity: .7; }
+
+.rose__rayon--majeur { fill: $danger; opacity: .85; }
+.rose__rayon--mineur { fill: currentColor; opacity: .38; }
+
+.rose__coeur         { fill: #fff; stroke: currentColor; stroke-width: 1.6; }
+.rose__coeur-losange { fill: currentColor; opacity: .5; }
+.rose__coeur-point   { fill: $danger; }
+
+// La rose en tête des pages d'équipe. Grande et franche sur un écran large,
+// elle passe derrière les onglets en dessous de 992 px plutôt que de manger
+// la hauteur utile d'un téléphone.
+.entete-equipe {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.entete-equipe__rose {
+  position: absolute;
+  top: -2.2rem;
+  right: -1rem;
+  width: 15rem;
+  opacity: .5;
+  pointer-events: none;
+  z-index: 0;
+
+  .rose { color: $blue; }
+}
+
+.entete-equipe .onglets-equipe {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1199px) {
+  .entete-equipe__rose { width: 11rem; top: -1.4rem; opacity: .34; }
+}
+
+@media (max-width: 767px) {
+  .entete-equipe__rose { width: 8rem; top: -1rem; right: -2rem; opacity: .22; }
 }

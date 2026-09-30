@@ -1,3 +1,8 @@
+<%# La rose des vents coiffe les trois pages de l'équipe : c'est le même
+    espace de travail, et le repère visuel le dit avant les onglets. %>
+<div class="entete-equipe">
+  <div class="entete-equipe__rose"><%= render "shared/rose_des_vents" %></div>
+
 <nav class="onglets-equipe">
   <%= link_to "Tableau de bord", team_path(team),
               class: "onglet #{'onglet--actif' if actif == :kanban}" %>
@@ -6,3 +11,4 @@
   <%= link_to "Progression", team_progressions_path(team),
               class: "onglet #{'onglet--actif' if actif == :progression}" %>
 </nav>
+</div>

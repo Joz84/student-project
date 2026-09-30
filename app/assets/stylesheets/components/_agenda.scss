@@ -673,3 +673,39 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   font-size: .72rem;
   color: $muted-soft;
 }
+
+// Sélecteur d'intervenant sur le relevé, réservé à l'administration.
+.bilan__consulte {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .6rem;
+  padding: .7rem .9rem;
+  margin-bottom: 1rem;
+  background: mix($blue, #fff, 7%);
+  border: 1px solid mix($blue, #fff, 30%);
+  border-radius: $radius-sm;
+
+  form { margin: 0; }
+  select { max-width: 18rem; }
+}
+
+.bilan__consulte-libelle {
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted-soft;
+}
+
+// On écrit dans le registre de quelqu'un d'autre : ça doit se voir.
+.bilan__consulte-alerte {
+  flex: 1 1 16rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: $ink;
+  background: mix($notice, #fff, 30%);
+  border: 1px solid $notice;
+  border-radius: 999px;
+  padding: .2rem .7rem;
+}
