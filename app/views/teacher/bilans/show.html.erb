@@ -130,6 +130,21 @@
                 <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
                 <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
                 <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+
+                <fieldset class="portee">
+                  <legend class="portee__titre">Pour combien de temps ?</legend>
+                  <label class="portee__choix">
+                    <%= radio_button_tag :portee, "matiere", true %>
+                    <span><strong>Toute la matière</strong><br>
+                      <small>Attendu à chaque séance, et proposé à l'appel.</small></span>
+                  </label>
+                  <label class="portee__choix">
+                    <%= radio_button_tag :portee, "releve", false %>
+                    <span><strong>Ce relevé seulement</strong><br>
+                      <small>Une ligne dans la grille, sans figurer aux appels.</small></span>
+                  </label>
+                </fieldset>
+
                 <%= submit_tag "Ajouter", class: "btn btn-danger" %>
               <% end %>
               <p class="text-grey mt-2 mb-0"><small>

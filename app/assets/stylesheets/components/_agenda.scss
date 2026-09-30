@@ -593,3 +593,54 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   border: 1px solid $notice;
   color: $ink;
 }
+
+// Choix de portée : la saisie vaut-elle pour cette séance ou pour la matière ?
+.portee {
+  flex: 1 1 100%;
+  border: 1px solid $line;
+  border-radius: $radius-sm;
+  padding: .7rem .9rem;
+  margin: 0;
+  background: #fff;
+}
+
+.portee__titre {
+  float: none;
+  width: auto;
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted-soft;
+  padding: 0;
+  margin-bottom: .45rem;
+}
+
+.portee__choix {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .3rem 0;
+  font-size: .85rem;
+  color: $ink;
+  cursor: pointer;
+
+  input { margin-top: .28rem; flex: 0 0 auto; }
+  small { color: $muted; }
+}
+
+.appel__portee {
+  display: flex;
+  gap: .35rem;
+  flex-wrap: wrap;
+
+  form { margin: 0; }
+}
+
+.btn-portee {
+  border: 1px solid mix($danger, #fff, 55%);
+  background: mix($danger, #fff, 14%);
+  color: $ink;
+
+  &:hover { background: mix($danger, #fff, 26%); }
+}

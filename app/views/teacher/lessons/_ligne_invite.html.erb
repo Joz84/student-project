@@ -1,0 +1,23 @@
+<%# Une personne sans compte inscrite sur toute la matière, pas encore pointée
+    sur cette séance. Un clic la pointe, et elle rejoint alors les lignes
+    ordinaires au rafraîchissement suivant. %>
+<li class="appel__ligne">
+  <span class="appel__nom">
+    <%= invite.nom_complet %>
+    <% if invite.student_number.present? %>
+      <span class="appel__num"><%= invite.student_number %></span>
+    <% end %>
+    <span class="appel__source">inscrit sur la matière · pas encore pointé</span>
+  </span>
+
+  <span class="appel__boutons">
+    <%= form_with url: teacher_lesson_attendances_path(lesson), method: :post,
+                   class: "appel__forme" do %>
+      <%= hidden_field_tag :guest_first_name, invite.first_name %>
+      <%= hidden_field_tag :guest_last_name, invite.last_name %>
+      <%= hidden_field_tag :guest_student_number, invite.student_number %>
+      <%= submit_tag "Marquer présent", class: "btn btn-sm btn-outline-ink",
+            disabled: lesson.valide?, data: { disable_with: "…" } %>
+    <% end %>
+  </span>
+</li>

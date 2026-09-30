@@ -43,6 +43,7 @@ class Lesson < ApplicationRecord
   # ses groupes. À défaut d'UE identifiée, on retombe sur la promotion.
   def concerne?(user)
     return false if user.nil? || user[:drop] || user.teacher?
+    return true if comptes_ajoutes.include?(user.id)
     return (user.group_ids & group_ids).any? if groups.any?
     # Une feuille ajoutée à la main sans groupe ne vise personne d'office :
     # l'enseignant fait l'appel à l'oral et désigne lui-même les présents.
@@ -54,20 +55,36 @@ class Lesson < ApplicationRecord
     ue.present? && user.group_ids.intersect?(ue.group_ids)
   end
 
+  # Les comptes ajoutés à la main sur la liste de la matière, en plus des
+  # groupes : un étudiant d'une autre promotion, ou rattaché à aucun TD, doit
+  # pouvoir être attendu sans qu'on lui invente une appartenance.
+  def comptes_ajoutes
+    return [] if ue_id.nil?
+    @comptes_ajoutes ||= UeGuest.permanentes.where(ue_id: ue_id)
+                                .where.not(user_id: nil).pluck(:user_id)
+  end
+
+  # Les lignes sans compte attendues à chaque séance de la matière.
+  def invites_permanents
+    return UeGuest.none if ue_id.nil?
+    UeGuest.permanentes.where(ue_id: ue_id, user_id: nil).order(:last_name, :first_name)
+  end
+
   def eleves_attendus
-    return User.none if manuelle? && groups.empty?
+    return User.kept.where(id: comptes_ajoutes) if manuelle? && groups.empty?
 
     eleves = User.kept.where(teacher: nil)
     if groups.any?
-      return eleves.joins(:group_memberships)
-                   .where(group_memberships: { group_id: group_ids }).distinct
+      ids = eleves.joins(:group_memberships)
+                  .where(group_memberships: { group_id: group_ids }).distinct.ids
+      return User.kept.where(id: ids | comptes_ajoutes)
     end
     ids = eleves.where(batch_id: batch_id).ids
     if ue
       ids |= eleves.joins(:group_memberships)
                    .where(group_memberships: { group_id: ue.group_ids }).ids
     end
-    User.where(id: ids)
+    User.where(id: ids | comptes_ajoutes)
   end
 
   def verrouille? = locked_at.present?

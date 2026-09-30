@@ -3,7 +3,8 @@ class Teacher::AttendancesController < ApplicationController
 
   # Pointage d'un étudiant, qu'il soit attendu ou venu en rattrapage.
   def update
-    @attendance = @lesson.pointage_de(User.find(params[:id]))
+    eleve = User.find(params[:id])
+    @attendance = @lesson.pointage_de(eleve)
     authorize [:teacher, @attendance]
 
     if params[:status].blank?
@@ -13,7 +14,9 @@ class Teacher::AttendancesController < ApplicationController
       @attendance.update!(status: params[:status], declared_by: :teacher,
                           declared_at: Time.current)
     end
-    redirect_to teacher_lesson_path(@lesson), status: :see_other
+
+    message = inscrire_sur_la_matiere(user: eleve)
+    redirect_to teacher_lesson_path(@lesson), notice: message, status: :see_other
   end
 
   # Étudiant absent de toutes les listes : saisie libre, sans validation de
@@ -32,8 +35,12 @@ class Teacher::AttendancesController < ApplicationController
       redirect_to teacher_lesson_path(@lesson), alert: "Renseignez au moins un nom ou un numéro.", status: :see_other
     else
       @attendance.save!
-      redirect_to teacher_lesson_path(@lesson),
-                  notice: "#{@attendance.nom_complet} ajouté à la feuille d'appel.", status: :see_other
+      suite = inscrire_sur_la_matiere(
+        nom: @attendance.guest_last_name, prenom: @attendance.guest_first_name,
+        numero: @attendance.guest_student_number
+      )
+      redirect_to teacher_lesson_path(@lesson), status: :see_other,
+                  notice: "#{@attendance.nom_complet} ajouté à la feuille d'appel.#{" #{suite}" if suite}"
     end
   end
 
@@ -45,6 +52,27 @@ class Teacher::AttendancesController < ApplicationController
   end
 
   private
+
+  # L'enseignant choisit la portée de sa saisie : cette séance seulement, ou
+  # toute la matière. Le second cas inscrit la personne sur la liste de l'UE,
+  # d'où elle sera attendue à chaque séance suivante.
+  def inscrire_sur_la_matiere(user: nil, nom: nil, prenom: nil, numero: nil)
+    return nil unless params[:portee] == "matiere"
+    return nil if @lesson.ue_id.nil?
+
+    invite = if user
+               UeGuest.find_or_initialize_by(ue_id: @lesson.ue_id, user_id: user.id)
+             else
+               UeGuest.where(ue_id: @lesson.ue_id, user_id: nil).find { |g|
+                 g.cle == UeGuest.cle_de(nom, prenom, numero)
+               } || UeGuest.new(ue_id: @lesson.ue_id, last_name: nom,
+                                first_name: prenom, student_number: numero)
+             end
+
+    invite.permanent = true
+    return nil unless invite.changed? || invite.new_record?
+    invite.save ? "Inscrit sur toute la matière." : nil
+  end
 
   def charger_seance
     @lesson = Lesson.find(params[:lesson_id])

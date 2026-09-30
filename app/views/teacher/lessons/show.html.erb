@@ -104,10 +104,22 @@
                     <%= eleve.first_name %> <%= eleve.last_name %>
                     <span class="appel__num"><%= eleve.student_number %></span>
                   </span>
-                  <%= button_to "Marquer présent",
-                                teacher_lesson_attendance_path(@lesson, eleve, status: :present),
-                                method: :patch, form: {  },
-                                class: "btn btn-sm btn-outline-ink", disabled: @lesson.valide? %>
+                  <span class="appel__portee">
+                    <%= button_to "Cette séance",
+                                  teacher_lesson_attendance_path(@lesson, eleve, status: :present, portee: "seance"),
+                                  method: :patch, form: {  },
+                                  class: "btn btn-sm btn-outline-ink",
+                                  title: "Présent aujourd'hui seulement",
+                                  disabled: @lesson.valide? %>
+                    <% if @lesson.ue %>
+                      <%= button_to "Toute la matière",
+                                    teacher_lesson_attendance_path(@lesson, eleve, status: :present, portee: "matiere"),
+                                    method: :patch, form: {  },
+                                    class: "btn btn-sm btn-portee",
+                                    title: "Présent aujourd'hui, et attendu à chaque séance de #{@lesson.ue.name}",
+                                    disabled: @lesson.valide? %>
+                    <% end %>
+                  </span>
                 </li>
               <% end %>
             </ul>
@@ -122,6 +134,23 @@
             <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
             <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
             <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+
+            <% if @lesson.ue %>
+              <fieldset class="portee">
+                <legend class="portee__titre">Pour combien de temps ?</legend>
+                <label class="portee__choix">
+                  <%= radio_button_tag :portee, "seance", true %>
+                  <span><strong>Cette séance seulement</strong><br>
+                    <small>Un passage ponctuel, un rattrapage.</small></span>
+                </label>
+                <label class="portee__choix">
+                  <%= radio_button_tag :portee, "matiere", false %>
+                  <span><strong>Toute la matière</strong><br>
+                    <small>Attendu à chaque séance de <%= @lesson.ue.name %>.</small></span>
+                </label>
+              </fieldset>
+            <% end %>
+
             <%= submit_tag "Ajouter", class: "btn btn-danger", disabled: @lesson.valide? %>
           <% end %>
           <p class="text-grey mt-2 mb-0"><small>

@@ -2,6 +2,10 @@
 <% pointages = lesson.attendances.includes(:user).index_by(&:user_id) %>
 <% ids_attendus = attendus.map(&:id) %>
 <% rattrapages = lesson.attendances.includes(:user).reject { |a| a.user_id && ids_attendus.include?(a.user_id) } %>
+<%# Les personnes sans compte inscrites sur toute la matière : attendues ici
+    même si elles n'ont encore jamais été pointées. %>
+<% cles_pointees = rattrapages.reject(&:user_id).map { |a| UeGuest.cle_de(a.guest_last_name, a.guest_first_name, a.guest_student_number) } %>
+<% invites_matiere = lesson.invites_permanents.reject { |g| cles_pointees.include?(g.cle) } %>
 <% presents = lesson.attendances.count(&:statut_present?) %>
 
 <div class="appel__compteur">
@@ -27,6 +31,17 @@
                numero: eleve.student_number %>
   <% end %>
 </ul>
+
+<% if invites_matiere.any? %>
+  <h4 class="appel__sous-titre">
+    Inscrits sur la matière <span class="team-card__muted">(<%= invites_matiere.size %>)</span>
+  </h4>
+  <ul class="appel__liste">
+    <% invites_matiere.each do |g| %>
+      <%= render "teacher/lessons/ligne_invite", lesson: lesson, invite: g %>
+    <% end %>
+  </ul>
+<% end %>
 
 <% if rattrapages.any? %>
   <h4 class="appel__sous-titre">Hors liste <span class="team-card__muted">(<%= rattrapages.size %>)</span></h4>

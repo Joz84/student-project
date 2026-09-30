@@ -56,14 +56,19 @@ class Teacher::BilansController < ApplicationController
   # précisément ce qu'un pointage seul ne permettait pas d'exprimer.
   def eleve
     @ue = Ue.find(params[:ue_id])
-    invite = UeGuest.new(ue: @ue,
+    # Portée : attendu à chaque séance de la matière, ou seulement présent dans
+    # ce relevé, pour une personne venue une fois.
+    permanent = params[:portee] != "releve"
+
+    invite = UeGuest.new(ue: @ue, permanent: permanent,
                          first_name: params[:guest_first_name].to_s.strip,
                          last_name: params[:guest_last_name].to_s.strip,
                          student_number: params[:guest_student_number].to_s.strip)
 
     if invite.save
+      suite = permanent ? "Il sera attendu à chaque séance." : "Il ne figure que dans ce relevé."
       redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
-                  notice: "#{invite.nom_complet} ajouté à la liste de #{@ue.name}."
+                  notice: "#{invite.nom_complet} ajouté à la liste de #{@ue.name}. #{suite}"
     else
       redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
                   alert: invite.errors.full_messages.to_sentence
