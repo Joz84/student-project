@@ -722,3 +722,39 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
 
   .bilan__date { color: $muted; }
 }
+
+// Bandeau d'une feuille créée à la main : elle ne vient pas de l'emploi du
+// temps, et c'est le seul endroit d'où on peut la retirer.
+.appel__manuelle {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-top: 1rem;
+  padding: .7rem .9rem;
+  background: $surface;
+  border: 1px dashed $line;
+  border-radius: $radius-sm;
+
+  form { margin: 0; }
+}
+
+.appel__manuelle-marque {
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: $muted-soft;
+}
+
+// Dans le relevé, la colonne correspondante le dit et mène à la feuille.
+.bilan__manuelle {
+  display: block;
+  margin-top: .2rem;
+  font-size: .66rem;
+  color: $muted-soft;
+  text-decoration: none;
+  border-bottom: 1px dashed currentColor;
+
+  &:hover { color: $blue; }
+}

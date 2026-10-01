@@ -89,6 +89,11 @@
                           <%= @sheet.sous_entete(l) %>
                           <span class="bilan__attendus"><%= @sheet.nombre_attendus(l) %></span>
                         </span>
+                        <% if l.manuelle? %>
+                          <%= link_to "ajoutée à la main", teacher_lesson_path(l),
+                                      class: "bilan__manuelle",
+                                      title: "Feuille créée à la main — ouvrez-la pour la supprimer" %>
+                        <% end %>
                       </th>
                     <% end %>
                   </tr>

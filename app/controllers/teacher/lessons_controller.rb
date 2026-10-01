@@ -94,6 +94,28 @@ class Teacher::LessonsController < ApplicationController
     redirect_to teacher_lesson_path(@lesson), notice: message, status: :see_other
   end
 
+  # Une feuille créée à la main peut l'avoir été par erreur — mauvaise matière,
+  # mauvais horaire. Elle laissait jusqu'ici une colonne parasite dans le relevé,
+  # sans aucun moyen de la retirer.
+  #
+  # Les séances venues d'ADE ne se suppriment pas ici : le flux fait autorité,
+  # et l'import les recréerait de toute façon la nuit suivante.
+  def destroy
+    unless @lesson.manuelle?
+      return redirect_to teacher_lesson_path(@lesson), status: :see_other,
+                         alert: "Cette séance vient de l'emploi du temps : elle ne se supprime pas ici."
+    end
+
+    if @lesson.attendances.any?
+      return redirect_to teacher_lesson_path(@lesson), status: :see_other,
+                         alert: "Des présences y sont déjà enregistrées. Effacez-les d'abord si la feuille est bien à retirer."
+    end
+
+    intitule = @lesson.title
+    @lesson.destroy!
+    redirect_to root_path, notice: "Feuille « #{intitule} » supprimée.", status: :see_other
+  end
+
   def valider
     # Les attendus qui ne se sont pas signalés sont portés absents : sans cela
     # la séance resterait à moitié renseignée.

@@ -53,6 +53,23 @@
           <% end %>
         </div>
 
+        <% if @lesson.manuelle? %>
+          <div class="appel__manuelle">
+            <span class="appel__manuelle-marque">Feuille ajoutée à la main</span>
+            <% if @lesson.attendances.any? %>
+              <span class="appel__note">
+                <%= pluralize(@lesson.attendances.size, "présence") %> enregistrée<%= "s" if @lesson.attendances.size > 1 %> :
+                la feuille ne peut plus être supprimée. Effacez-les d'abord si elle est bien à retirer.
+              </span>
+            <% else %>
+              <%= button_to "Supprimer cette feuille", teacher_lesson_path(@lesson),
+                            method: :delete,
+                            form: { data: { turbo_confirm: "Supprimer la feuille « #{@lesson.title} » ? Elle disparaîtra aussi du relevé de présences." } },
+                            class: "btn btn-sm btn-supp" %>
+            <% end %>
+          </div>
+        <% end %>
+
         <% if @lesson.pointage_ouvert? %>
           <div class="appel__code">
             <span class="appel__code-libelle">Code à afficher aux étudiants</span>

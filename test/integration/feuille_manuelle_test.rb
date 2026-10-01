@@ -117,6 +117,89 @@ class FeuilleManuelleTest < ActionDispatch::IntegrationTest
     assert_equal 2, seance.reload.presents_count
   end
 
+  # Une feuille créée par erreur laissait une colonne parasite dans le relevé,
+  # sans aucun moyen de la retirer.
+  test "une feuille manuelle vide se supprime" do
+    sign_in @prof
+    post teacher_lessons_path, params: {
+      lesson: { ue_id: @ue.id, category: "autre" },
+      jour: Date.current.to_s, debut: "08:00", fin: "10:00"
+    }
+    seance = Lesson.order(:created_at).last
+
+    get teacher_lesson_path(seance)
+    assert_match "Feuille ajoutée à la main", response.body
+    assert_match "Supprimer cette feuille", response.body
+
+    assert_difference -> { Lesson.count }, -1 do
+      delete teacher_lesson_path(seance)
+    end
+    assert_redirected_to root_path
+    assert_match(/supprimée/, flash[:notice])
+  end
+
+  test "elle ne se supprime plus dès qu'une présence y figure" do
+    sign_in @prof
+    post teacher_lessons_path, params: {
+      lesson: { ue_id: @ue.id, category: "autre" },
+      jour: Date.current.to_s, debut: "08:00", fin: "10:00"
+    }
+    seance = Lesson.order(:created_at).last
+    seance.attendances.create!(user: @eleve, status: :present, declared_by: :teacher)
+
+    get teacher_lesson_path(seance)
+    refute_match "Supprimer cette feuille", response.body
+    assert_match "ne peut plus être supprimée", response.body
+
+    assert_no_difference -> { Lesson.count } do
+      delete teacher_lesson_path(seance)
+    end
+    assert_match(/Effacez-les d.abord/, flash[:alert])
+  end
+
+  test "une séance venue d'ADE ne se supprime pas ici" do
+    ade = Lesson.create!(batch: @batch, ue: @ue, teacher: @prof, title: "TD-01 - Calcul fonctionnel",
+                         starts_at: 2.days.ago, ends_at: 2.days.ago + 2.hours)
+    sign_in @prof
+    get teacher_lesson_path(ade)
+    refute_match "Supprimer cette feuille", response.body
+
+    assert_no_difference -> { Lesson.count } do
+      delete teacher_lesson_path(ade)
+    end
+    assert_match(/vient de l.emploi du temps/, flash[:alert])
+  end
+
+  test "le relevé signale la colonne et mène à la feuille" do
+    sign_in @prof
+    post teacher_lessons_path, params: {
+      lesson: { ue_id: @ue.id, category: "autre" },
+      jour: 1.hour.ago.to_date.to_s, debut: 1.hour.ago.strftime("%H:%M"), fin: Time.current.strftime("%H:%M"),
+      group_ids: [@td1.id.to_s]
+    }
+    seance = Lesson.order(:created_at).last
+
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match "ajoutée à la main", response.body
+    assert_match teacher_lesson_path(seance), response.body
+  end
+
+  test "un étudiant ne supprime pas de feuille" do
+    sign_in @prof
+    post teacher_lessons_path, params: {
+      lesson: { ue_id: @ue.id, category: "autre" },
+      jour: Date.current.to_s, debut: "08:00", fin: "10:00"
+    }
+    seance = Lesson.order(:created_at).last
+
+    sign_out :user
+    sign_in @eleve
+    assert_no_difference -> { Lesson.count } do
+      delete teacher_lesson_path(seance)
+    end
+    assert_redirected_to root_path
+  end
+
   test "un étudiant ne crée pas de feuille d'appel" do
     sign_in @eleve
     get new_teacher_lesson_path

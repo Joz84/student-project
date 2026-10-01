@@ -58,7 +58,7 @@ Rails.application.routes.draw do
       post :import
       post :eleve      # ajoute une ligne à la liste de la matière
     end
-    resources :lessons, only: [:new, :create, :show] do
+    resources :lessons, only: [:new, :create, :show, :destroy] do
       member do
         get  :liste
         post :ouvrir
