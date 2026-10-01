@@ -1,0 +1,189 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour", :back, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <div class="fiche__tete">
+        <div>
+          <h2 class="mb-1"><%= @eleve.last_name.to_s.upcase %> <%= @eleve.first_name %></h2>
+          <p class="text-grey mb-0">
+            <%= mail_to @eleve.email %> ·
+            <span class="soutien__num"><%= @eleve.student_number %></span> ·
+            <%= @eleve.batch&.title %>
+            <% if @eleve[:drop] %><span class="soutien__alerte">compte désactivé</span><% end %>
+          </p>
+        </div>
+        <span class="recap__prive">Fiche réservée à l'administration</span>
+      </div>
+
+      <div class="soutien__chiffres">
+        <div class="soutien__chiffre">
+          <span class="soutien__valeur"><%= @matieres.sum { |m| m[:presents] + m[:retards] } %><em> / <%= @matieres.sum { |m| m[:renseignees] } %></em></span>
+          <span class="soutien__label">présences sur séances renseignées</span>
+        </div>
+        <div class="soutien__chiffre">
+          <span class="soutien__valeur"><%= @evaluations.values.count { |e| e.level.present? } %><em> / <%= @ues.size %></em></span>
+          <span class="soutien__label">matières auto-évaluées</span>
+        </div>
+        <div class="soutien__chiffre">
+          <span class="soutien__valeur"><%= @soutien.size %></span>
+          <span class="soutien__label">demande<%= "s" if @soutien.size > 1 %> de soutien</span>
+        </div>
+        <div class="soutien__chiffre">
+          <span class="soutien__valeur"><%= @evaluations.values.sum { |e| e.home_hours.to_f }.round(1) %> h</span>
+          <span class="soutien__label">travail personnel déclaré</span>
+        </div>
+      </div>
+
+      <%# ---------------- son projet ---------------- %>
+      <section class="fiche__bloc">
+        <h3 class="roadmap__sous-titre">Son projet</h3>
+        <% if @eleve.team %>
+          <p class="mb-1">
+            <strong><%= link_to @eleve.team.name, team_path(@eleve.team), class: "text-decoration-none" %></strong>
+            <% if @eleve.team.project %>
+              — <%= @eleve.team.project.name %>
+            <% else %>
+              — <em class="text-grey">aucun projet attribué</em>
+            <% end %>
+          </p>
+          <p class="text-grey mb-2"><small>
+            Coéquipiers :
+            <%= @eleve.team.users.kept.where.not(id: @eleve.id).map { |u| "#{u.first_name} #{u.last_name}" }.join(", ").presence || "seul" %>
+          </small></p>
+          <%= link_to "Ouvrir le tableau de bord de l'équipe →", team_path(@eleve.team),
+                      class: "text-decoration-none" %>
+        <% else %>
+          <p class="text-grey mb-0">Aucune équipe. <%= "Spécialité : #{@eleve.speciality.name}" if @eleve.speciality %></p>
+        <% end %>
+
+        <% if @voeux.any? %>
+          <p class="text-grey mt-3 mb-1"><small>
+            Classement de vœux — <%= @eleve.booked? ? "validé" : "non validé" %>,
+            <%= @voeux.size %> projets
+          </small></p>
+          <p class="recap__matieres mb-0">
+            <%= @voeux.first(5).each_with_index.map { |r, i| "#{i + 1}. #{r.project&.name}" }.join(" · ") %>
+            <%= "…" if @voeux.size > 5 %>
+          </p>
+        <% end %>
+      </section>
+
+      <%# ---------------- ses matières ---------------- %>
+      <section class="fiche__bloc">
+        <h3 class="roadmap__sous-titre">Ses matières</h3>
+        <% if @ues.empty? %>
+          <p class="text-grey mb-0">Rattaché à aucun groupe de TD ou de TP.</p>
+        <% else %>
+          <div class="enrobage-table">
+            <table class="recap__table">
+              <thead>
+                <tr>
+                  <th>Matière</th>
+                  <th>Groupe</th>
+                  <th>Niveau déclaré</th>
+                  <th class="recap__nombre">Travail perso</th>
+                  <th class="recap__nombre">Séances</th>
+                  <th class="recap__nombre">Présent</th>
+                  <th class="recap__nombre">Absent</th>
+                  <th class="recap__nombre">Justifié</th>
+                  <th>Soutien</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% assiduite = @matieres.index_by { |m| m[:ue].id } %>
+                <% @ues.each do |ue| %>
+                  <% ev = @evaluations[ue.id] %>
+                  <% a = assiduite[ue.id] %>
+                  <tr>
+                    <td>
+                      <span class="recap__teinte" style="background: <%= ue.teinte %>;"></span>
+                      <% if ue.code.present? %><span class="recap__code"><%= ue.code %></span><% end %>
+                      <%= ue.name %>
+                    </td>
+                    <td class="recap__matieres"><%= @eleve.groups.where(ue: ue).pluck(:label).join(", ") %></td>
+                    <td>
+                      <% if ev&.level %>
+                        <span class="soutien__niveau soutien__niveau--<%= ev.level %>"><%= ev.libelle %></span>
+                      <% else %>
+                        <span class="soutien__niveau soutien__niveau--inconnu">non déclaré</span>
+                      <% end %>
+                    </td>
+                    <td class="recap__nombre"><%= ev && ev.home_hours.to_f.positive? ? "#{ev.home_hours.round(1)} h" : "—" %></td>
+                    <td class="recap__nombre"><%= a ? "#{a[:renseignees]} / #{a[:attendues]}" : "—" %></td>
+                    <td class="recap__nombre"><%= a && a[:presents].positive? ? a[:presents] : "—" %></td>
+                    <td class="recap__nombre"><%= a && a[:absents].positive? ? a[:absents] : "—" %></td>
+                    <td class="recap__nombre"><%= a && a[:excuses].positive? ? a[:excuses] : "—" %></td>
+                    <td><%= "oui" if @soutien.include?(ue) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+      </section>
+
+      <%# ---------------- ses derniers pointages ---------------- %>
+      <% if @derniers_pointages.any? %>
+        <section class="fiche__bloc">
+          <h3 class="roadmap__sous-titre">Ses derniers pointages</h3>
+          <div class="enrobage-table">
+            <table class="recap__table">
+              <thead><tr><th>Séance</th><th>Quand</th><th>État</th><th>Saisi par</th></tr></thead>
+              <tbody>
+                <% @derniers_pointages.each do |p| %>
+                  <tr>
+                    <td><%= p.lesson.title %></td>
+                    <td class="soutien__num"><%= l p.lesson.starts_at, format: "%d/%m %H:%M" %></td>
+                    <td><span class="soutien__niveau soutien__niveau--<%= p.status == "present" ? "maitrise" : "inconnu" %>"><%= p.libelle %></span></td>
+                    <td class="recap__matieres"><%= p.by_student? ? "lui-même" : "l'enseignant" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      <% end %>
+
+      <%# ---------------- son travail d'équipe ---------------- %>
+      <% if @cartes.any? %>
+        <section class="fiche__bloc">
+          <h3 class="roadmap__sous-titre">Ses tâches sur le projet</h3>
+          <p class="matieres__regle"><%= @cartes.size %> tâche<%= "s" if @cartes.size > 1 %> où il est collaborateur.</p>
+          <ul class="orphan-list">
+            <% @cartes.first(15).each do |carte| %>
+              <li>
+                <strong><%= carte.name %></strong>
+                <span class="team-card__muted">
+                  <%= carte.list&.name %> ·
+                  <%= carte.time_estimate %> <%= carte.time_unit %>
+                  <% if carte.card_skills.any? %>
+                    · compétences <%= carte.card_skills.map { |cs| "#{cs.skill.skill_block.position}.#{cs.skill.position}" }.join(", ") %>
+                  <% end %>
+                </span>
+              </li>
+            <% end %>
+          </ul>
+        </section>
+      <% end %>
+
+      <%# ---------------- le compte ---------------- %>
+      <section class="fiche__bloc">
+        <h3 class="roadmap__sous-titre">Son compte</h3>
+        <ul class="orphan-list">
+          <li>Créé le <%= l @eleve.created_at.to_date, format: "%d/%m/%Y" %></li>
+          <li>Spécialité : <%= @eleve.speciality&.name || "aucune" %></li>
+          <li>Groupes : <%= @eleve.groups.includes(:ue).map { |g| "#{g.label} (#{g.ue.name})" }.join(" · ").presence || "aucun" %></li>
+          <li>
+            Dernière demande de mot de passe :
+            <%= @eleve.reset_password_sent_at ? l(@eleve.reset_password_sent_at, format: "%d/%m/%Y à %H:%M") : "jamais" %>
+          </li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+</div>

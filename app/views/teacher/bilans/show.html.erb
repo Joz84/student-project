@@ -7,6 +7,13 @@
         <p>Un onglet par matière. Les appels déjà faits sont repris ; tout reste modifiable.</p>
       </div>
 
+      <% if current_user.admin %>
+        <p class="bilan__suivi">
+          <%= link_to "Voir le suivi de l'émargement et l'assiduité →", teacher_suivi_path,
+                      class: "text-decoration-none" %>
+        </p>
+      <% end %>
+
       <% if current_user.admin && @enseignants.present? %>
         <%# L'administrateur consulte le relevé de n'importe quel intervenant :
             c'est ainsi qu'il dépanne celui qui n'y arrive pas. %>

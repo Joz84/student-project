@@ -1,0 +1,6 @@
+<nav class="onglets-equipe mb-4">
+  <%= link_to "Demandes de soutien", teacher_soutien_path(batch_id: batch.id),
+              class: "onglet #{'onglet--actif' if actif == :demandes}" %>
+  <%= link_to "Avancement des étudiants", avancement_teacher_soutien_path(batch_id: batch.id),
+              class: "onglet #{'onglet--actif' if actif == :avancement}" %>
+</nav>

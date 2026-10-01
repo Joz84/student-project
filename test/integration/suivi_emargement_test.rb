@@ -128,15 +128,19 @@ class SuiviEmargementTest < ActionDispatch::IntegrationTest
     assert_not_nil semaines.last[:taux]
   end
 
-  test "le lien du suivi n'est proposé qu'à l'administrateur" do
-    sign_in @assidu
-    get root_path
-    refute_match teacher_suivi_path, response.body
-
-    sign_out @assidu
+  # Le lien a quitté la barre de navigation pour la page des présences : c'est
+  # en tenant son registre qu'on se demande où en sont les autres.
+  test "le lien du suivi vit sur la page des présences, pour l'administrateur seul" do
     sign_in @admin
-    get root_path
+    get teacher_bilan_path
     assert_match teacher_suivi_path, response.body
+    get root_path
+    refute_match teacher_suivi_path, response.body, "plus dans la barre de navigation"
+
+    sign_out :user
+    sign_in @assidu
+    get teacher_bilan_path
+    refute_match teacher_suivi_path, response.body
   end
 
   test "l'administrateur voit le nom de l'intervenant à côté de chaque cours" do

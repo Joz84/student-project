@@ -121,6 +121,79 @@
           représente. Il ne peut pas faire l'appel, et ce n'est pas un oubli de sa part.
         </p>
 
+        <h3 class="roadmap__sous-titre mt-5">L'assiduité des étudiants</h3>
+        <p class="matieres__regle">
+          Le taux se calcule sur les séances <strong>renseignées</strong>, jamais
+          sur les séances attendues : sinon il mesurerait l'assiduité des
+          enseignants. La colonne « Couverture » dit quelle part du registre est
+          réellement tenue pour cet étudiant — un taux assis sur trois séances
+          sur quarante ne vaut pas grand-chose.
+        </p>
+
+        <% if @assiduite.vide? %>
+          <div class="agenda__vide">
+            Aucun pointage sur cette promotion : l'assiduité ne peut pas encore se lire.
+          </div>
+        <% else %>
+          <div class="soutien__chiffres">
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @assiduite.taux %> %</span>
+              <span class="soutien__label">de présence sur ce qui est renseigné</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @assiduite.renseignees %></span>
+              <span class="soutien__label">pointages enregistrés</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @assiduite.absents %><em> + <%= @assiduite.excuses %></em></span>
+              <span class="soutien__label">absences non justifiées / justifiées</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @assiduite.par_etat[:alerte].to_i %></span>
+              <span class="soutien__label">étudiants en décrochage</span>
+            </div>
+          </div>
+
+          <div class="enrobage-table">
+            <table class="recap__table">
+              <thead>
+                <tr>
+                  <th>Étudiant</th>
+                  <th class="recap__nombre">Attendues</th>
+                  <th class="recap__nombre">Renseignées</th>
+                  <th class="recap__nombre">Couverture</th>
+                  <th class="recap__nombre">Présent</th>
+                  <th class="recap__nombre">Retard</th>
+                  <th class="recap__nombre">Absent</th>
+                  <th class="recap__nombre">Justifié</th>
+                  <th class="recap__nombre">Taux</th>
+                  <th>État</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @assiduite.lignes.each do |ligne| %>
+                  <tr class="<%= "recap__ligne--muette" if ligne.renseignees.zero? %>">
+                    <td>
+                      <%= link_to teacher_etudiant_path(ligne.user), class: "text-decoration-none" do %>
+                        <%= ligne.user.last_name.to_s.upcase %> <%= ligne.user.first_name %>
+                      <% end %>
+                    </td>
+                    <td class="recap__nombre"><%= ligne.attendues %></td>
+                    <td class="recap__nombre"><strong><%= ligne.renseignees %></strong></td>
+                    <td class="recap__nombre"><%= ligne.couverture ? "#{ligne.couverture} %" : "—" %></td>
+                    <td class="recap__nombre"><%= ligne.presents.positive? ? ligne.presents : "—" %></td>
+                    <td class="recap__nombre"><%= ligne.retards.positive? ? ligne.retards : "—" %></td>
+                    <td class="recap__nombre"><%= ligne.absents.positive? ? ligne.absents : "—" %></td>
+                    <td class="recap__nombre"><%= ligne.excuses.positive? ? ligne.excuses : "—" %></td>
+                    <td class="recap__nombre"><strong><%= ligne.taux ? "#{ligne.taux} %" : "—" %></strong></td>
+                    <td><span class="suivi__etat suivi__etat--<%= ligne.etat %>"><%= ligne.libelle_etat %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% end %>
+
         <% sans_appel = @suivi.seances_sans_appel %>
         <% if sans_appel.any? %>
           <h3 class="roadmap__sous-titre mt-5">Les dernières séances sans appel</h3>

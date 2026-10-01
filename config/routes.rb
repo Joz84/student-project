@@ -72,8 +72,9 @@ Rails.application.routes.draw do
     end
     resource :suivi, only: [:show], controller: "suivis"
     resource :soutien, only: [:show], controller: "soutiens" do
-      get :recap
+      get :avancement
     end
+    resources :etudiants, only: [:show], controller: "etudiants"
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do
       resources :teams, only: [:index] do

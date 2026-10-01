@@ -6,5 +6,6 @@ class Teacher::SuivisController < ApplicationController
     @batches = Batch.joins(:lessons).distinct.order(:title).to_a
     @batch = params[:batch_id].present? ? Batch.find(params[:batch_id]) : @batches.last
     @suivi = SuiviEmargement.new(@batch) if @batch
+    @assiduite = Assiduite.new(@batch) if @batch
   end
 end

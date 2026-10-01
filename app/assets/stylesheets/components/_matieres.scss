@@ -864,3 +864,36 @@
   font-weight: 600;
   color: $muted;
 }
+
+// États de l'avancement déclaré, sur la même grammaire que ceux du suivi.
+.suivi__etat--muet     { background: $surface; border-color: $line; color: $muted; }
+.suivi__etat--alerte   { background: mix($red, #fff, 20%); border-color: mix($red, #fff, 55%); color: $ink; }
+.suivi__etat--en_cours { background: mix($notice, #fff, 34%); border-color: $notice; color: $ink; }
+.suivi__etat--a_laise  { background: mix($danger, #fff, 26%); border-color: mix($danger, #fff, 60%); color: $ink; }
+.suivi__etat--inconnu  { background: $surface; border-color: $line; color: $muted; }
+.suivi__etat--irregulier { background: mix($notice, #fff, 34%); border-color: $notice; color: $ink; }
+.suivi__etat--assidu   { background: mix($danger, #fff, 26%); border-color: mix($danger, #fff, 60%); color: $ink; }
+
+// Fiche d'un étudiant : des blocs nets, pour une page qu'on parcourt avant un
+// entretien plutôt qu'on ne lit en continu.
+.fiche__tete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $line;
+  margin-bottom: 1rem;
+}
+
+.fiche__bloc {
+  background: #fff;
+  border: 1px solid $line;
+  border-radius: $radius;
+  padding: 1.2rem 1.3rem;
+  margin-bottom: 1.1rem;
+  box-shadow: $shadow-sm;
+
+  .roadmap__sous-titre { margin-top: 0; }
+}

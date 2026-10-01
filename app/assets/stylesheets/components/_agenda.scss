@@ -758,3 +758,11 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
 
   &:hover { color: $blue; }
 }
+
+// Accès au suivi depuis le relevé : c'est en tenant son registre qu'on se
+// demande où en sont les autres.
+.bilan__suivi {
+  margin: 0 0 1rem;
+  font-size: .9rem;
+  font-weight: 600;
+}

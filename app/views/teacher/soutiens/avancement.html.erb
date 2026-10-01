@@ -1,0 +1,110 @@
+<div class="container page-min-height">
+  <div class="row">
+    <div class="col-lg-10 offset-lg-1">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <h2 class="text-center mb-1">Avancement des étudiants</h2>
+      <p class="matieres__regle text-center">
+        <%= @batch.title %> · ce que chacun déclare de son niveau et de son travail personnel.
+        <span class="recap__prive">Page réservée à l'administration</span>
+      </p>
+
+      <%= render "promos", batches: @batches, batch: @batch %>
+      <%= render "onglets", batch: @batch, actif: :avancement %>
+
+      <% if @avancement.vide? %>
+        <div class="agenda__vide">Aucun étudiant sur cette promotion.</div>
+      <% else %>
+
+        <div class="soutien__chiffres">
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @avancement.participation %> %</span>
+            <span class="soutien__label">des étudiants ont rempli au moins une matière</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @avancement.actifs %><em> / <%= @avancement.lignes.size %></em></span>
+            <span class="soutien__label">se sont situés quelque part</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @avancement.evaluations %></span>
+            <span class="soutien__label">auto-évaluations saisies</span>
+          </div>
+          <div class="soutien__chiffre">
+            <span class="soutien__valeur"><%= @avancement.demandeurs %></span>
+            <span class="soutien__label">demandent du soutien</span>
+          </div>
+        </div>
+
+        <p class="matieres__regle">
+          Un étudiant qui n'a rien rempli n'est pas en difficulté : il n'a rien
+          rempli, et c'est une autre conversation. Les deux se distinguent dans
+          la colonne « État ».
+        </p>
+
+        <h3 class="roadmap__sous-titre">Comment la promotion se situe</h3>
+        <div class="recap__niveaux">
+          <% total = @avancement.par_niveau.values.sum %>
+          <% UeAssessment::NIVEAUX.each do |cle, libelle| %>
+            <% n = @avancement.par_niveau[cle].to_i %>
+            <div class="recap__niveau">
+              <span class="recap__niveau-nombre"><%= n %></span>
+              <span class="recap__niveau-libelle"><%= libelle %></span>
+              <div class="recap__barre">
+                <div class="recap__barre-part recap__barre-part--<%= cle %>"
+                     style="width: <%= total.zero? ? 0 : (100.0 * n / total).round %>%;"></div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <h3 class="roadmap__sous-titre mt-5">Étudiant par étudiant</h3>
+        <p class="matieres__regle">
+          Classé par nombre de matières renseignées : ceux qui n'ont rien rempli
+          sont en bas, et c'est à eux qu'il faut parler en premier.
+        </p>
+
+        <div class="enrobage-table">
+          <table class="recap__table">
+            <thead>
+              <tr>
+                <th>Étudiant</th>
+                <th class="recap__nombre">Matières<br>remplies</th>
+                <th class="recap__nombre">Niveau<br>moyen</th>
+                <th class="recap__nombre" title="Se dit à « notion » ou « initiation »">Fragiles</th>
+                <th class="recap__nombre">Travail<br>perso</th>
+                <th class="recap__nombre">Soutien</th>
+                <th class="recap__nombre">Dernière<br>saisie</th>
+                <th>État</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @avancement.lignes.each do |ligne| %>
+                <tr class="<%= "recap__ligne--muette" if ligne.evaluees.zero? %>">
+                  <td>
+                    <%= link_to teacher_etudiant_path(ligne.user), class: "text-decoration-none" do %>
+                      <%= ligne.user.last_name.to_s.upcase %> <%= ligne.user.first_name %>
+                    <% end %>
+                    <span class="soutien__num"><%= ligne.user.student_number %></span>
+                  </td>
+                  <td class="recap__nombre"><strong><%= ligne.evaluees %></strong></td>
+                  <td class="recap__nombre"><%= ligne.niveau_moyen || "—" %></td>
+                  <td class="recap__nombre"><%= ligne.fragiles.positive? ? ligne.fragiles : "—" %></td>
+                  <td class="recap__nombre"><%= ligne.heures_maison.positive? ? "#{ligne.heures_maison} h" : "—" %></td>
+                  <td class="recap__nombre"><%= ligne.demandes.positive? ? ligne.demandes : "—" %></td>
+                  <td class="recap__nombre">
+                    <%= ligne.derniere_saisie ? l(ligne.derniere_saisie.to_date, format: "%d/%m") : "—" %>
+                  </td>
+                  <td><span class="suivi__etat suivi__etat--<%= ligne.etat %>"><%= ligne.libelle_etat %></span></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

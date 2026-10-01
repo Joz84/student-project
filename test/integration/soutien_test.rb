@@ -20,6 +20,8 @@ class SoutienTest < ActionDispatch::IntegrationTest
     GroupMembership.create!(user: @camarade, group: @g_maths)
 
     @prof = creer_prof
+    @admin = creer_prof("Serafini")
+    @admin.update!(admin: true)
     [@maths, @chimie].each { |ue| seance(ue) }
   end
 
@@ -90,12 +92,12 @@ class SoutienTest < ActionDispatch::IntegrationTest
     refute doublon.valid?
   end
 
-  test "l'enseignant voit la demande, classée du moins avancé au plus avancé" do
+  test "la demande est classée du moins avancé au plus avancé" do
     UeAssessment.create!(user: @eleve, ue: @maths, level: :application)
     TutoringRequest.create!(user: @eleve, ue: @maths)
     TutoringRequest.create!(user: @camarade, ue: @maths)   # sans niveau déclaré
 
-    sign_in @prof
+    sign_in @admin
     get teacher_soutien_path(batch_id: @batch.id)
     assert_response :success
     assert_match "Calcul fonctionnel", response.body
@@ -107,14 +109,14 @@ class SoutienTest < ActionDispatch::IntegrationTest
 
   test "les matières sans demande sont reléguées en bas" do
     TutoringRequest.create!(user: @eleve, ue: @maths)
-    sign_in @prof
+    sign_in @admin
     get teacher_soutien_path(batch_id: @batch.id)
     assert_match "Aucune demande sur ces matières", response.body
     assert_match "Structure de la matière", response.body
   end
 
   test "sans aucune demande la page le dit" do
-    sign_in @prof
+    sign_in @admin
     get teacher_soutien_path(batch_id: @batch.id)
     assert_response :success
     assert_match "Aucune demande pour le moment", response.body
@@ -155,74 +157,6 @@ class SoutienTest < ActionDispatch::IntegrationTest
     ligne = soutien.lignes.find { |l| l.ue == @maths }
     assert_equal 1, ligne.nombre
     assert_equal 1, soutien.demandeurs
-  end
-
-  # Le récapitulatif sert à arbitrer l'ouverture des séances : il ne sort pas
-  # de l'administration, alors que le détail nominatif reste ouvert aux
-  # enseignants.
-  test "seul un administrateur ouvre le récapitulatif" do
-    TutoringRequest.create!(user: @eleve, ue: @maths)
-
-    sign_in @prof
-    get recap_teacher_soutien_path(batch_id: @batch.id)
-    assert_redirected_to root_path
-
-    sign_out @prof
-    admin = creer_prof("Serafini")
-    admin.update!(admin: true)
-    sign_in admin
-    get recap_teacher_soutien_path(batch_id: @batch.id)
-    assert_response :success
-    assert_match "Réservée à l'administration", response.body.gsub("réservée", "Réservée")
-  end
-
-  test "un étudiant n'ouvre pas le récapitulatif" do
-    sign_in @eleve
-    get recap_teacher_soutien_path
-    assert_redirected_to root_path
-  end
-
-  test "le récapitulatif compte la demande par matière" do
-    UeAssessment.create!(user: @eleve, ue: @maths, level: :notion)
-    TutoringRequest.create!(user: @eleve, ue: @maths)
-    TutoringRequest.create!(user: @camarade, ue: @maths)
-    TutoringRequest.create!(user: @eleve, ue: @chimie)
-
-    admin = creer_prof("Serafini")
-    admin.update!(admin: true)
-    sign_in admin
-    get recap_teacher_soutien_path(batch_id: @batch.id)
-    assert_response :success
-
-    assert_match "Calcul fonctionnel", response.body
-    assert_match "Structure de la matière", response.body
-    assert_match "étudiants concernés", response.body
-    assert_match "inscriptions au total", response.body
-    assert_match "matières demandées", response.body
-
-    # Les chiffres sont portés par leurs propres balises : on les lit là.
-    valeurs = response.body.scan(/soutien__valeur">([\d.]+)</).flatten
-    assert_equal ["2", "3", "2", "1.5"], valeurs,
-                 "2 étudiants, 3 inscriptions, 2 matières, 1,5 matière par étudiant"
-
-    # Calcul fonctionnel, deux demandes, passe devant Structure de la matière.
-    assert_operator response.body.index("Calcul fonctionnel"), :<,
-                    response.body.index("Structure de la matière")
-    assert_match "Option non suivie", response.body
-    assert_match "recap__ligne--muette", response.body
-  end
-
-  test "le lien du récapitulatif n'est proposé qu'à l'administrateur" do
-    sign_in @prof
-    get root_path
-    refute_match recap_teacher_soutien_path, response.body
-
-    sign_out @prof
-    admin = creer_prof("Serafini")
-    admin.update!(admin: true)
-    sign_in admin
-    get root_path
-    assert_match recap_teacher_soutien_path, response.body
   end
 
   test "un étudiant n'accède pas au relevé des demandes" do

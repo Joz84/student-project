@@ -1,0 +1,8 @@
+<% if batches.size > 1 %>
+  <div class="d-flex justify-content-center flex-wrap mb-3" style="gap: .5rem;">
+    <% batches.each do |b| %>
+      <%= link_to b.title, url_for(batch_id: b.id),
+                  class: "btn btn-sm #{b == batch ? 'btn-danger' : 'btn-outline-ink'}" %>
+    <% end %>
+  </div>
+<% end %>

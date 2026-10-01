@@ -1,29 +1,29 @@
-# Ce que les étudiants demandent comme soutien, par matière.
+# Le soutien tutoré, vu de l'administration : qui en demande, et où en sont
+# les étudiants dans ce qu'ils déclarent.
 class Teacher::SoutiensController < ApplicationController
   def show
     authorize [:teacher, :soutien], :show?
     charger
+    @soutien = Soutien.new(@batch)
   end
 
-  # Récapitulatif chiffré, réservé à l'administration : c'est la vue qui sert à
-  # décider quelles séances ouvrir, pas à contacter les étudiants.
-  def recap
-    authorize [:teacher, :soutien], :recap?
-    charger(defaut: "LSPI 2026-2029")
+  # L'avancement déclaré : ce que les étudiants ont rempli de leur niveau et de
+  # leur travail personnel. Une mesure d'usage autant que de niveau.
+  def avancement
+    authorize [:teacher, :soutien], :avancement?
+    charger
+    @avancement = AvancementEtudiants.new(@batch)
   end
 
   private
 
-  def charger(defaut: nil)
-    @batches = current_user.admin ? Batch.order(:title).to_a : current_user.supervised_batches.to_a
+  def charger
+    @batches = Batch.where(id: Ue.select(:batch_id)).order(:title).to_a
     @batches = Batch.order(:title).to_a if @batches.empty?
     @batch = if params[:batch_id].present?
                Batch.find(params[:batch_id])
-             elsif defaut
-               @batches.find { |b| b.title == defaut } || @batches.last
              else
-               @batches.last
+               @batches.find { |b| b.title == "LSPI 2026-2029" } || @batches.last
              end
-    @soutien = Soutien.new(@batch)
   end
 end

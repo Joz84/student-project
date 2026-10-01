@@ -1,13 +1,11 @@
-# Les demandes de soutien nomment des étudiants en difficulté : elles ne sortent
-# pas du corps enseignant.
+# Les demandes de soutien nomment des étudiants en difficulté, et leur
+# avancement déclaré est plus personnel encore : la page ne sort pas de
+# l'administration.
 class Teacher::SoutienPolicy < ApplicationPolicy
-  def show? = user.present? && user.teacher?
-
-  # Le récapitulatif sert à arbitrer l'ouverture des séances : il ne sort pas
-  # de l'administration.
-  def recap? = user.present? && user.admin?
+  def show?       = user.present? && user.admin?
+  def avancement? = show?
 
   class Scope < ApplicationPolicy::Scope
-    def resolve = user&.teacher? ? scope.all : scope.none
+    def resolve = user&.admin? ? scope.all : scope.none
   end
 end
