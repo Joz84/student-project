@@ -338,10 +338,14 @@ class BilanTest < ActionDispatch::IntegrationTest
     assert_match 'data-controller="filtre"', response.body, "la même recherche que sur la feuille d'appel"
 
     # Les deux boutons disent ce qu'ils font, pas où ils écrivent.
-    assert_match "attendre aux séances", response.body
-    assert_match "Ne pas l", response.body
+    assert_match "Présence exceptionnelle", response.body
+    assert_match "Ajouter aux feuilles de présences", response.body
     refute_match "Ce relevé", response.body
     refute_match "Toute la matière", response.body
+
+    # Le ponctuel vient en premier, l'ajout durable ensuite et mis en avant.
+    assert_operator response.body.index("Présence exceptionnelle"), :<,
+                    response.body.index("Ajouter aux feuilles de présences")
 
     assert_difference -> { UeGuest.count }, 1 do
       post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
