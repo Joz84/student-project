@@ -766,3 +766,17 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   font-size: .9rem;
   font-weight: 600;
 }
+
+// Choix du groupe visé par un ajout, sur la page des présences.
+.portee__choix-groupes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .4rem;
+
+  .agenda__onglet {
+    border: 1px solid $line;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+}

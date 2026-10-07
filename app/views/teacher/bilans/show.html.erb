@@ -178,6 +178,26 @@
               </small></p>
 
               <div class="collapse mt-3" id="ajoutPromo">
+                <% if @groupes_ajout.size > 1 %>
+                  <div class="portee mb-3">
+                    <span class="portee__titre">Sur quel groupe l'ajouter ?</span>
+                    <div class="portee__choix-groupes">
+                      <% @groupes_ajout.each do |g| %>
+                        <%= link_to g.label,
+                              teacher_bilan_path(ue_id: @ue.id, groupe: g.id,
+                                                 teacher_id: (@enseignant.id if @enseignant != current_user),
+                                                 anchor: "ajoutPromo"),
+                              class: "agenda__onglet #{'agenda__onglet--actif' if @groupe_ajout == g}" %>
+                      <% end %>
+                      <%= link_to "Toute la matière",
+                            teacher_bilan_path(ue_id: @ue.id, groupe: "",
+                                               teacher_id: (@enseignant.id if @enseignant != current_user),
+                                               anchor: "ajoutPromo"),
+                            class: "agenda__onglet #{'agenda__onglet--actif' if @groupe_ajout.nil?}" %>
+                    </div>
+                  </div>
+                <% end %>
+
                 <div data-controller="filtre">
                   <%= search_field_tag :recherche_promo, nil,
                         placeholder: "Rechercher un nom ou un numéro…",
@@ -194,13 +214,13 @@
                         </span>
                         <span class="appel__portee">
                           <%= button_to "Présence exceptionnelle",
-                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "releve"),
+                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "releve", group_id: @groupe_ajout&.id),
                                         form: { data: { turbo: false } }, class: "btn btn-sm btn-outline-ink",
                                         title: "Une ligne dans ce tableau, sans figurer sur aucune feuille d'appel" %>
                           <%= button_to "Ajouter aux feuilles de présences",
-                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "matiere"),
+                                        eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id, portee: "matiere", group_id: @groupe_ajout&.id),
                                         form: { data: { turbo: false } }, class: "btn btn-sm btn-portee",
-                                        title: "Attendu à chaque séance de #{@ue.name} et proposé à l'appel" %>
+                                        title: "Attendu aux séances #{@groupe_ajout ? "du #{@groupe_ajout.label}" : "de #{@ue.name}"} et proposé à l'appel" %>
                         </span>
                       </li>
                     <% end %>
@@ -231,6 +251,18 @@
                 <%= text_field_tag :guest_first_name, nil, placeholder: "Prénom", class: "form-control" %>
                 <%= text_field_tag :guest_last_name, nil, placeholder: "Nom", class: "form-control" %>
                 <%= text_field_tag :guest_student_number, nil, placeholder: "Numéro étudiant", class: "form-control" %>
+
+                <% if @groupes_ajout.size > 1 %>
+                  <div class="mb-2" style="flex: 1 1 100%;">
+                    <%= label_tag :group_id, "Sur quel groupe ?", class: "form-label fw-bold" %>
+                    <%= select_tag :group_id,
+                          options_from_collection_for_select(@groupes_ajout, :id, :label, @groupe_ajout&.id) +
+                          content_tag(:option, "Toute la matière", value: ""),
+                          class: "form-select" %>
+                  </div>
+                <% elsif @groupes_ajout.one? %>
+                  <%= hidden_field_tag :group_id, @groupes_ajout.first.id, id: nil %>
+                <% end %>
 
                 <fieldset class="portee">
                   <legend class="portee__titre">Faut-il l'attendre aux prochaines séances ?</legend>

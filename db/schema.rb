@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_09_29_120000) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_06_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -439,6 +439,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_29_120000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.boolean "permanent", default: true, null: false
+    t.bigint "group_id"
+    t.index ["group_id"], name: "index_ue_guests_on_group_id"
     t.index ["ue_id", "permanent"], name: "index_ue_guests_on_ue_id_and_permanent"
     t.index ["ue_id"], name: "index_ue_guests_on_ue_id"
     t.index ["user_id"], name: "index_ue_guests_on_user_id"
@@ -554,6 +556,7 @@ ActiveRecord::Schema[7.1].define(version: 2026_09_29_120000) do
   add_foreign_key "tutoring_requests", "users"
   add_foreign_key "ue_assessments", "ues"
   add_foreign_key "ue_assessments", "users"
+  add_foreign_key "ue_guests", "groups"
   add_foreign_key "ue_guests", "ues"
   add_foreign_key "ue_guests", "users"
   add_foreign_key "ues", "batches"

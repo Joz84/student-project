@@ -8,6 +8,9 @@ class UeGuest < ApplicationRecord
   # Une ligne peut désigner un compte — un étudiant d'une autre promotion, ou
   # rattaché à aucun groupe — plutôt qu'une identité saisie à la main.
   belongs_to :user, optional: true
+  # Le groupe auquel l'ajout se limite. Nul vise toute la matière, ce qui
+  # reste utile pour un auditeur qui suit tout.
+  belongs_to :group, optional: true
 
   # Portée de l'ajout : une ligne permanente est attendue à chaque séance de la
   # matière, une ligne ponctuelle ne figure que dans le relevé.
@@ -27,6 +30,9 @@ class UeGuest < ApplicationRecord
     return nil if user_id.present?
     self.class.cle_de(last_name, first_name, student_number)
   end
+
+  # La portée, dite en français, pour les messages et les listes.
+  def portee = group ? group.label : "toute la matière"
 
   def nom_complet
     return "#{user.first_name} #{user.last_name}" if user

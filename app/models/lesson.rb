@@ -60,14 +60,20 @@ class Lesson < ApplicationRecord
   # pouvoir être attendu sans qu'on lui invente une appartenance.
   def comptes_ajoutes
     return [] if ue_id.nil?
-    @comptes_ajoutes ||= UeGuest.permanentes.where(ue_id: ue_id)
-                                .where.not(user_id: nil).pluck(:user_id)
+    @comptes_ajoutes ||= ajouts_de_la_matiere.where.not(user_id: nil).pluck(:user_id)
   end
 
-  # Les lignes sans compte attendues à chaque séance de la matière.
+  # Les lignes sans compte attendues sur cette séance.
   def invites_permanents
     return UeGuest.none if ue_id.nil?
-    UeGuest.permanentes.where(ue_id: ue_id, user_id: nil).order(:last_name, :first_name)
+    ajouts_de_la_matiere.where(user_id: nil).order(:last_name, :first_name)
+  end
+
+  # Un ajout vise soit un groupe précis — et ne concerne alors que les séances
+  # de ce groupe — soit toute la matière, pour un auditeur qui suit tout.
+  def ajouts_de_la_matiere
+    UeGuest.permanentes.where(ue_id: ue_id)
+           .where("group_id IS NULL OR group_id IN (?)", group_ids.presence || [0])
   end
 
   def eleves_attendus

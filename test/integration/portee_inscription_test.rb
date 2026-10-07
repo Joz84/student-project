@@ -35,14 +35,14 @@ class PorteeInscriptionTest < ActionDispatch::IntegrationTest
     assert_equal 0, @demain.invites_permanents.count
   end
 
-  test "une saisie libre sur toute la matière revient à chaque séance" do
+  test "une saisie libre sur la matière revient à chaque séance du groupe" do
     assert_difference -> { UeGuest.count }, 1 do
       post teacher_lesson_attendances_path(@aujourdhui), params: {
         guest_first_name: "Vaiana", guest_last_name: "Tepuhiarii",
         guest_student_number: "20260999", portee: "matiere"
       }
     end
-    assert_match "Inscrit sur toute la matière", flash[:notice]
+    assert_match "Inscrit aux séances du TD-01", flash[:notice]
 
     invite = UeGuest.last
     assert invite.permanent?
@@ -100,6 +100,73 @@ class PorteeInscriptionTest < ActionDispatch::IntegrationTest
           params: { status: "present", portee: "matiere" }
     GroupMembership.create!(user: @promo, group: @groupe)
     assert_equal 1, @demain.eleves_attendus.where(id: @promo.id).count
+  end
+
+  # Un ajout « sur toute la matière » visait toutes les séances de l'UE, tous
+  # groupes confondus : un étudiant inscrit depuis le TP-01 se retrouvait
+  # attendu au TP-04 et partout ailleurs.
+  test "depuis la feuille d'appel, l'ajout vise le groupe de la séance" do
+    autre_groupe = Group.create!(ue: @ue, label: "TD-02", kind: :td)
+    ailleurs = seance(3.days.from_now)
+    ailleurs.lesson_groups.destroy_all
+    LessonGroup.create!(lesson: ailleurs, group: autre_groupe)
+
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "present", portee: "matiere" }
+
+    invite = UeGuest.last
+    assert_equal @groupe, invite.group, "le groupe de la séance d'origine"
+    assert_match "séances du TD-01", flash[:notice]
+
+    assert @demain.eleves_attendus.exists?(@promo.id), "attendu sur les séances du TD-01"
+    refute ailleurs.eleves_attendus.exists?(@promo.id), "mais pas sur celles du TD-02"
+  end
+
+  test "une séance visant plusieurs groupes ne tranche pas : l'ajout porte sur la matière" do
+    second = Group.create!(ue: @ue, label: "TD-02", kind: :td)
+    LessonGroup.create!(lesson: @aujourdhui, group: second)
+    @aujourdhui.reload
+
+    patch teacher_lesson_attendance_path(@aujourdhui, @promo),
+          params: { status: "present", portee: "matiere" }
+
+    assert_nil UeGuest.last.group, "aucun groupe ne s'impose"
+    assert_match "toute la matière", flash[:notice]
+  end
+
+  test "le relevé propose les groupes où l'enseignant a des séances" do
+    autre = Group.create!(ue: @ue, label: "TD-09", kind: :td)
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_response :success
+    refute_match "TD-09", response.body, "il n'y enseigne pas"
+  end
+
+  test "l'ajout depuis le relevé se limite au groupe choisi" do
+    autre_groupe = Group.create!(ue: @ue, label: "TD-02", kind: :td)
+    ailleurs = seance(4.days.from_now)
+    ailleurs.lesson_groups.destroy_all
+    LessonGroup.create!(lesson: ailleurs, group: autre_groupe)
+
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: @promo.id,
+                                             portee: "matiere", group_id: @groupe.id }
+    invite = UeGuest.last
+    assert_equal @groupe, invite.group
+    assert_match "séances du TD-01", flash[:notice]
+    assert @demain.eleves_attendus.exists?(@promo.id)
+    refute ailleurs.eleves_attendus.exists?(@promo.id)
+  end
+
+  test "sans groupe précisé, l'ajout vaut pour toute la matière" do
+    autre_groupe = Group.create!(ue: @ue, label: "TD-02", kind: :td)
+    ailleurs = seance(4.days.from_now)
+    ailleurs.lesson_groups.destroy_all
+    LessonGroup.create!(lesson: ailleurs, group: autre_groupe)
+
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: @promo.id,
+                                             portee: "matiere", group_id: "" }
+    assert_nil UeGuest.last.group
+    assert_match "chaque séance de la matière", flash[:notice]
+    assert ailleurs.eleves_attendus.exists?(@promo.id), "partout, cette fois"
   end
 
   # --- formulaire du relevé ---

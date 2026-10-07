@@ -64,21 +64,31 @@ class Teacher::BilansController < ApplicationController
     # ce relevé, pour une personne venue une fois.
     permanent = params[:portee] != "releve"
 
+    # Le périmètre : un groupe précis, ou toute la matière pour un auditeur qui
+    # suit tout. Un groupe d'une autre UE n'a rien à faire ici.
+    groupe = Group.where(ue_id: @ue.id).find_by(id: params[:group_id])
+
     invite = if params[:user_id].present?
                # Un étudiant de la promotion qui n'était pas prévu dans ce
                # groupe : on le rattache par son compte, pas par son nom.
                eleve = User.kept.where(teacher: nil).find(params[:user_id])
                UeGuest.find_or_initialize_by(ue: @ue, user_id: eleve.id)
-                      .tap { |g| g.permanent = permanent }
+                      .tap { |g| g.permanent = permanent; g.group = groupe }
              else
-               UeGuest.new(ue: @ue, permanent: permanent,
+               UeGuest.new(ue: @ue, permanent: permanent, group: groupe,
                            first_name: params[:guest_first_name].to_s.strip,
                            last_name: params[:guest_last_name].to_s.strip,
                            student_number: params[:guest_student_number].to_s.strip)
              end
 
     if invite.save
-      suite = permanent ? "Il sera attendu à chaque séance." : "Il ne figure que dans ce relevé."
+      suite = if !permanent
+                "Il ne figure que dans ce relevé."
+              elsif groupe
+                "Il sera attendu aux séances du #{groupe.label}."
+              else
+                "Il sera attendu à chaque séance de la matière."
+              end
       redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
                   notice: "#{invite.nom_complet} ajouté à la liste de #{@ue.name}. #{suite}"
     else
@@ -99,6 +109,16 @@ class Teacher::BilansController < ApplicationController
     @ue = params[:ue_id].present? ? @ues.find_by(id: params[:ue_id]) : @ues.first
     @sheet = AttendanceSheet.new(teacher: @enseignant, ue: @ue) if @ue
     @enseignants = AttendanceSheet.enseignants_avec_seances if current_user.admin
+
+    # Le périmètre d'un ajout. Chaque bouton crée son propre formulaire : le
+    # choix ne peut pas vivre dans un champ, il voyage donc dans l'adresse.
+    return unless @sheet
+    @groupes_ajout = @sheet.groupes_enseignes
+    @groupe_ajout = if params.key?(:groupe)
+                      @groupes_ajout.find { |g| g.id.to_s == params[:groupe].to_s }
+                    else
+                      @groupes_ajout.first
+                    end
   end
 
   # L'administrateur consulte le relevé de n'importe quel intervenant : il

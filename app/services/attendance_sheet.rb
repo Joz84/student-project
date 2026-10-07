@@ -30,15 +30,19 @@ class AttendanceSheet
   # d'un autre groupe, d'une autre promotion, ou que la scolarité n'a pas
   # rattaché. `permanent` dit s'il est attendu à chaque séance ou s'il ne
   # figure que dans ce relevé.
+  # [user_id, permanent, group_id] : le groupe dit sur quelles séances l'ajout
+  # porte. Nul vise toute la matière.
   def comptes_ajoutes
     @comptes_ajoutes ||= ue ? UeGuest.where(ue: ue).where.not(user_id: nil)
-                                     .pluck(:user_id, :permanent).to_h : {}
+                                     .pluck(:user_id, :permanent, :group_id) : []
   end
+
+  def ids_ajoutes = comptes_ajoutes.map(&:first)
 
   def eleves
     @eleves ||= begin
       ids = attendus_par_seance.values.reduce(Set.new, :|)
-      ids |= comptes_ajoutes.keys
+      ids |= ids_ajoutes
       User.where(id: ids.to_a).order(:last_name, :first_name).to_a
     end
   end
@@ -50,6 +54,12 @@ class AttendanceSheet
     User.kept.where(teacher: nil, batch_id: ue.batch_id)
         .where.not(id: eleves.map(&:id))
         .order(:last_name, :first_name)
+  end
+
+  # Les groupes où l'enseignant a effectivement des séances sur cette matière :
+  # ce sont les seuls périmètres qu'il peut proposer à un ajout.
+  def groupes_enseignes
+    @groupes_enseignes ||= Group.where(id: lessons.flat_map(&:group_ids).uniq).order(:label)
   end
 
   # Les lignes sans compte. Deux origines qui se rejoignent sur la même clé :
@@ -110,13 +120,15 @@ class AttendanceSheet
                    .pluck(:group_id, :user_id)
                    .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(g, u), h| h[g] << u }
 
-      # Les comptes inscrits sur toute la matière sont attendus partout ; ceux
-      # ajoutés pour ce seul relevé apparaissent en ligne mais restent estompés.
-      permanents = comptes_ajoutes.select { |_, p| p }.keys
+      # Un ajout permanent est attendu sur les séances de son groupe, ou sur
+      # toutes celles de la matière s'il n'en vise aucun. Un ajout ponctuel
+      # apparaît en ligne mais reste estompé partout.
+      permanents = comptes_ajoutes.select { |_, p, _| p }
+      def_pour = ->(ids) { permanents.filter_map { |u, _, g| u if g.nil? || ids.include?(g) } }
 
       table = {}
       avec_groupes.each do |l|
-        table[l.id] = (l.group_ids.flat_map { |g| par_groupe[g] } + permanents).to_set
+        table[l.id] = (l.group_ids.flat_map { |g| par_groupe[g] } + def_pour.call(l.group_ids)).to_set
       end
 
       unless sans_groupes.empty?
@@ -125,7 +137,7 @@ class AttendanceSheet
                      .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(b, u), h| h[b] << u }
         auditeurs = ue ? GroupMembership.where(group_id: ue.group_ids).pluck(:user_id) : []
         sans_groupes.each do |l|
-          table[l.id] = (promos[l.batch_id] + auditeurs + permanents).to_set
+          table[l.id] = (promos[l.batch_id] + auditeurs + def_pour.call([])).to_set
         end
       end
       table

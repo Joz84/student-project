@@ -60,6 +60,11 @@ class Teacher::AttendancesController < ApplicationController
     return nil unless params[:portee] == "matiere"
     return nil if @lesson.ue_id.nil?
 
+    # La séance dit elle-même le périmètre : on inscrit sur son groupe, pas sur
+    # toute la matière. Une séance qui vise plusieurs groupes — ou aucun — ne
+    # permet pas de trancher : l'ajout porte alors sur la matière entière.
+    groupe = @lesson.groups.one? ? @lesson.groups.first : nil
+
     invite = if user
                UeGuest.find_or_initialize_by(ue_id: @lesson.ue_id, user_id: user.id)
              else
@@ -70,8 +75,10 @@ class Teacher::AttendancesController < ApplicationController
              end
 
     invite.permanent = true
+    invite.group = groupe
     return nil unless invite.changed? || invite.new_record?
-    invite.save ? "Inscrit sur toute la matière." : nil
+    return nil unless invite.save
+    groupe ? "Inscrit aux séances du #{groupe.label}." : "Inscrit sur toute la matière."
   end
 
   def charger_seance
