@@ -115,6 +115,13 @@ class Lesson < ApplicationRecord
   # correction se fait depuis le bilan, qui reste modifiable sans limite.
   def rouvrable?(instant = Time.current) = valide? && ends_at > instant
 
+  # Un appel ouvert pendant le cours puis laissé en plan. Tant qu'il n'est pas
+  # validé, les étudiants qui ne se sont pas signalés n'ont aucune ligne : ni
+  # présents ni absents, simplement absents du registre.
+  def appel_en_attente?(instant = Time.current)
+    attendance_code.present? && validated_at.nil? && ends_at < instant
+  end
+
   def rouvrir!
     update!(validated_at: nil, locked_at: nil)
   end

@@ -780,3 +780,27 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
     text-decoration: none;
   }
 }
+
+// Un appel ouvert puis laissé en plan. Il reste sur l'accueil jusqu'à sa
+// validation, en rouge : tant qu'on ne valide pas, les étudiants qui ne se
+// sont pas signalés n'ont aucune ligne, ni présents ni absents.
+.seance--attente {
+  background: mix($red, #fff, 10%);
+  border-radius: $radius-sm;
+  box-shadow: inset 3px 0 0 $red;
+  padding-left: .9rem;
+
+  .seance__heure { color: $red; }
+}
+
+.seance__attente {
+  display: inline-block;
+  margin-left: .4rem;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .06rem .5rem;
+  border-radius: 999px;
+  background: mix($red, #fff, 22%);
+  border: 1px solid mix($red, #fff, 55%);
+  color: $ink;
+}

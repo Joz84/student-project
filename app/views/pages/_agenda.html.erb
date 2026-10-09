@@ -45,7 +45,8 @@
     <ul class="agenda__liste">
       <% seances.each do |seance| %>
         <% en_cours = seance.en_cours? %>
-        <li class="seance <%= "seance--active" if en_cours %>">
+        <% en_attente = current_user.teacher? && seance.appel_en_attente? %>
+        <li class="seance <%= "seance--active" if en_cours %><%= " seance--attente" if en_attente %>">
           <div class="seance__quand">
             <span class="seance__heure"><%= seance.starts_at.strftime("%H:%M") %></span>
             <span class="seance__jour"><%= I18n.l(seance.starts_at.to_date, format: "%a %d/%m") %></span>
@@ -64,6 +65,12 @@
                   rattrapage
                 </span>
               <% end %>
+              <% if en_attente %>
+                <span class="seance__attente"
+                      title="L'appel a été ouvert mais jamais validé : les étudiants non pointés n'ont aucune ligne">
+                  appel non validé
+                </span>
+              <% end %>
               <% if toutes && seance.teacher.nil? %>
                 <span class="agenda__orphelin" title="Aucun compte n'est rattaché : personne ne voit cette séance">
                   sans compte enseignant
@@ -74,7 +81,11 @@
 
           <div class="seance__action">
             <% if current_user.teacher? %>
-              <%= link_to "Feuille d'appel", teacher_lesson_path(seance), class: "btn btn-danger btn-sm" %>
+              <% if en_attente %>
+                <%= link_to "Valider l'appel", teacher_lesson_path(seance), class: "btn btn-danger btn-sm" %>
+              <% else %>
+                <%= link_to "Feuille d'appel", teacher_lesson_path(seance), class: "btn btn-danger btn-sm" %>
+              <% end %>
             <% elsif (pointage = seance.attendances.find_by(user: current_user))&.statut_present? %>
               <span class="seance__etat seance__etat--ok">
                 Présence enregistrée

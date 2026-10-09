@@ -23,10 +23,19 @@ module LessonsHelper
   # à faire leur appel, et doit pour cela atteindre leur feuille.
   def seances_enseignant(user, limite: 8, toutes: false)
     return Lesson.none unless user&.teacher?
+    partout = toutes && user.admin
 
-    scope = Lesson.where("ends_at >= ?", Time.current).order(:starts_at)
-    scope = scope.where(teacher: user) unless toutes && user.admin
-    scope.includes(:teacher).limit(toutes && user.admin ? 25 : limite)
+    base = Lesson.order(:starts_at).includes(:teacher)
+    base = base.where(teacher: user) unless partout
+
+    # Les appels ouverts puis laissés en plan restent en tête tant qu'ils ne
+    # sont pas validés : sans cela personne ne s'en aperçoit, et les étudiants
+    # qui ne se sont pas signalés n'ont jamais de ligne.
+    en_attente = base.where("ends_at < ?", Time.current)
+                     .where.not(attendance_code: nil).where(validated_at: nil).to_a
+    a_venir = base.where("ends_at >= ?", Time.current).limit(partout ? 25 : limite).to_a
+
+    en_attente + a_venir
   end
 
   # Le filtre n'est offert qu'à l'administrateur, et « tous » est sa vue par
