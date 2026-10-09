@@ -126,6 +126,26 @@
                 <% end %>
               </div>
 
+              <% presence = @assiduite[matiere.ue.id] %>
+              <% if presence && presence[:renseignees].positive? %>
+                <div class="presence-matiere">
+                  <span class="presence-matiere__titre">Mes présences</span>
+                  <span class="presence-matiere__detail">
+                    <strong><%= presence[:presents] + presence[:retards] %></strong>
+                    sur <%= presence[:renseignees] %> séance<%= "s" if presence[:renseignees] > 1 %> renseignée<%= "s" if presence[:renseignees] > 1 %>
+                    <% if presence[:absents].positive? %>
+                      · <span class="presence-matiere__manque"><%= presence[:absents] %> absence<%= "s" if presence[:absents] > 1 %> non justifiée<%= "s" if presence[:absents] > 1 %></span>
+                    <% end %>
+                    <% if presence[:excuses].positive? %>
+                      · <%= presence[:excuses] %> justifiée<%= "s" if presence[:excuses] > 1 %>
+                    <% end %>
+                    <% if presence[:retards].positive? %>
+                      · <%= presence[:retards] %> retard<%= "s" if presence[:retards] > 1 %>
+                    <% end %>
+                  </span>
+                </div>
+              <% end %>
+
               <% demande = @demandes.include?(matiere.ue.id) %>
               <div class="soutien-choix <%= "soutien-choix--prise" if demande %>">
                 <%= form_with url: ue_tutoring_request_path(matiere.ue), method: :post,
@@ -157,6 +177,36 @@
               </p>
             </div>
           </section>
+        <% end %>
+
+        <% if @pointages.any? %>
+          <h3 class="roadmap__sous-titre mt-5">Le détail de mes présences</h3>
+          <p class="matieres__regle">
+            Ce que vos enseignants ont enregistré, séance par séance. Une ligne
+            vous semble fausse ? Dites-le à l'enseignant concerné : le registre
+            reste modifiable, sans limite de temps.
+          </p>
+
+          <div class="enrobage-table">
+            <table class="releve-perso">
+              <thead>
+                <tr><th>Séance</th><th>Quand</th><th>Matière</th><th>État</th><th>Renseigné par</th></tr>
+              </thead>
+              <tbody>
+                <% @pointages.each do |p| %>
+                  <tr class="releve-perso__ligne releve-perso__ligne--<%= p.status %>">
+                    <td><%= p.lesson.title %></td>
+                    <td class="releve-perso__quand"><%= l p.lesson.starts_at, format: "%a %d/%m %H:%M" %></td>
+                    <td class="releve-perso__matiere"><%= p.lesson.ue&.name || "—" %></td>
+                    <td><span class="releve-perso__etat releve-perso__etat--<%= p.status %>"><%= p.libelle %></span></td>
+                    <td class="releve-perso__source">
+                      <%= p.by_student? ? "vous-même" : "votre enseignant" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
         <% end %>
 
       <% end %>
