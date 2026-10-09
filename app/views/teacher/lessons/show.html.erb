@@ -44,6 +44,17 @@
             <%= button_to "Tous présents", tous_presents_teacher_lesson_path(@lesson),
                           form: { data: { turbo_confirm: "Marquer présents tous les attendus qui ne sont pas encore renseignés ? Les absences et retards déjà saisis sont conservés." } },
                           class: "btn btn-outline-ink" %>
+            <% if @lesson.appel_en_attente? %>
+              <%# Un appel oublié ne dit rien de la présence : le valider
+                  porterait tout le monde absent, ce qui serait faux. %>
+              <%= button_to "Déclarer non renseignée", oublier_teacher_lesson_path(@lesson),
+                            form: { data: { turbo_confirm:
+                              @lesson.attendances.any? ?
+                                "Déclarer « #{@lesson.title} » non renseignée ? Les #{@lesson.attendances.count} pointages déjà enregistrés seront effacés." :
+                                "Déclarer « #{@lesson.title} » non renseignée ? Elle cessera d'apparaître comme un appel en attente." } },
+                            class: "btn btn-outline-ink" %>
+            <% end %>
+
             <% if @lesson.attendance_code.present? %>
               <%= button_to "Valider l'appel", valider_teacher_lesson_path(@lesson),
                             form: { data: { turbo: false,

@@ -116,6 +116,21 @@ class Teacher::LessonsController < ApplicationController
     redirect_to root_path, notice: "Feuille « #{intitule} » supprimée.", status: :see_other
   end
 
+  # Déclarer qu'une séance n'a pas été pointée. Valider porterait tout le monde
+  # absent, ce qui serait faux : un appel oublié ne dit rien de la présence des
+  # étudiants, et doit se lire comme tel partout.
+  def oublier
+    efface = @lesson.attendances.count
+    ActiveRecord::Base.transaction do
+      @lesson.attendances.destroy_all
+      @lesson.update!(attendance_code: nil, locked_at: nil, validated_at: nil)
+    end
+
+    suite = efface.positive? ? " #{efface} pointage#{'s' if efface > 1} effacé#{'s' if efface > 1}." : ""
+    redirect_to root_path, status: :see_other,
+                notice: "« #{@lesson.title} » est déclarée non renseignée.#{suite}"
+  end
+
   def valider
     # Les attendus qui ne se sont pas signalés sont portés absents : sans cela
     # la séance resterait à moitié renseignée.

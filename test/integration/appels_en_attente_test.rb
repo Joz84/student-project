@@ -53,7 +53,7 @@ class AppelsEnAttenteTest < ActionDispatch::IntegrationTest
     sign_in @prof
     post valider_teacher_lesson_path(@oubliee)
     get root_path
-    refute_match @oubliee.title, response.body
+    refute_match teacher_lesson_path(@oubliee), response.body
     refute_match "seance--attente", response.body
   end
 
@@ -86,6 +86,53 @@ class AppelsEnAttenteTest < ActionDispatch::IntegrationTest
     get root_path
     refute_match "appel non validé", response.body
     refute_match "seance--attente", response.body
+  end
+
+  # Valider un appel oublié porterait tout le monde absent, ce qui serait faux.
+  test "déclarer une séance non renseignée la sort de l'attente" do
+    sign_in @prof
+    get teacher_lesson_path(@oubliee)
+    assert_match "Déclarer non renseignée", response.body
+
+    post oublier_teacher_lesson_path(@oubliee)
+    assert_redirected_to root_path
+    assert_match(/non renseignée/, flash[:notice])
+
+    @oubliee.reload
+    assert_nil @oubliee.attendance_code
+    assert_nil @oubliee.validated_at
+    refute @oubliee.appel_en_attente?
+
+    get root_path
+    refute_match teacher_lesson_path(@oubliee), response.body
+    refute_match "seance--attente", response.body
+  end
+
+  test "elle efface les pointages, et le dit avant" do
+    @oubliee.attendances.create!(user: @eleve, status: :present, declared_by: :student)
+    sign_in @prof
+
+    get teacher_lesson_path(@oubliee)
+    assert_match "pointages déjà enregistrés seront effacés", response.body
+
+    assert_difference -> { Attendance.count }, -1 do
+      post oublier_teacher_lesson_path(@oubliee)
+    end
+    assert_match "1 pointage effacé", flash[:notice]
+  end
+
+  test "une séance qui n'est pas en attente ne propose pas le renoncement" do
+    sign_in @prof
+    get teacher_lesson_path(@a_venir)
+    refute_match "Déclarer non renseignée", response.body
+  end
+
+  test "un étudiant ne déclare rien non renseigné" do
+    sign_in @eleve
+    assert_no_difference -> { Lesson.where(attendance_code: nil).count } do
+      post oublier_teacher_lesson_path(@oubliee)
+    end
+    assert_redirected_to root_path
   end
 
   private

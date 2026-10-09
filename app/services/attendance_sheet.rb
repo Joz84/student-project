@@ -43,9 +43,17 @@ class AttendanceSheet
     @eleves ||= begin
       ids = attendus_par_seance.values.reduce(Set.new, :|)
       ids |= ids_ajoutes
+      # Quiconque porte un pointage sur ces séances garde sa ligne, même
+      # retiré de la liste : sans cela son état deviendrait invisible tout en
+      # restant en base.
+      ids |= pointages.values.map(&:user_id)
       User.where(id: ids.to_a).order(:last_name, :first_name).to_a
     end
   end
+
+  # Cet étudiant figure-t-il dans la grille parce qu'on l'y a ajouté, et non
+  # parce que son groupe l'y amène ? C'est lui qu'on peut retirer.
+  def ajoute?(user) = ids_ajoutes.include?(user.id)
 
   # La promotion, moins ceux qui figurent déjà dans la grille : ce qu'on peut
   # encore ajouter.

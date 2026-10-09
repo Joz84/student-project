@@ -110,6 +110,14 @@
                     <tr>
                       <th class="bilan__eleve">
                         <%= eleve.last_name %> <span class="team-card__muted"><%= eleve.first_name %></span>
+                        <% if @sheet.ajoute?(eleve) %>
+                          <%= button_to "retirer",
+                                eleve_teacher_bilan_path(ue_id: @ue.id, user_id: eleve.id),
+                                method: :delete, form: { data: { turbo: false } },
+                                class: "bilan__retirer",
+                                title: "Le retirer de la liste de cette matière — ses pointages sont conservés",
+                                data: { turbo_confirm: "Retirer #{eleve.first_name} #{eleve.last_name} de la liste de #{@ue.name} ? Ses pointages déjà enregistrés sont conservés." } %>
+                        <% end %>
                       </th>
                       <% @sheet.lessons.each do |l| %>
                         <% statut = @sheet.statut(l, eleve) %>
@@ -132,6 +140,13 @@
                         <span class="team-card__muted">
                           ajouté à la main<%= " · #{invite.numero}" if invite.numero.present? %>
                         </span>
+                        <%= button_to "retirer",
+                              eleve_teacher_bilan_path(ue_id: @ue.id, nom: invite.nom,
+                                                       prenom: invite.prenom, numero: invite.numero),
+                              method: :delete, form: { data: { turbo: false } },
+                              class: "bilan__retirer",
+                              title: "Le retirer de la liste de cette matière",
+                              data: { turbo_confirm: "Retirer #{invite.libelle} de la liste de #{@ue.name} ? Ses pointages déjà enregistrés sont conservés." } %>
                         <%= hidden_field_tag "invites[#{i}][nom]", invite.nom, id: nil %>
                         <%= hidden_field_tag "invites[#{i}][prenom]", invite.prenom, id: nil %>
                         <%= hidden_field_tag "invites[#{i}][numero]", invite.numero, id: nil %>

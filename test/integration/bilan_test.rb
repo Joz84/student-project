@@ -393,6 +393,66 @@ class BilanTest < ActionDispatch::IntegrationTest
     refute_match @a.student_number, bloc, "il est déjà dans la grille par son groupe"
   end
 
+  # Une liste se corrige : on y ajoute, on en retire.
+  test "retirer un étudiant de la liste de la matière" do
+    hors = creer_eleve("85000010", "Retire")
+    sign_in @prof
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
+
+    get teacher_bilan_path(ue_id: @ue.id)
+    assert_match hors.last_name, response.body
+    assert_match "retirer", response.body
+
+    assert_difference -> { UeGuest.count }, -1 do
+      delete eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id }
+    end
+    assert_match "retiré de la liste", flash[:notice]
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    refute_includes sheet.eleves.map(&:id), hors.id
+  end
+
+  test "ses pointages sont conservés, et le gardent dans la grille" do
+    hors = creer_eleve("85000011", "Pointe")
+    sign_in @prof
+    post eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id, portee: "matiere" }
+    @s1.attendances.create!(user: hors, status: :present, declared_by: :teacher)
+
+    assert_no_difference -> { Attendance.count } do
+      delete eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id }
+    end
+    assert_match "pointages sont conservés", flash[:notice]
+
+    sheet = AttendanceSheet.new(teacher: @prof, ue: @ue)
+    assert_includes sheet.eleves.map(&:id), hors.id, "un constat garde sa ligne"
+  end
+
+  test "retirer une ligne sans compte" do
+    UeGuest.create!(ue: @ue, first_name: "Vaiana", last_name: "Tepuhiarii",
+                    student_number: "20260999")
+    sign_in @prof
+    assert_difference -> { UeGuest.count }, -1 do
+      delete eleve_teacher_bilan_path, params: { ue_id: @ue.id, nom: "Tepuhiarii",
+                                                 prenom: "Vaiana", numero: "20260999" }
+    end
+  end
+
+  test "retirer quelqu'un qui n'y est pas est signalé" do
+    sign_in @prof
+    delete eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: @a.id }
+    assert_match "ne figure pas sur la liste", flash[:alert]
+  end
+
+  test "un étudiant ne retire personne" do
+    hors = creer_eleve("85000012", "Protege")
+    UeGuest.create!(ue: @ue, user: hors)
+    sign_in @a
+    assert_no_difference -> { UeGuest.count } do
+      delete eleve_teacher_bilan_path, params: { ue_id: @ue.id, user_id: hors.id }
+    end
+    assert_redirected_to root_path
+  end
+
   test "un étudiant n'accède pas au bilan" do
     sign_in @a
     get teacher_bilan_path

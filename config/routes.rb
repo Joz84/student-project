@@ -56,7 +56,8 @@ Rails.application.routes.draw do
     resource :bilan, only: [:show, :update], controller: "bilans" do
       get  :export
       post :import
-      post :eleve      # ajoute une ligne à la liste de la matière
+      post   :eleve                              # ajoute une ligne à la liste
+      delete :eleve, action: :retirer_eleve      # et l'en retire
     end
     resources :lessons, only: [:new, :create, :show, :destroy] do
       member do
@@ -67,6 +68,7 @@ Rails.application.routes.draw do
         post :rouvrir
         post :valider
         post :tous_presents
+        post :oublier
       end
       resources :attendances, only: [:create, :update, :destroy]
     end

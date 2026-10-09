@@ -804,3 +804,22 @@ thead .bilan__eleve { z-index: 4; background: $surface; }
   border: 1px solid mix($red, #fff, 55%);
   color: $ink;
 }
+
+// Retirer quelqu'un de la liste d'une matière. Discret : c'est une correction
+// rare, pas une action du quotidien.
+.bilan__retirer {
+  display: inline-block;
+  margin-left: .4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: .68rem;
+  font-weight: 600;
+  color: $muted-soft;
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover { color: $red; }
+}
+
+.bilan__eleve form { display: inline; margin: 0; }

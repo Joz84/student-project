@@ -97,6 +97,29 @@ class Teacher::BilansController < ApplicationController
     end
   end
 
+  # Retire quelqu'un de la liste d'une matière. Ses pointages ne sont pas
+  # touchés : ce sont des constats, et ils gardent leur ligne dans la grille.
+  def retirer_eleve
+    @ue = Ue.find(params[:ue_id])
+    lignes = UeGuest.where(ue: @ue)
+    lignes = if params[:user_id].present?
+               lignes.where(user_id: params[:user_id])
+             else
+               cle = UeGuest.cle_de(params[:nom], params[:prenom], params[:numero])
+               lignes.where(user_id: nil).select { |g| g.cle == cle }
+             end
+
+    if lignes.empty?
+      return redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
+                         alert: "Cette ligne ne figure pas sur la liste de la matière."
+    end
+
+    nom = lignes.first.nom_complet
+    lignes.each(&:destroy!)
+    redirect_to teacher_bilan_path(ue_id: @ue.id), status: :see_other,
+                notice: "#{nom} retiré de la liste de #{@ue.name}. Ses pointages sont conservés."
+  end
+
   private
 
   def autoriser
