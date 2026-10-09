@@ -7,12 +7,8 @@ require "test_helper"
 class MesureRequetesTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
-  # « matières » est passé de 15 à 20 le jour où la page a montré son assiduité
-  # à l'étudiant : deux requêtes de plus, constantes quel que soit le nombre de
-  # matières. Un plafond se relève quand on ajoute une fonctionnalité, jamais
-  # pour faire taire une régression.
   PLAFONDS = { "accueil" => 6, "projets" => 25, "kanban" => 160, "progression" => 35,
-               "feuille de route" => 20, "matières" => 20, "équipes" => 25, "bilan" => 8 }.freeze
+               "feuille de route" => 20, "matières" => 15, "équipes" => 25, "bilan" => 8 }.freeze
 
   setup do
     montrer_les_erreurs!
