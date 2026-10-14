@@ -98,4 +98,42 @@ class HistoriqueEquipesTest < ActionDispatch::IntegrationTest
     get team_path(etranger)
     assert_redirected_to root_path
   end
+
+  test "un membre parti s'affiche en retrait de ceux du moment" do
+    reste = creer_eleve("90000002", "Rester", batch: @an_passe, team: @ancienne)
+    @eleve.update!(batch: @cette_annee, team: nil)
+
+    sign_in @prof
+    get teacher_batch_teams_path(@an_passe)
+    assert_response :success
+
+    carte = response.body[/<div class="team-card h-100">.*?Ouvrir le tableau de bord/m]
+    assert carte.present?, "la carte de l'équipe doit être rendue"
+    assert_match reste.last_name, carte
+    assert_match @eleve.last_name, carte
+    assert_match "team-card__parti", carte, "le parti porte la classe grisée"
+    assert_match "avatar-sm--parti", carte
+    assert_match "1 étudiant", carte, "le décompte ne retient que l'équipe du moment"
+    assert_match "1 parti", carte
+  end
+
+  test "une équipe que plus personne ne compose se replie au lieu d'occuper la grille" do
+    # Son unique étudiant s'en va, et son compte est désactivé : il ne reste
+    # personne à montrer, mais le travail déposé doit rester atteignable.
+    @eleve.update!(team: nil)
+    @eleve.update!(drop: true)
+
+    sign_in @prof
+    get teacher_batch_teams_path(@an_passe)
+    assert_response :success
+    assert_match "Équipes sans étudiant actif", response.body
+    assert_match @ancienne.name, response.body
+    refute_match "team-card h-100", response.body, "aucune carte vide dans la grille"
+  end
+
+  test "un compte désactivé ne reparaît pas parmi les anciens membres" do
+    @eleve.update!(drop: true, team: nil)
+    assert_empty @ancienne.membres
+    assert @ancienne.sans_membre?
+  end
 end

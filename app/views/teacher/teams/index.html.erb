@@ -180,6 +180,37 @@
           </div>
         <% end %>
 
+        <% if @equipes_vides.present? %>
+          <div class="liste-pliante">
+            <a class="liste-pliante__tete" data-bs-toggle="collapse" href="#listeEquipesVides"
+               role="button" aria-expanded="false" aria-controls="listeEquipesVides">
+              <span class="liste-pliante__puce" style="background: #E3E8EF;"></span>
+              <span class="liste-pliante__titre">Équipes sans étudiant actif</span>
+              <span class="liste-pliante__compte"><%= @equipes_vides.size %></span>
+            </a>
+            <div class="collapse" id="listeEquipesVides">
+              <div class="liste-pliante__corps">
+                <p class="text-grey mb-2"><small>
+                  Plus aucun compte actif ne les compose : leurs étudiants ont quitté
+                  la formation ou leur compte a été désactivé. Le travail déposé reste
+                  consultable.
+                </small></p>
+                <ul class="mb-0">
+                  <% @equipes_vides.sort_by { |t| t.name.to_s.downcase }.each do |t| %>
+                    <li>
+                      <%= link_to t.name, t %>
+                      <span class="text-grey">—
+                        <%= t.project ? t.project.name : "sans projet" %><% cartes = @cartes_par_equipe[t.id].to_i %>,
+                        <%= cartes.zero? ? "aucune carte" : "#{cartes} carte#{'s' if cartes > 1}" %>
+                      </span>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
         <% @teachers.each do |teacher| %>
           <% equipes = @equipes_par_enseignant[teacher.id] || [] %>
           <% next if equipes.empty? %>

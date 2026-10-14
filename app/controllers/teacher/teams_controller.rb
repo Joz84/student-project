@@ -98,7 +98,15 @@ class Teacher::TeamsController < ApplicationController
     # Une équipe sans projet ne peut être rattachée à aucun référent — d'anciennes
     # promos en comptent, créées avant qu'un projet leur soit attribué.
     toutes = @teams.includes(:project, :users, :anciens_membres).to_a
-    equipes, @equipes_sans_projet = toutes.partition(&:project)
+    # Les équipes que plus personne ne compose — leurs membres n'ont que des
+    # comptes désactivés — encombraient la grille de cartes sans un seul nom.
+    # Elles se replient en bas de page plutôt que de disparaître : le travail
+    # qu'elles contiennent reste atteignable.
+    @equipes_vides, vivantes = toutes.partition(&:sans_membre?)
+    @cartes_par_equipe = Card.joins(:list)
+                             .where(lists: { team_id: @equipes_vides.map(&:id) })
+                             .group("lists.team_id").count
+    equipes, @equipes_sans_projet = vivantes.partition(&:project)
     supervisions = Supervision.where(project_id: equipes.map(&:project_id).uniq)
                               .pluck(:project_id, :user_id)
                               .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(p, u), h| h[p] << u }

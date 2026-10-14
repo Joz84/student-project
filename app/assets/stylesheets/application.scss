@@ -250,6 +250,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 .team-card__list li { padding: .1rem 0; }
 .team-card__list .team-card__muted { font-size: .75rem; margin-left: .3rem; }
+// Un étudiant passé par l'équipe mais qui ne la compose plus : présent,
+// lisible, mais visiblement en retrait de ceux du moment.
+.team-card__parti { color: #8A96A3; font-style: italic; }
+.avatar-sm--parti { filter: grayscale(1); opacity: .5; }
 .team-card__link {
   display: block;
   padding: .6rem 1.1rem;

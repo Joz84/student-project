@@ -19,8 +19,29 @@ class Team < ApplicationRecord
   # promotion achevée doit continuer de montrer : ses équipes d'alors, avec
   # les étudiants qui y étaient, même partis en année supérieure.
   def membres
-    (users.kept.to_a | anciens_membres.kept.to_a)
-      .sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] }
+    (actuels | passes).sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] }
+  end
+
+  # `reject` plutôt que le scope `kept` : les deux associations sont préchargées
+  # par le contrôleur, et une requête par équipe les relirait pour rien.
+  def actuels
+    @actuels ||= users.reject { |u| u[:drop] }
+  end
+
+  # Ceux qui sont passés par l'équipe sans y être aujourd'hui. Les comptes
+  # désactivés n'en font pas partie : ils ne reviendront pas.
+  def passes
+    @passes ||= anciens_membres.reject { |u| u[:drop] } - actuels
+  end
+
+  def parti?(user)
+    !actuels.include?(user)
+  end
+
+  # Une équipe que plus personne ne compose, ni aujourd'hui ni autrefois : il
+  # n'y a rien à en montrer, seulement d'anciens comptes désactivés.
+  def sans_membre?
+    membres.empty?
   end
 
   def archived_cards
