@@ -21,6 +21,9 @@ from typing import Dict, Iterable, Tuple, List, Optional, Set
 # ce qui garde les sorties identiques aux versions précédentes.
 SLOT_SEP = " || groupe "
 
+# Taille de groupe visée. Au-delà, chaque élève supplémentaire est pénalisé.
+TARGET_SIZE = 4
+
 # Plafond de la phase 2 (minimiser le nombre de groupes). Le score, lui, est
 # décidé en phase 1 : c'est elle qui mérite le budget de temps.
 # Une catégorie à groupes homogènes comptant exactement ce nombre d'élèves forme
@@ -30,6 +33,59 @@ EXCEPTION_SIZE = 5
 
 def slot_label(project: str, index: int, n_slots: int) -> str:
     return project if n_slots == 1 else f"{project}{SLOT_SEP}{index + 1}"
+
+
+def _exigences_par_sujet(min_per_subject, projects, subject_of) -> Dict[str, int]:
+    """
+    Combien de projets au minimum doivent être retenus dans chaque catégorie.
+
+    Un entier vaut pour toutes les catégories présentes ; un dict permet de
+    doser catégorie par catégorie. Un projet sans catégorie n'est jamais
+    comptabilisé : il ne peut donc pas satisfaire une exigence.
+    """
+    if not min_per_subject:
+        return {}
+    presents = {subject_of.get(p) for p in projects if subject_of.get(p)}
+    if isinstance(min_per_subject, dict):
+        return {str(k): int(v) for k, v in min_per_subject.items() if int(v) > 0}
+    return {s: int(min_per_subject) for s in sorted(presents)}
+
+
+def _check_sujets(exigences, projects, subject_of, students, min_size, k_projects):
+    """
+    Trois façons d'exiger l'impossible, dites avant de lancer le solveur :
+    une catégorie trop peu fournie, un total d'exigences qui dépasse le nombre
+    de groupes formables, et un total qui dépasse le nombre de groupes imposé.
+    """
+    if not exigences:
+        return
+    disponibles = {}
+    for sujet in exigences:
+        disponibles[sujet] = sum(1 for p in projects if subject_of.get(p) == sujet)
+    manquants = {s: (n, disponibles[s]) for s, n in exigences.items() if disponibles[s] < n}
+    if manquants:
+        details = "; ".join(f"{s} : {d} projet(s) pour {n} exigé(s)"
+                            for s, (n, d) in sorted(manquants.items()))
+        raise ValueError(
+            "Impossible d'ouvrir autant de projets par catégorie que demandé.\n"
+            f"Détail  : {details}.\n"
+            "Ajoutez des projets dans ces catégories, ou abaissez l'exigence."
+        )
+
+    total = sum(exigences.values())
+    groupes_max = len(students) // min_size
+    if total > groupes_max:
+        raise ValueError(
+            f"Les exigences par catégorie imposent au moins {total} groupes, "
+            f"or {len(students)} élèves par groupes de {min_size} au minimum "
+            f"n'en forment que {groupes_max}.\n"
+            "Abaissez l'exigence, ou réduisez la taille minimale des groupes."
+        )
+    if k_projects is not None and total > k_projects:
+        raise ValueError(
+            f"Les exigences par catégorie imposent au moins {total} groupes, "
+            f"or le nombre de groupes est fixé à {k_projects}."
+        )
 
 
 def project_of_slot(label: str) -> str:
@@ -65,6 +121,9 @@ def _parse_payload(payload):
              "specialities": {"peip": {"exclusive_groups": true}, ...}
            }
        - max_booking      : nombre d'équipes que le projet peut accueillir.
+       - subject          : catégorie du projet (« clustering »…), facultative.
+                            Sert à exiger un minimum de projets ouverts par
+                            catégorie, cf. `min_per_subject`.
        - exclusive_groups : les élèves de cette spécialité ne peuvent être
                             groupés qu'entre eux (les PEIP).
     """
@@ -140,11 +199,11 @@ def _check_feasibility(students, projects, scores, n_slots,
         g_max = n_choix // min_choosers
         g_min = math.ceil(len(students) / max_size)
         if g_min > g_max:
-            raise ValueError(
-                f"Impossible d'avoir {min_choosers} élève(s) ayant classé dans chaque groupe : "
-                f"{len(students)} élèves demandent au moins {g_min} groupes (taille max {max_size}), "
-                f"or {n_choix} élèves ont classé, ce qui n'en permet que {g_max}. "
-                f"Baissez min_choosers, augmentez max_size, ou obtenez plus de classements."
+            print(
+                f"Note    : {min_choosers} élève(s) ayant classé par groupe est hors d'atteinte.\n"
+                f"          {len(students)} élèves demandent au moins {g_min} groupes (taille max "
+                f"{max_size}), or {n_choix} ont classé, ce qui n'en couvre que {g_max}.\n"
+                f"          Le solveur s'en approchera au mieux."
             )
 
     # Une catégorie à groupes homogènes doit pouvoir se partitionner seule.
@@ -172,6 +231,7 @@ def solve_assignment(
     time_limit_s: float = 60,
     duplicate_penalty: Optional[float] = None,
     min_choosers: int = 0,
+    min_per_subject=None,
     return_status: bool = False,
 ):
     """
@@ -197,6 +257,10 @@ def solve_assignment(
     - min_choosers : nombre minimal d'élèves ayant exprimé des vœux par groupe. Les
       autres — ceux marqués no_preference dans les spécialités — viennent compléter
       les groupes sans jamais les composer à eux seuls.
+    - min_per_subject : nombre minimal de projets retenus dans chaque catégorie
+      (le `subject` des projets). Un entier s'applique à toutes les catégories
+      présentes, un dict les dose une à une. Contrainte dure, et non préférence :
+      un modèle qui ne peut la tenir est déclaré infaisable avant résolution.
     - return_status : renvoie un 5e élément décrivant le déroulé de la résolution.
 
     Retourne:
@@ -245,9 +309,13 @@ def solve_assignment(
     sans_pref = {g for g, meta in specialities_meta.items() if (meta or {}).get("no_preference")}
     choisisseurs = [e for e in students if speciality_of.get(e) not in sans_pref]
 
+    subject_of = {p: (projects_meta.get(p) or {}).get("subject") for p in projects}
+    exigences_sujets = _exigences_par_sujet(min_per_subject, projects, subject_of)
+
     _check_feasibility(students, projects, scores, n_slots,
                        min_size, max_size, k_projects, speciality_of, exclusive,
                        sans_pref, min_choosers)
+    _check_sujets(exigences_sujets, projects, subject_of, students, min_size, k_projects)
 
     # --- Construction du solveur
     solver = pywraplp.Solver.CreateSolver("CBC_MIXED_INTEGER_PROGRAMMING")
@@ -272,6 +340,17 @@ def solve_assignment(
 
     # doublons : tout créneau au-delà du premier d'un projet
     doublons = [y[(p, k)] for p in projects for k in range(1, n_slots[p])]
+
+    # dépassement de la taille cible : un groupe de 5 coûte 1, un de 6 coûte 2.
+    # Sans ça, à nombre de groupes figé, rien ne pousse vers des groupes de 4 :
+    # le solveur produit indifféremment 12x4+2x5 ou 6x4+5x5+3x3.
+    cible = min(TARGET_SIZE, max_size)
+    surplus = {s_: solver.IntVar(0, max(0, max_size - cible), f"sur_{s_[0]}_{s_[1]}")
+               for s_ in slots}
+
+    # manque d'élèves ayant classé, par groupe. Objectif souple : la taille des
+    # groupes prime, donc on encaisse le manque plutôt que de créer un groupe de 5.
+    manque = {s_: solver.IntVar(0, max_size, f"mq_{s_[0]}_{s_[1]}") for s_ in slots}
 
 
     # --- Contraintes
@@ -303,6 +382,14 @@ def solve_assignment(
         for k in range(n_slots[p] - 1):
             solver.Add(y[(p, k)] >= y[(p, k + 1)])
 
+    # 5bis) Un minimum de projets retenus par catégorie. Le bris de symétrie
+    #       ci-dessus garantit qu'un projet dont un créneau est ouvert a son
+    #       premier créneau ouvert : y[(p, 0)] dit donc « ce projet est retenu »,
+    #       et compter les projets ne revient pas à compter les groupes.
+    for sujet, mini in sorted(exigences_sujets.items()):
+        retenus = [y[(p, 0)] for p in projects if subject_of.get(p) == sujet]
+        solver.Add(solver.Sum(retenus) >= mini)
+
     # 6) Groupes homogènes : un créneau marqué pour une catégorie exclusive
     #    n'accueille qu'elle, et ses élèves ne vont que sur des créneaux marqués.
     for g in exclusive:
@@ -320,10 +407,11 @@ def solve_assignment(
             solver.Add(solver.Sum(z[g][s] for g in exclusive) <= 1)
         load_s = solver.Sum(x[(e, s)] for e in students if (e, s) in x)
         solver.Add(load_s <= cap_for(s))
+        solver.Add(load_s <= cible * y[s] + surplus[s])
         solver.Add(load_s >= min_size * y[s])
         if min_choosers > 0:
             avec_voeux = solver.Sum(x[(e, s)] for e in choisisseurs if (e, s) in x)
-            solver.Add(avec_voeux >= min_choosers * y[s])
+            solver.Add(manque[s] >= min_choosers * y[s] - avec_voeux)
 
     ok = (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE)
     etat = {"phase1": None, "phase2": None, "groupes": None, "borne_min": None,
@@ -364,9 +452,14 @@ def solve_assignment(
     for (e, s), var in x.items():
         obj2.SetCoefficient(var, scores[(e, s[0])])
     # Dominant par construction : aucun gain de vœux ne peut payer un doublon.
-    penalite = sum(scores.values()) + 1 if duplicate_penalty is None else duplicate_penalty
+    base = sum(scores.values()) + 1
+    penalite = base * 100 if duplicate_penalty is None else duplicate_penalty
     for var in doublons:
         obj2.SetCoefficient(var, -float(penalite))
+    for var in surplus.values():
+        obj2.SetCoefficient(var, -float(base))
+    for var in manque.values():
+        obj2.SetCoefficient(var, -float(base))
     obj2.SetMaximization()
 
     solver.SetTimeLimit(int(time_limit_s * 1000))
@@ -466,7 +559,13 @@ def summary(assignment: Dict[str, List[str]], score: float, payload: dict) -> st
         tailles[len(g)] = tailles.get(len(g), 0) + 1
     distincts = len(groups_by_project(assignment))
     detail = ", ".join(f"{n} groupe(s) de {t}" for t, n in sorted(tailles.items(), reverse=True))
+    par_groupe = {}
+    for g in assignment.values():
+        n = sum(1 for e in g if spec.get(e) not in sans)
+        par_groupe[n] = par_groupe.get(n, 0) + 1
+    detail_c = ", ".join(f"{v} groupe(s) à {k}" for k, v in sorted(par_groupe.items(), reverse=True))
     lignes += ["", f"{total} élèves affectés — {detail}",
+               f"élèves ayant classé par groupe : {detail_c}",
                f"{distincts} projets distincts utilisés sur {len(payload.get('projects') or {}) or distincts}"]
     return "\n".join(lignes)
 
@@ -498,8 +597,12 @@ def main(argv=None):
     ap.add_argument("--max-size", type=int, default=4, help="taille maximale d'un groupe (4)")
     ap.add_argument("--groupes", type=int, default=None,
                     help="impose un nombre exact de groupes (sinon minimisé)")
+    ap.add_argument("--min-par-sujet", type=int, default=0,
+                    help="nombre minimal de projets retenus dans chaque catégorie "
+                         "(le subject des projets) ; 0 = pas de règle")
     ap.add_argument("--min-choosers", type=int, default=0,
-                    help="minimum d'élèves ayant classé leurs vœux par groupe (0 = pas de règle)")
+                    help="objectif d'élèves ayant classé leurs vœux par groupe ; souple, "
+                         "il cède devant la taille des groupes (0 = pas de règle)")
     ap.add_argument("--time-limit", type=float, default=60,
                     help="temps maximal par phase, en secondes (60)")
     ap.add_argument("--duplicate-penalty", type=float, default=None,
@@ -521,7 +624,7 @@ def main(argv=None):
             payload, min_size=args.min_size, max_size=args.max_size,
             k_projects=args.groupes, time_limit_s=args.time_limit,
             duplicate_penalty=args.duplicate_penalty, min_choosers=args.min_choosers,
-            return_status=True)
+            min_per_subject=args.min_par_sujet, return_status=True)
     except (ValueError, RuntimeError) as exc:
         raise SystemExit(f"\nRépartition impossible.\n{exc}")
 

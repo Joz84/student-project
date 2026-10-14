@@ -83,7 +83,11 @@ class Batch < ApplicationRecord
 
     {
       scores: notes,
-      projects: projects.map { |p| [p.slug, { max_booking: p.max_booking || 1 }] }.to_h,
+      # `subject` sert au solveur à exiger un minimum de projets retenus par
+      # catégorie — par exemple au moins deux projets de chaque sujet.
+      projects: projects.map { |p|
+        [p.slug, { max_booking: p.max_booking || 1, subject: p.subject }]
+      }.to_h,
       students: student_scope.map { |u|
         [u.slug, { speciality: u.pending? ? SANS_CHOIX : u.speciality&.slug }]
       }.to_h,

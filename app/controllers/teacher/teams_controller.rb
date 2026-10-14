@@ -11,8 +11,13 @@ class Teacher::TeamsController < ApplicationController
   def solver_payload
     @batch = Batch.find(params[:batch_id])
     authorize [:teacher, @batch], :solver_payload?
-    send_data JSON.pretty_generate(@batch.solver_payload),
-              filename: "payload-#{@batch.title.parameterize}.json",
+    # `valides` restreint l'export à ceux qui ont validé leur classement : les
+    # autres ne sont alors pas répartis du tout, au lieu d'être placés au hasard.
+    eleves = @batch.users.kept.where(teacher: nil)
+    eleves = eleves.booked if params[:valides].present?
+    suffixe = params[:valides].present? ? "-valides" : ""
+    send_data JSON.pretty_generate(@batch.solver_payload(eleves)),
+              filename: "payload-#{@batch.title.parameterize}#{suffixe}.json",
               type: "application/json"
   end
 
