@@ -1,3 +1,16 @@
+<% if !current_user.teacher? && current_user.team_id != team.id %>
+  <%# Une équipe qu'il a quittée : il la relit, il n'y écrit plus — les
+      policies des cartes vérifient l'appartenance du moment. %>
+  <div class="equipe-passee">
+    <strong>Équipe d'une année achevée.</strong>
+    Vous pouvez la relire, mais plus la modifier.
+    <% if current_user.team %>
+      <%= link_to "Revenir à mon équipe actuelle", team_path(current_user.team),
+                  class: "text-decoration-none" %>
+    <% end %>
+  </div>
+<% end %>
+
 <nav class="onglets-equipe">
   <%= link_to "Tableau de bord", team_path(team),
               class: "onglet #{'onglet--actif' if actif == :kanban}" %>

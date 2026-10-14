@@ -20,6 +20,9 @@ class User < ApplicationRecord
   has_many :messages, dependent: :destroy 
   has_many :presences, dependent: :destroy
   has_many :user_skill_statuses, dependent: :destroy
+  has_many :team_memberships, dependent: :destroy
+  # Les équipes fréquentées, celle du moment comprise.
+  has_many :equipes_frequentees, through: :team_memberships, source: :team
   has_many :group_memberships, dependent: :destroy
   has_many :groups, through: :group_memberships
   has_many :attendances, dependent: :destroy
@@ -58,6 +61,10 @@ class User < ApplicationRecord
     # message: "Votre numéro étudiant n'est pas valide" }
   before_create :initialize_avatar_color
   after_create :sync_ratings!
+  # Sans cette trace, changer d'équipe effacerait tout souvenir de la
+  # précédente, et la promotion qu'on vient de quitter perdrait ses équipes.
+  after_create  :noter_appartenance, if: -> { team_id.present? }
+  after_update  :noter_appartenance, if: :saved_change_to_team_id?
   after_update :sync_ratings!, if: :saved_change_to_speciality_id?
 
   enum progress: [ :pending, :booked ]
@@ -247,7 +254,18 @@ class User < ApplicationRecord
     end
   end
 
+  # A-t-il appartenu à cette équipe, aujourd'hui ou autrefois ?
+  def a_frequente?(team)
+    return false if team.nil?
+    team_id == team.id || team_memberships.exists?(team_id: team.id)
+  end
+
   private
+
+  def noter_appartenance
+    ancienne, nouvelle = saved_change_to_team_id || [nil, team_id]
+    TeamMembership.suivre(self, ancienne, nouvelle)
+  end
 
   def initialize_avatar_color
     r = rand(128..255)

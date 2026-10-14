@@ -330,3 +330,15 @@ $notes: (refused: #E4606D, one: #F0A04B, two: #EFC84A, three: #BBD94A, accepted:
 
   &:hover { background: rgba($red, .1); border-color: rgba($red, .4); color: darken($red, 8%); }
 }
+
+// Le tableau d'une équipe qu'on a quittée : lisible, pas modifiable.
+.equipe-passee {
+  margin-bottom: 1rem;
+  padding: .7rem 1rem;
+  border: 1px solid $notice;
+  border-left: 4px solid $notice;
+  border-radius: $radius-sm;
+  background: mix($notice, #fff, 18%);
+  font-size: .88rem;
+  color: $ink;
+}

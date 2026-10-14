@@ -171,8 +171,8 @@
                 <li>
                   <%= link_to t.name, t %>
                   <span class="team-card__muted">
-                    <%= t.users.kept.size %> étudiant<%= "s" if t.users.kept.size > 1 %> —
-                    <%= t.users.kept.map { |u| "#{u.first_name} #{u.last_name}" }.join(", ") %>
+                    <%= t.membres.size %> étudiant<%= "s" if t.membres.size > 1 %> —
+                    <%= t.membres.map { |u| "#{u.first_name} #{u.last_name}" }.join(", ") %>
                   </span>
                 </li>
               <% end %>
@@ -188,7 +188,7 @@
               <h4><%= teacher.first_name %> <%= teacher.last_name.capitalize %></h4>
               <span class="teacher-block__count">
                 <%= equipes.size %> équipe<%= "s" if equipes.size > 1 %> ·
-                <%= equipes.sum { |t| t.users.kept.size } %> étudiants ·
+                <%= equipes.sum { |t| t.membres.size } %> étudiants ·
                 <%= equipes.map(&:project_id).uniq.size %> projet<%= "s" if equipes.map(&:project_id).uniq.size > 1 %>
               </span>
             </div>

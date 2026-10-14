@@ -2,6 +2,8 @@ class Team < ApplicationRecord
   belongs_to :project, optional: true
   belongs_to :user #, optional: true #remove after migration #team leader
   has_many :users, dependent: :nullify
+  has_many :team_memberships, dependent: :destroy
+  has_many :anciens_membres, through: :team_memberships, source: :user
   has_many :lists
   has_many :milestones, dependent: :destroy
   has_many :cards, through: :lists
@@ -12,6 +14,14 @@ class Team < ApplicationRecord
   # en L1 et en L2 désignent des projets distincts. L'unicité ne vaut donc que
   # dans une promotion, repérée par le projet de l'équipe.
   validate :name_unique_within_batch
+
+  # Tous ceux qui ont composé l'équipe, présents et passés. C'est ce qu'une
+  # promotion achevée doit continuer de montrer : ses équipes d'alors, avec
+  # les étudiants qui y étaient, même partis en année supérieure.
+  def membres
+    (users.kept.to_a | anciens_membres.kept.to_a)
+      .sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] }
+  end
 
   def archived_cards
     cards.where(status: :archived)

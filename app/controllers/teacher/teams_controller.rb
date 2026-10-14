@@ -60,12 +60,16 @@ class Teacher::TeamsController < ApplicationController
 
     @batch = Batch.find(@batch_id)
     session[:batch_id] = @batch_id
+    # Une promotion montre les équipes de ses projets, et non celles dont un
+    # membre y est encore rattaché : sans cela, une promotion achevée se vide
+    # de ses propres équipes dès que ses étudiants passent à la suivante.
+    # Les équipes sans projet n'ont que leurs membres pour se rattacher.
+    sans_projet = Team.joins(:users).where(users: { batch_id: @batch_id }, teams: { project_id: nil })
     @teams = @teams
-      .joins(:users)
-      .where(users: { batch_id: @batch_id })
+      .where("teams.project_id IN (:projets) OR teams.id IN (:orphelines)",
+             projets: @batch.projects.select(:id), orphelines: sans_projet.select(:id))
       .where.not(name: "En attente de projet")
       .distinct
-      .kept
     @teachers = @batch.teachers.joins(supervisions: { project: :teams }).distinct
     @teachers = @teachers.where(id: current_user.id) if !current_user.admin
     load_equipes_par_enseignant
@@ -93,7 +97,7 @@ class Teacher::TeamsController < ApplicationController
   def load_equipes_par_enseignant
     # Une équipe sans projet ne peut être rattachée à aucun référent — d'anciennes
     # promos en comptent, créées avant qu'un projet leur soit attribué.
-    toutes = @teams.includes(:project, :users).to_a
+    toutes = @teams.includes(:project, :users, :anciens_membres).to_a
     equipes, @equipes_sans_projet = toutes.partition(&:project)
     supervisions = Supervision.where(project_id: equipes.map(&:project_id).uniq)
                               .pluck(:project_id, :user_id)

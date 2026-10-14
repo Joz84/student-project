@@ -1,5 +1,5 @@
 <% return if team.project.nil? %>
-<% membres = team.users.kept.sort_by { |u| [u.last_name.to_s.downcase, u.first_name.to_s.downcase] } %>
+<% membres = team.membres %>
 <% td = membres.map(&:td).compact.uniq %>
 <% tp = membres.map(&:tp).compact.uniq %>
 <% valides = membres.count(&:booked?) %>

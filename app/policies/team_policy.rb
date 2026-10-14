@@ -8,8 +8,11 @@ class TeamPolicy < ApplicationPolicy
     (record == user.team) || user.teacher?
   end
 
+  # Un étudiant relit le tableau d'une équipe qu'il a quittée : son travail de
+  # l'année passée ne disparaît pas parce qu'il a changé de projet. Modifier
+  # reste réservé à l'équipe du moment, par `update?`.
   def show?
-    (record == user.team) || user.teacher?
+    user.teacher? || user.a_frequente?(record)
   end
 
   class Scope < ApplicationPolicy::Scope
