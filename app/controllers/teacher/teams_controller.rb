@@ -53,7 +53,10 @@ class Teacher::TeamsController < ApplicationController
   end
 
   def load_index(forced_batch_id = nil)
-    @batches = current_user.supervised_batches
+    # L'administrateur voit toutes les promotions. Le sélecteur ne listait que
+    # celles qu'on encadre, et une promotion neuve — dont les projets n'ont pas
+    # encore d'encadrant — n'apparaissait donc nulle part.
+    @batches = current_user.admin ? Batch.order(:id) : current_user.supervised_batches
     @teams = policy_scope([:teacher, Team])
     @batch_id = forced_batch_id || params[:batch_id] || session[:batch_id] || @batches.last&.id
     return if @batch_id.nil?
@@ -111,8 +114,13 @@ class Teacher::TeamsController < ApplicationController
                               .pluck(:project_id, :user_id)
                               .each_with_object(Hash.new { |h, k| h[k] = [] }) { |(p, u), h| h[p] << u }
     @equipes_par_enseignant = Hash.new { |h, k| h[k] = [] }
+    # Une équipe dont le projet n'a pas d'encadrant ne se rangeait sous personne
+    # et disparaissait purement de la page. Elle a son propre bloc.
+    @equipes_sans_encadrant = []
     equipes.sort_by { |t| [t.project.name.to_s, t.name.to_s] }.each do |t|
-      supervisions[t.project_id].each { |uid| @equipes_par_enseignant[uid] << t }
+      referents = supervisions[t.project_id]
+      @equipes_sans_encadrant << t if referents.empty?
+      referents.each { |uid| @equipes_par_enseignant[uid] << t }
     end
   end
 

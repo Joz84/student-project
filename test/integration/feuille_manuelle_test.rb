@@ -3,6 +3,14 @@ require "test_helper"
 class FeuilleManuelleTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
+  # « Il y a une heure » franchit minuit une fois par jour : le jour devenait
+  # celui de la veille tandis que l'heure de fin restait celle du matin, et la
+  # séance se terminait vingt-trois heures avant de commencer. Un créneau ancré
+  # en milieu de journée ne dépend plus de l'heure à laquelle les tests tournent.
+  def creneau
+    Time.zone.now.change(hour: 10, min: 0)
+  end
+
   setup do
     montrer_les_erreurs!
     @batch = Batch.create!(title: "Promo manuelle #{SecureRandom.hex(4)}")
@@ -174,7 +182,7 @@ class FeuilleManuelleTest < ActionDispatch::IntegrationTest
     sign_in @prof
     post teacher_lessons_path, params: {
       lesson: { ue_id: @ue.id, category: "autre" },
-      jour: 1.hour.ago.to_date.to_s, debut: 1.hour.ago.strftime("%H:%M"), fin: Time.current.strftime("%H:%M"),
+      jour: creneau.to_date.to_s, debut: creneau.strftime("%H:%M"), fin: (creneau + 2.hours).strftime("%H:%M"),
       group_ids: [@td1.id.to_s]
     }
     seance = Lesson.order(:created_at).last
@@ -216,7 +224,7 @@ class FeuilleManuelleTest < ActionDispatch::IntegrationTest
     sign_in @prof
     post teacher_lessons_path, params: {
       lesson: { ue_id: @ue.id, category: "autre" },
-      jour: 1.hour.ago.to_date.to_s, debut: (1.hour.ago).strftime("%H:%M"), fin: Time.current.strftime("%H:%M"),
+      jour: creneau.to_date.to_s, debut: creneau.strftime("%H:%M"), fin: (creneau + 2.hours).strftime("%H:%M"),
       group_ids: [@td1.id.to_s]
     }
     seance = Lesson.order(:created_at).last
