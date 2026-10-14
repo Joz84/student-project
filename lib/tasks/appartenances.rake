@@ -22,8 +22,20 @@ namespace :equipes do
     carte = JSON.parse(File.read(ENV.fetch("FICHIER")))
     quand = ENV["QUAND"] ? Time.zone.parse(ENV["QUAND"]) : 1.year.ago
 
+    # Un nom d'équipe n'est unique que dans une promotion : sans PROMO, deux
+    # « Hydroponie » de deux années différentes se confondraient, et
+    # l'historique irait se poser sur la mauvaise.
+    portee = Team.all
+    if ENV["PROMO"]
+      promo = Batch.find(ENV["PROMO"])
+      portee = portee.where(project_id: promo.projects.select(:id))
+      puts "Promotion : #{promo.title}"
+    end
+
     carte.each do |nom, ids|
-      t = Team.find_by!(name: nom)
+      trouvees = portee.where(name: nom).to_a
+      raise "#{trouvees.size} équipes nommées #{nom.inspect} : précisez PROMO=<id>" if trouvees.size != 1
+      t = trouvees.first
       ids.each do |id|
         u = User.find(id)
         next if TeamMembership.exists?(user_id: u.id, team_id: t.id)
