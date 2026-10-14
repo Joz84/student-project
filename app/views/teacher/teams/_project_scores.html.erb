@@ -28,7 +28,7 @@
           <% @project_demand.each do |d| %>
             <tr>
               <td>
-                <span class="chip-sujet bg-<%= d[:project].subject.downcase %>"><%= d[:project].subject.capitalize %></span>
+                <span class="chip-sujet bg-<%= d[:project].subject %>"><%= d[:project].subject_label %></span>
                 <%= link_to d[:project].name.truncate(52), project_path(d[:project]),
                             class: "text-decoration-none", target: "_blank" %>
               </td>

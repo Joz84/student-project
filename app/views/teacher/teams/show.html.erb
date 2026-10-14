@@ -9,7 +9,7 @@
       <article class="card card-body p-4 p-md-5 mb-5">
         <% if @team.project %>
           <div class="text-center mb-3">
-            <span class="chip bg-<%= @team.project.subject.downcase %>"><%= @team.project.subject %></span>
+            <span class="chip bg-<%= @team.project.subject %>"><%= @team.project.subject_label %></span>
           </div>
         <% end %>
 

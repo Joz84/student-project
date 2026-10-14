@@ -132,7 +132,7 @@
               <div class="card w-100 p-3 mb-3">
                 <h6 class="text-center"><%= team.project.name %></h6>
                 <p class="text-center mb-3"><strong><%= team.name %></strong></p>
-                <small class="text-grey"><i><%= team.project.subject.capitalize %></i></small>
+                <small class="text-grey"><i><%= team.project.subject_label %></i></small>
                 <p><%= team.project.description %></p>
                 
                 <% if team.drive_link.blank? %>

@@ -16,7 +16,7 @@
               <div class="project-card card-hover">
                 <div class="project-card__bar" style="background: <%= project.color %>;"></div>
                 <div class="project-card__body">
-                  <span class="chip bg-<%= project.subject.downcase %>"><%= project.subject %></span>
+                  <span class="chip bg-<%= project.subject %>"><%= project.subject_label %></span>
                   <h3 class="project-card__title"><%= project.name %></h3>
                   <p class="project-card__text">
                     <%= truncate(project.description, length: 190, separator: " ") %>

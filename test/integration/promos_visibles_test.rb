@@ -70,4 +70,18 @@ class PromosVisiblesTest < ActionDispatch::IntegrationTest
     assert_match equipe.name, response.body
     refute_match "Équipes sans encadrant", response.body
   end
+
+  test "la pastille d'un sujet composé s'affiche lisiblement" do
+    @projet.update!(subject: :regression_lineaire)
+    eleve = creer_eleve("83000003", "Mahuta", batch: @batch)
+    equipe = Team.create!(name: "Datavore", project: @projet, user: eleve)
+    eleve.update!(team: equipe)
+
+    sign_in @admin
+    get teacher_batch_teams_path(@batch)
+    assert_response :success
+    assert_match "Régression linéaire", response.body
+    assert_match "bg-regression_lineaire", response.body
+    refute_match "Regression_lineaire", response.body
+  end
 end

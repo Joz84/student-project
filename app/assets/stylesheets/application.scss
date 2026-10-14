@@ -167,6 +167,20 @@ h1, h2, h3, h4, h5, h6 {
 .bg-stes {
   background: #C7F0D8;
 }
+/* Les quatre sujets de science des données, dans la même famille pastel
+   que les quatre disciplines : la pastille reste lisible en texte sombre. */
+.bg-regression_lineaire {
+  background: #FFD9C1;
+}
+.bg-classification {
+  background: #FFC9DC;
+}
+.bg-clustering {
+  background: #C1F0EE;
+}
+.bg-deep_learning {
+  background: #D5CFF7;
+}
 /* --- cartes d'équipe, espace enseignant --- */
 .team-grid {
   display: grid;

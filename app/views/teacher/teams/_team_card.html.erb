@@ -6,11 +6,11 @@
 
 <div class="col">
   <div class="team-card h-100">
-    <div class="team-card__bar bg-<%= team.project.subject.downcase %>"></div>
+    <div class="team-card__bar bg-<%= team.project.subject %>"></div>
 
     <div class="team-card__body">
       <div class="team-card__top">
-        <span class="chip-sujet bg-<%= team.project.subject.downcase %>"><%= team.project.subject.capitalize %></span>
+        <span class="chip-sujet bg-<%= team.project.subject %>"><%= team.project.subject_label %></span>
         <span class="team-card__tags">
           <% td.each do |v| %><span class="team-tag"><%= v %></span><% end %>
           <% tp.each do |v| %><span class="team-tag"><%= v %></span><% end %>
