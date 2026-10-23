@@ -1,10 +1,13 @@
 class AssignmentPolicy < ApplicationPolicy
-  def destroy?
-    record.team&.users&.include?(user)
+  # Affecter un étudiant à une carte, et le retirer, vont par paire : un
+  # enseignant pouvait poser une affectation sans pouvoir la défaire, ce qui
+  # bloquait les référents dès qu'ils corrigeaient la répartition des tâches.
+  def create?
+    membre? || user.teacher?
   end
 
-  def create?
-    record.team&.users&.include?(user) || user.teacher
+  def destroy?
+    membre? || user.teacher?
   end
 
   class Scope < ApplicationPolicy::Scope
@@ -12,5 +15,11 @@ class AssignmentPolicy < ApplicationPolicy
     def resolve
       scope.all
     end
+  end
+
+  private
+
+  def membre?
+    record.team&.users&.include?(user)
   end
 end
