@@ -29,8 +29,16 @@ class CardsController < ApplicationController
       flash[:alert] = @card.errors.messages.map{|k, v| "#{k.capitalize} #{v.join('et ')}"}.join(". ")
     end
     # Une carte se modifie depuis le tableau comme depuis la feuille de route :
-    # on revient là où l'on était.
-    redirect_back fallback_location: @team, status: :see_other
+    # on revient là où l'on était. Depuis le tableau, on revient sur le volet
+    # d'où l'on vient, ouvert : sans cela le panneau se refermait et la
+    # modification semblait n'avoir pas été prise en compte.
+    if params[:volet].present?
+      redirect_to team_path(@team, carte: @card.id, volet: params[:volet],
+                            anchor: "carte#{@card.id}"),
+                  notice: flash[:alert] ? nil : "Tâche modifiée.", status: :see_other
+    else
+      redirect_back fallback_location: @team, status: :see_other
+    end
   end
 
   def destroy

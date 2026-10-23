@@ -20,7 +20,7 @@ Options
         </div>
 
         
-        <% if card.pending? %>
+        <% if card.pending? || current_user.teacher? %>
           
         <div class="accordion-item">
           <h2 class="accordion-header">
@@ -101,8 +101,10 @@ Options
             Modifier la tâche
             </button>
         </h2>
-        <div id="collapseThree<%= card.id%>" class="accordion-collapse collapse p-2" data-bs-parent="#accordion<%= card.id %>">
+        <div id="collapseThree<%= card.id%>" class="accordion-collapse collapse p-2 <%= "show" if volet == "modifier" %>" data-bs-parent="#accordion<%= card.id %>">
             <%= simple_form_for card do |f| %>
+            <%# Dit au contrôleur de revenir sur ce volet, ouvert. %>
+            <%= hidden_field_tag :volet, "modifier" %>
             <%= f.input :name %>
             <%= f.input :description %>
             <%= f.input :drive_link %>

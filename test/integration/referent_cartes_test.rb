@@ -86,4 +86,42 @@ class ReferentCartesTest < ActionDispatch::IntegrationTest
       delete assignment_path(affectation)
     end
   end
+
+  test "une carte évaluée reste modifiable par le référent, figée pour l'étudiant" do
+    @carte.update!(teacher_validation: "accepted")
+
+    sign_in @referent
+    get team_path(@equipe)
+    assert_match "Modifier la tâche", response.body,
+                 "l'enseignant doit pouvoir corriger ce qu'il vient d'évaluer"
+    sign_out :user
+
+    sign_in @eleve
+    get team_path(@equipe)
+    refute_match "Modifier la tâche", response.body,
+                 "une tâche évaluée ne se modifie plus côté étudiant"
+  end
+
+  test "après modification, le panneau de la carte se rouvre sur place" do
+    sign_in @referent
+    patch card_path(@carte), params: { volet: "modifier", card: { name: "Reformulée" } }
+    assert_redirected_to team_path(@equipe, carte: @carte.id, volet: "modifier",
+                                   anchor: "carte#{@carte.id}")
+    assert_equal "Tâche modifiée.", flash[:notice]
+
+    follow_redirect!
+    assert_response :success
+    assert_match "Reformulée", response.body
+    # L'accordéon doit être déplié, sinon la modification paraît perdue.
+    assert_match "collapseThree#{@carte.id}\" class=\"accordion-collapse collapse p-2 show",
+                 response.body
+  end
+
+  test "une modification refusée explique pourquoi et ne prétend pas avoir réussi" do
+    sign_in @referent
+    patch card_path(@carte), params: { volet: "modifier", card: { name: "" } }
+    assert_nil flash[:notice], "aucun message de succès sur un échec"
+    assert_match(/Name|Nom/, flash[:alert].to_s)
+    assert_equal "Tâche existante", @carte.reload.name
+  end
 end
