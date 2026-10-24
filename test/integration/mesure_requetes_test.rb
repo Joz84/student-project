@@ -8,7 +8,8 @@ class MesureRequetesTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
   PLAFONDS = { "accueil" => 6, "projets" => 25, "kanban" => 160, "progression" => 35,
-               "feuille de route" => 20, "matières" => 15, "équipes" => 25, "bilan" => 8 }.freeze
+               "feuille de route" => 20, "matières" => 15, "équipes" => 25, "bilan" => 8,
+               "étudiants" => 15 }.freeze
 
   setup do
     montrer_les_erreurs!
@@ -55,6 +56,14 @@ class MesureRequetesTest < ActionDispatch::IntegrationTest
     sign_in @prof
     verifier "équipes", teacher_teams_path(batch_id: @batch.id)
     verifier "bilan", teacher_bilan_path
+  end
+
+  # La vue d'ensemble affiche une promotion entière : c'est la page où un N+1
+  # coûterait le plus cher, une requête par étudiant.
+  test "la vue d'ensemble des étudiants reste sous son plafond" do
+    @prof.update!(admin: true)
+    sign_in @prof
+    verifier "étudiants", teacher_etudiants_path(batch_id: @batch.id)
   end
 
   private

@@ -267,6 +267,20 @@
   box-shadow: 0 0 0 3px rgba(0, 0, 0, .06);
 }
 
+// Aperçu de l'écran d'un étudiant : la pastille garde son aspect mais ne
+// réagit plus, sans quoi elle promettrait un clic qui n'enregistre rien.
+.autoeval__bouton--inerte {
+  cursor: default;
+  pointer-events: none;
+  opacity: 1;
+}
+
+.soutien-btn--inerte {
+  cursor: default;
+  pointer-events: none;
+  opacity: 1;
+}
+
 .matiere__pied {
   display: flex;
   align-items: center;

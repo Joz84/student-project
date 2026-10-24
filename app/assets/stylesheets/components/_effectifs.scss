@@ -1,0 +1,151 @@
+// Vue d'ensemble des étudiants : un bloc par sous-ensemble — projet, TD, TP —
+// tenu par sa teinte. La couleur porte le regroupement, le cadre le délimite ;
+// les deux ensemble se lisent même imprimés en noir et blanc, où il reste le
+// filet et le titre.
+
+.effectif__paquet {
+  background: #fff;
+  border: 1px solid $line;
+  border-left: 4px solid var(--teinte, #{$blue});
+  border-radius: $radius;
+  box-shadow: $shadow-sm;
+  padding: .9rem 1.1rem 1rem;
+  margin-bottom: 1.4rem;
+}
+
+// Le groupe absent n'est pas un groupe : il se distingue du premier coup d'œil.
+.effectif__paquet--orphelin {
+  border-style: dashed;
+  border-left-style: dashed;
+  background: $surface;
+}
+
+.effectif__entete {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem;
+  padding-bottom: .6rem;
+  margin-bottom: .4rem;
+  border-bottom: 1px solid $line-soft;
+}
+
+.effectif__puce {
+  width: .7rem;
+  height: .7rem;
+  border-radius: 2px;
+  background: var(--teinte, #{$blue});
+  flex: 0 0 auto;
+}
+
+.effectif__titre {
+  font-size: 1rem;
+  margin: 0;
+  color: $ink;
+}
+
+.effectif__detail {
+  font-size: .82rem;
+  color: $muted;
+}
+
+.effectif__compte {
+  margin-left: auto;
+  font-size: .76rem;
+  font-weight: 600;
+  color: $muted-soft;
+  white-space: nowrap;
+}
+
+.effectif__table {
+  table-layout: fixed;
+  min-width: 52rem;
+}
+
+.effectif__col--nom     { width: 21%; }
+.effectif__col--num     { width: 9%; }
+.effectif__col--groupe  { width: 10%; }
+.effectif__col--chiffre { width: 8%; }
+
+.effectif__nom {
+  font-weight: 600;
+  color: $ink;
+  white-space: nowrap;
+
+  &:hover { color: $blue; text-decoration: underline; }
+}
+
+// La même étiquette qu'en tête de bloc, à hauteur de ligne : c'est elle qui
+// permet de suivre un TP à l'œil quand le tableau est rangé par projet.
+.effectif__pastille {
+  display: inline-block;
+  font-size: .74rem;
+  font-weight: 600;
+  padding: .1rem .5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: $ink;
+  border: 1px solid var(--teinte, #{$blue});
+  // `color-mix` seul laisserait l'étiquette blanche sur les navigateurs qui
+  // l'ignorent : la teinte est dans la bordure, le fond neutre suffit alors.
+  background: $surface;
+  background: color-mix(in srgb, var(--teinte, #{$blue}) 18%, #fff);
+}
+
+// Les noms de projet sont des phrases : l'étiquette d'équipe revient à la
+// ligne au lieu de déborder sur la colonne voisine.
+.effectif__pastille--equipe {
+  white-space: normal;
+  max-width: 100%;
+}
+
+.effectif__vide {
+  color: $muted-soft;
+  font-size: .8rem;
+}
+
+.effectif__alerte {
+  font-weight: 700;
+  color: #B4453F;   // 4,6:1 sur blanc, là où #D96C6C n'était qu'à 2,9:1
+}
+
+// Le lien vers l'écran de l'étudiant, sur sa fiche.
+.fiche__oeil {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  margin: .2rem 0 1rem;
+  padding: .4rem .8rem;
+  border: 1px solid mix($blue, #fff, 45%);
+  border-radius: 999px;
+  background: mix($blue, #fff, 8%);
+  font-size: .84rem;
+  font-weight: 600;
+  color: $blue;
+
+  &:hover { background: mix($blue, #fff, 16%); color: $blue; }
+}
+
+// Bandeau de l'aperçu : rappelle qu'on regarde l'écran d'un autre, et qu'il
+// ne répond pas aux boutons.
+.apercu {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .5rem .9rem;
+  padding: .7rem 1rem;
+  margin-bottom: 1.2rem;
+  border: 1px solid $notice;
+  border-radius: $radius;
+  background: mix($notice, #fff, 22%);
+  font-size: .86rem;
+  color: $ink;
+
+  strong { font-weight: 700; }
+  a { color: $blue; font-weight: 600; }
+}
+
+.apercu__mention {
+  font-size: .78rem;
+  color: $ink-soft;
+}

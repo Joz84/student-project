@@ -3,16 +3,43 @@
     <div class="col-lg-10 offset-lg-1">
 
       <div class="my-4">
-        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+        <% if @apercu %>
+          <%= link_to "← Retour à sa fiche", teacher_etudiant_path(@eleve),
+                      class: "text-decoration-none", style: "color: #66727F;" %>
+        <% else %>
+          <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+        <% end %>
       </div>
+
+      <%# Le même écran, mot pour mot : c'est ce que l'étudiant lit, et le
+          reformuler à la troisième personne ôterait tout l'intérêt de venir
+          ici. Seuls les boutons sont neutralisés — ils enregistreraient au nom
+          de l'administrateur, alors que le niveau déclaré n'appartient qu'à
+          l'étudiant. %>
+      <% if @apercu %>
+        <div class="apercu">
+          <strong>Vue de l'étudiant</strong>
+          <span><%= @eleve.last_name.to_s.upcase %> <%= @eleve.first_name %></span>
+          <span class="apercu__mention">
+            L'écran tel qu'il le voit, en lecture seule : rien ne peut être
+            déclaré ni demandé à sa place.
+          </span>
+          <%= link_to "Sa fiche →", teacher_etudiant_path(@eleve) %>
+        </div>
+      <% end %>
 
       <h2 class="text-center mb-4">Mes matières</h2>
 
       <% if @semestre.vide? %>
         <div class="agenda__vide">
-          Aucun cours n'est rattaché à votre emploi du temps pour ce semestre.
-          Si vous êtes enseignant, cette page présente le relevé personnel d'un
-          étudiant : elle reste vide pour vous.
+          <% if @apercu %>
+            Aucun cours n'est rattaché à son emploi du temps pour ce semestre :
+            il n'est inscrit à aucun groupe de TD ou de TP.
+          <% else %>
+            Aucun cours n'est rattaché à votre emploi du temps pour ce semestre.
+            Si vous êtes enseignant, cette page présente le relevé personnel d'un
+            étudiant : elle reste vide pour vous.
+          <% end %>
         </div>
       <% else %>
 
@@ -87,23 +114,40 @@
                     <th class="autoeval__quoi">Niveau global sur la matière</th>
                     <% UeAssessment::NIVEAUX.each_key do |cle| %>
                       <td class="autoeval__case">
-                        <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                       class: "autoeval__forme" do %>
-                          <%= hidden_field_tag :level, cle %>
-                          <button type="submit" class="autoeval__bouton <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
+                        <% if @apercu %>
+                          <button type="button" disabled
+                                  class="autoeval__bouton autoeval__bouton--inerte <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
                                   style="<%= "--teinte: #{matiere.teinte};" %>"
                                   title="<%= UeAssessment::NIVEAUX[cle] %>"
                                   aria-label="<%= UeAssessment::NIVEAUX[cle] %>"></button>
+                        <% else %>
+                          <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                         class: "autoeval__forme" do %>
+                            <%= hidden_field_tag :level, cle %>
+                            <button type="submit" class="autoeval__bouton <%= "autoeval__bouton--choisi" if evaluation&.level == cle %>"
+                                    style="<%= "--teinte: #{matiere.teinte};" %>"
+                                    title="<%= UeAssessment::NIVEAUX[cle] %>"
+                                    aria-label="<%= UeAssessment::NIVEAUX[cle] %>"></button>
+                          <% end %>
                         <% end %>
                       </td>
                     <% end %>
                     <td class="autoeval__case autoeval__maison">
-                      <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                     class: "maison__forme" do %>
-                        <%= number_field_tag :home_hours, evaluation&.home_hours.to_f.round(1),
-                              min: 0, step: 0.5, class: "maison__champ",
-                              onchange: "this.form.requestSubmit()", "aria-label": "Heures de travail personnel" %>
-                        <span class="maison__unite">h</span>
+                      <% if @apercu %>
+                        <span class="maison__forme">
+                          <%= number_field_tag :home_hours, evaluation&.home_hours.to_f.round(1),
+                                min: 0, step: 0.5, class: "maison__champ", disabled: true,
+                                "aria-label": "Heures de travail personnel" %>
+                          <span class="maison__unite">h</span>
+                        </span>
+                      <% else %>
+                        <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                       class: "maison__forme" do %>
+                          <%= number_field_tag :home_hours, evaluation&.home_hours.to_f.round(1),
+                                min: 0, step: 0.5, class: "maison__champ",
+                                onchange: "this.form.requestSubmit()", "aria-label": "Heures de travail personnel" %>
+                          <span class="maison__unite">h</span>
+                        <% end %>
                       <% end %>
                       <% if taux %>
                         <span class="maison__taux <%= "maison__taux--faible" if taux < 60 %>"><%= taux %> %</span>
@@ -116,10 +160,12 @@
               <div class="matiere__pied">
                 <% if evaluation&.level %>
                   <span class="matiere__niveau">Niveau déclaré : <strong><%= evaluation.libelle %></strong></span>
-                  <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
-                                 class: "autoeval__forme" do %>
-                    <%= hidden_field_tag :level, "" %>
-                    <%= submit_tag "Effacer", class: "no-btn matiere__effacer" %>
+                  <% unless @apercu %>
+                    <%= form_with url: ue_assessment_path(matiere.ue), method: :patch,
+                                   class: "autoeval__forme" do %>
+                      <%= hidden_field_tag :level, "" %>
+                      <%= submit_tag "Effacer", class: "no-btn matiere__effacer" %>
+                    <% end %>
                   <% end %>
                 <% else %>
                   <span class="matiere__niveau text-grey">Pas encore évaluée.</span>
@@ -130,11 +176,13 @@
               <div class="soutien-choix <%= "soutien-choix--prise" if demande %>">
                 <%= form_with url: ue_tutoring_request_path(matiere.ue), method: :post,
                                class: "soutien-choix__forme" do %>
-                  <button type="submit" class="soutien-btn <%= "soutien-btn--prise" if demande %>">
+                  <button type="<%= @apercu ? "button" : "submit" %>"
+                          <%= "disabled" if @apercu %>
+                          class="soutien-btn <%= "soutien-btn--prise" if demande %> <%= "soutien-btn--inerte" if @apercu %>">
                     <% if demande %>
                       <span class="soutien-btn__coche" aria-hidden="true">✓</span>
                       <span>Inscrit au soutien</span>
-                      <span class="soutien-btn__retrait">me retirer</span>
+                      <% unless @apercu %><span class="soutien-btn__retrait">me retirer</span><% end %>
                     <% else %>
                       <span class="soutien-btn__libelle">Je souhaite du soutien</span>
                       <span class="soutien-btn__matiere"><%= matiere.ue.name %></span>

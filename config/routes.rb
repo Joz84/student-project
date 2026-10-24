@@ -76,7 +76,10 @@ Rails.application.routes.draw do
     resource :soutien, only: [:show], controller: "soutiens" do
       get :avancement
     end
-    resources :etudiants, only: [:show], controller: "etudiants"
+    resources :etudiants, only: [:index, :show], controller: "etudiants" do
+      # Le relevé de matières tel que l'étudiant le voit, en lecture seule.
+      member { get :matieres }
+    end
     resources :teams, only: [:index, :show, :update]
     resources :batches, only: [] do
       resources :teams, only: [:index] do

@@ -1,0 +1,165 @@
+<div class="container-fluid page-min-height" style="max-width: 1500px;">
+  <div class="row">
+    <div class="col-12">
+
+      <div class="my-4">
+        <%= link_to "← Retour à l'accueil", root_path, class: "text-decoration-none", style: "color: #66727F;" %>
+      </div>
+
+      <h2 class="text-center mb-1">Vue d'ensemble des étudiants</h2>
+      <p class="matieres__regle text-center">
+        <% if @batch %><%= @batch.title %> · <% end %>
+        chaque nom ouvre sa fiche.
+        <span class="recap__prive">Page réservée aux enseignants</span>
+      </p>
+
+      <% if @batch.nil? %>
+        <div class="agenda__vide">Aucune promotion n'a d'étudiant inscrit.</div>
+      <% else %>
+
+        <%= render "teacher/soutiens/promos", batches: @batches, batch: @batch %>
+
+        <% if @effectifs.vide? %>
+          <div class="agenda__vide">Aucun étudiant sur cette promotion.</div>
+        <% else %>
+
+          <nav class="onglets-equipe mb-4">
+            <% Effectifs::AXES.each do |cle, libelle| %>
+              <%= link_to libelle, teacher_etudiants_path(batch_id: @batch.id, axe: cle),
+                          class: "onglet #{'onglet--actif' if cle == @axe}" %>
+            <% end %>
+          </nav>
+
+          <div class="soutien__chiffres">
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @effectifs.lignes.size %></span>
+              <span class="soutien__label">étudiants inscrits</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @effectifs.groupes(@axe) %></span>
+              <span class="soutien__label">
+                <%= Effectifs::NOMS[@axe] || "liste unique" %>
+              </span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @effectifs.sans_groupe(@axe) %></span>
+              <span class="soutien__label">non rattachés</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @effectifs.lignes.count { |l| l.team } %></span>
+              <span class="soutien__label">en équipe</span>
+            </div>
+            <div class="soutien__chiffre">
+              <span class="soutien__valeur"><%= @effectifs.lignes.count { |l| l.demandes.positive? } %></span>
+              <span class="soutien__label">demandent du soutien</span>
+            </div>
+          </div>
+
+          <p class="matieres__regle">
+            Un TD se répartit sur plusieurs TP, et les équipes de projet ignorent
+            les deux : les onglets réorganisent le tableau selon le découpage qui
+            vous intéresse. Les teintes, elles, ne changent pas d'un onglet à
+            l'autre — un même TP garde sa couleur quand vous passez aux projets.
+          </p>
+
+          <% @paquets.each do |paquet| %>
+            <section class="effectif__paquet <%= "effectif__paquet--orphelin" if paquet.en_attente? %>"
+                     style="--teinte: <%= paquet.teinte || "#66727F" %>;">
+              <header class="effectif__entete">
+                <span class="effectif__puce" aria-hidden="true"></span>
+                <h3 class="effectif__titre"><%= paquet.libelle %></h3>
+                <% if paquet.detail.present? %>
+                  <span class="effectif__detail"><%= paquet.detail %></span>
+                <% end %>
+                <span class="effectif__compte">
+                  <%= paquet.nombre %> étudiant<%= "s" if paquet.nombre > 1 %>
+                </span>
+              </header>
+
+              <div class="enrobage-table">
+                <%# Largeurs fixes : sans elles chaque bloc dimensionnait ses
+                    colonnes pour lui seul, et les en-têtes ne s'alignaient
+                    plus d'un groupe à l'autre. %>
+                <table class="recap__table effectif__table">
+                  <thead>
+                    <tr>
+                      <th class="effectif__col--nom">Étudiant</th>
+                      <th class="effectif__col--num">N° étudiant</th>
+                      <% unless @axe == "td" %><th class="effectif__col--groupe">TD</th><% end %>
+                      <% unless @axe == "tp" %><th class="effectif__col--groupe">TP</th><% end %>
+                      <% unless @axe == "tp_info" %><th class="effectif__col--groupe">TP info</th><% end %>
+                      <% unless @axe == "projet" %><th>Équipe · projet</th><% end %>
+                      <th class="recap__nombre effectif__col--chiffre">Présence</th>
+                      <th class="recap__nombre effectif__col--chiffre">Matières<br>remplies</th>
+                      <th class="recap__nombre effectif__col--chiffre">Soutien</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% paquet.lignes.each do |ligne| %>
+                      <tr>
+                        <td>
+                          <%= link_to ligne.nom, teacher_etudiant_path(ligne.user),
+                                      class: "effectif__nom" %>
+                        </td>
+                        <td class="soutien__num"><%= ligne.user.student_number %></td>
+
+                        <% %w[td tp tp_info].each do |axe| %>
+                          <% next if axe == @axe %>
+                          <td>
+                            <% if ligne.libelles(axe).any? %>
+                              <span class="effectif__pastille"
+                                    style="--teinte: <%= @effectifs.teinte(axe, ligne.cle(axe)) %>;">
+                                <%= ligne.libelles(axe).join(" / ") %>
+                              </span>
+                            <% else %>
+                              <span class="effectif__vide">—</span>
+                            <% end %>
+                          </td>
+                        <% end %>
+
+                        <% unless @axe == "projet" %>
+                          <td>
+                            <% if ligne.team %>
+                              <span class="effectif__pastille effectif__pastille--equipe"
+                                    style="--teinte: <%= @effectifs.teinte("projet", ligne.cle("projet")) %>;">
+                                <%= ligne.team.name %>
+                              </span>
+                              <% if ligne.projet && ligne.projet.name != ligne.team.name %>
+                                <span class="recap__matieres"><%= ligne.projet.name %></span>
+                              <% end %>
+                            <% else %>
+                              <span class="effectif__vide">sans équipe</span>
+                            <% end %>
+                          </td>
+                        <% end %>
+
+                        <td class="recap__nombre">
+                          <% if ligne.taux_presence %>
+                            <span class="<%= "effectif__alerte" if ligne.taux_presence < 60 %>">
+                              <%= ligne.taux_presence %> %
+                            </span>
+                          <% else %>
+                            —
+                          <% end %>
+                        </td>
+                        <td class="recap__nombre"><%= ligne.evaluees.positive? ? ligne.evaluees : "—" %></td>
+                        <td class="recap__nombre"><%= ligne.demandes.positive? ? ligne.demandes : "—" %></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          <% end %>
+
+          <p class="matieres__regle">
+            La présence se calcule sur les séances réellement renseignées, jamais
+            sur les séances attendues : un étudiant sans pointage n'a pas manqué
+            un cours, c'est la feuille d'appel qui n'a pas été tenue.
+          </p>
+        <% end %>
+      <% end %>
+
+    </div>
+  </div>
+</div>

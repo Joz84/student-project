@@ -159,6 +159,54 @@ class SoutienTest < ActionDispatch::IntegrationTest
     assert_equal 1, soutien.demandeurs
   end
 
+  # L'administration a besoin de voir l'écran que l'étudiant a sous les yeux :
+  # sa fiche dit ce qu'il a déclaré, pas où il l'a déclaré.
+  test "la fiche propose de voir l'écran de l'étudiant" do
+    sign_in @admin
+    get teacher_etudiant_path(@eleve)
+    assert_response :success
+    assert_match matieres_teacher_etudiant_path(@eleve), response.body
+  end
+
+  test "l'écran de l'étudiant montre ses demandes de soutien, en lecture seule" do
+    TutoringRequest.create!(user: @eleve, ue: @maths)
+    UeAssessment.create!(user: @eleve, ue: @chimie, level: :notion)
+
+    sign_in @admin
+    get matieres_teacher_etudiant_path(@eleve)
+    assert_response :success
+    assert_match "Vue de l'étudiant", response.body
+    assert_match "TETUA", response.body
+    assert_match "Inscrit au soutien", response.body       # son état, pas le nôtre
+    assert_match "soutien-btn--inerte", response.body
+    assert_match "autoeval__bouton--inerte", response.body
+    refute_match "me retirer", response.body               # rien ne s'annule à sa place
+    refute_match "matiere__effacer", response.body
+  end
+
+  # Le formulaire enregistrerait au nom de l'administrateur : son niveau
+  # déclaré n'appartient qu'à l'étudiant.
+  test "l'aperçu ne soumet rien au nom de l'administrateur" do
+    sign_in @admin
+    get matieres_teacher_etudiant_path(@eleve)
+    assert_no_difference -> { UeAssessment.count } do
+      get matieres_teacher_etudiant_path(@eleve)
+    end
+    assert_equal 0, UeAssessment.where(user: @admin).count
+  end
+
+  test "un enseignant qui n'est pas administrateur ne voit pas cet écran" do
+    sign_in @prof
+    get matieres_teacher_etudiant_path(@eleve)
+    assert_redirected_to root_path
+  end
+
+  test "un étudiant ne voit pas l'écran d'un autre" do
+    sign_in @camarade
+    get matieres_teacher_etudiant_path(@eleve)
+    assert_redirected_to root_path
+  end
+
   test "un étudiant n'accède pas au relevé des demandes" do
     sign_in @eleve
     get teacher_soutien_path

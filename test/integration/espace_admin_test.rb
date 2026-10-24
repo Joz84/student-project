@@ -1,7 +1,7 @@
 require "test_helper"
 
-# Les pages réservées à l'administration : soutien, avancement, suivi et la
-# fiche d'un étudiant.
+# Les pages réservées à l'administration : soutien, avancement, suivi et
+# l'écran de l'étudiant. La fiche, elle, est ouverte au corps enseignant.
 class EspaceAdminTest < ActionDispatch::IntegrationTest
   include Devise::Test::IntegrationHelpers
 
@@ -43,14 +43,23 @@ class EspaceAdminTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     get avancement_teacher_soutien_path
     assert_redirected_to root_path
+  end
+
+  # Lire le dossier d'un étudiant est le travail de tout enseignant ; se mettre
+  # à sa place devant l'écran où il se déclare ne l'est pas.
+  test "la fiche s'ouvre aux enseignants, l'écran de l'étudiant non" do
+    sign_in @prof
     get teacher_etudiant_path(@eleve)
+    assert_response :success
+
+    get matieres_teacher_etudiant_path(@eleve)
     assert_redirected_to root_path
   end
 
   test "un étudiant n'atteint aucune de ces pages" do
     sign_in @eleve
-    [teacher_soutien_path, avancement_teacher_soutien_path,
-     teacher_suivi_path, teacher_etudiant_path(@eleve)].each do |chemin|
+    [teacher_soutien_path, avancement_teacher_soutien_path, teacher_suivi_path,
+     teacher_etudiant_path(@eleve), matieres_teacher_etudiant_path(@eleve)].each do |chemin|
       get chemin
       assert_redirected_to root_path, chemin
     end

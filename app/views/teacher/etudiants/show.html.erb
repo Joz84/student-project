@@ -16,7 +16,7 @@
             <% if @eleve[:drop] %><span class="soutien__alerte">compte désactivé</span><% end %>
           </p>
         </div>
-        <span class="recap__prive">Fiche réservée à l'administration</span>
+        <span class="recap__prive">Fiche réservée aux enseignants</span>
       </div>
 
       <div class="soutien__chiffres">
@@ -75,6 +75,16 @@
       <%# ---------------- ses matières ---------------- %>
       <section class="fiche__bloc">
         <h3 class="roadmap__sous-titre">Ses matières</h3>
+
+        <%# Le tableau ci-dessous dit ce que l'étudiant a déclaré ; le lien
+            montre l'écran où il le déclare, soutien compris. C'est la seule
+            façon de savoir au téléphone ce qu'il a sous les yeux. %>
+        <% if policy([:teacher, :etudiant]).matieres? %>
+          <%= link_to matieres_teacher_etudiant_path(@eleve), class: "fiche__oeil" do %>
+            <i class="fas fa-eye" aria-hidden="true"></i>
+            Voir son écran « Mes matières », section soutien comprise
+          <% end %>
+        <% end %>
         <% if @ues.empty? %>
           <p class="text-grey mb-0">Rattaché à aucun groupe de TD ou de TP.</p>
         <% else %>
